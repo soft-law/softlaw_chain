@@ -1,42 +1,26 @@
 #![cfg(feature = "runtime-benchmarks")]
 
 use super::*;
-use frame::deps::frame_benchmarking::v2::*;
+use frame_benchmarking::{benchmarks, whitelisted_caller, impl_benchmark_test_suite};
+use frame_system::RawOrigin;
+use sp_std::prelude::*;
+use frame_support::traits::Get;
 
-#[benchmarks]
-mod benchmarks {
-    use super::*;
-    #[cfg(test)]
-    use crate::pallet::Pallet as Template;
-    use frame_system::RawOrigin;
-
-    #[benchmark]
-    fn do_something() {
+benchmarks! {
+    mint_nft {
         let caller: T::AccountId = whitelisted_caller();
-        #[extrinsic_call]
-        do_something(RawOrigin::Signed(caller), 100);
-
-        assert_eq!(
-            Something::<T>::get().map(|v| v.block_number),
-            Some(100u32.into())
-        );
+        let name: Vec<u8> = vec![0; T::MaxNameLength::get() as usize];
+        let description: Vec<u8> = vec![0; T::MaxDescriptionLength::get() as usize];
+        let filing_date: Vec<u8> = vec![0; T::MaxNameLength::get() as usize];
+        let jurisdiction: Vec<u8> = vec![0; T::MaxNameLength::get() as usize];
+    }: _(RawOrigin::Signed(caller), name, description, filing_date, jurisdiction)
+    verify {
+        assert_eq!(NextNftId::<T>::get(), 1);
     }
-
-    #[benchmark]
-    fn cause_error() {
-        let caller: T::AccountId = whitelisted_caller();
-        Something::<T>::put(CompositeStruct {
-            block_number: 100u32.into(),
-            someone: caller.clone(),
-        });
-        #[extrinsic_call]
-        cause_error(RawOrigin::Signed(caller));
-
-        assert_eq!(
-            Something::<T>::get().map(|v| v.block_number),
-            Some(101u32.into())
-        );
-    }
-
-    impl_benchmark_test_suite!(Template, crate::mock::new_test_ext(), crate::mock::Test);
 }
+
+impl_benchmark_test_suite!(
+    Pallet,
+    crate::mock::new_test_ext(),
+    crate::mock::Test,
+);

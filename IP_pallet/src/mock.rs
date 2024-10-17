@@ -1,50 +1,68 @@
-use crate::frame_system::{mocking::MockBlock, GenesisConfig};
-use frame::{
-    deps::frame_support::{derive_impl, runtime, weights::constants::RocksDbWeight},
-    runtime::prelude::*,
-    testing_prelude::*,
+use crate as pallet_ip_pallet;
+use frame_support::{
+    parameter_types,
+    traits::{ConstU16, ConstU64},
+};
+use sp_core::H256;
+use sp_runtime::{
+    testing::Header,
+    traits::{BlakeTwo256, IdentityLookup},
 };
 
-// Configure a mock runtime to test the pallet.
-#[runtime]
-mod test_runtime {
-    #[runtime::runtime]
-    #[runtime::derive(
-        RuntimeCall,
-        RuntimeEvent,
-        RuntimeError,
-        RuntimeOrigin,
-        RuntimeFreezeReason,
-        RuntimeHoldReason,
-        RuntimeSlashReason,
-        RuntimeLockId,
-        RuntimeTask
-    )]
-    pub struct Test;
+type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
+type Block = frame_system::mocking::MockBlock<Test>;
 
-    #[runtime::pallet_index(0)]
-    pub type System = frame_system;
-    #[runtime::pallet_index(1)]
-    pub type Ip_pallet = crate;
+frame_support::construct_runtime!(
+    pub enum Test where
+        Block = Block,
+        NodeBlock = Block,
+        UncheckedExtrinsic = UncheckedExtrinsic,
+    {
+        System: frame_system,
+        IPPallet: pallet_ip_pallet,
+    }
+);
+
+parameter_types! {
+    pub const BlockHashCount: u64 = 250;
+    pub BlockWeights: frame_system::limits::BlockWeights =
+        frame_system::limits::BlockWeights::simple_max(1024);
 }
 
-#[derive_impl(frame_system::config_preludes::TestDefaultConfig)]
 impl frame_system::Config for Test {
-    type Nonce = u64;
-    type Block = MockBlock<Test>;
-    type BlockHashCount = ConstU64<250>;
-    type DbWeight = RocksDbWeight;
-}
-
-impl crate::Config for Test {
+    type BaseCallFilter = frame_support::traits::Everything;
+    type BlockWeights = ();
+    type BlockLength = ();
+    type DbWeight = ();
+    type RuntimeOrigin = RuntimeOrigin;
+    type RuntimeCall = RuntimeCall;
+    type Index = u64;
+    type BlockNumber = u64;
+    type Hash = H256;
+    type Hashing = BlakeTwo256;
+    type AccountId = u64;
+    type Lookup = IdentityLookup<Self::AccountId>;
+    type Header = Header;
     type RuntimeEvent = RuntimeEvent;
-    type WeightInfo = ();
+    type BlockHashCount = BlockHashCount;
+    type Version = ();
+    type PalletInfo = PalletInfo;
+    type AccountData = ();
+    type OnNewAccount = ();
+    type OnKilledAccount = ();
+    type SystemWeightInfo = ();
+    type SS58Prefix = ConstU16<42>;
+    type OnSetCode = ();
+    type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-// Build genesis storage according to the mock runtime.
+impl pallet_ip_pallet::Config for Test {
+    type RuntimeEvent = RuntimeEvent;
+    type Currency = ();
+    type MaxNameLength = ConstU32<50>;
+    type MaxDescriptionLength = ConstU32<200>;
+}
+
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    GenesisConfig::<Test>::default()
-        .build_storage()
-        .unwrap()
-        .into()
+    frame_system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
 }
