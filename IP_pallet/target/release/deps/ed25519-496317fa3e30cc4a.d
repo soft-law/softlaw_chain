@@ -1,8 +1,0 @@
-/Users/wario/Documents/GitHub/substrate_chain/IP_pallet/target/release/deps/libed25519-496317fa3e30cc4a.rmeta: /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/lib.rs /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/../README.md
-
-/Users/wario/Documents/GitHub/substrate_chain/IP_pallet/target/release/deps/libed25519-496317fa3e30cc4a.rlib: /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/lib.rs /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/../README.md
-
-/Users/wario/Documents/GitHub/substrate_chain/IP_pallet/target/release/deps/ed25519-496317fa3e30cc4a.d: /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/lib.rs /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/../README.md
-
-/Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/lib.rs:
-/Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-1.5.3/src/../README.md:
