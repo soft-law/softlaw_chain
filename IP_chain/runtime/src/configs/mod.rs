@@ -49,6 +49,7 @@ use polkadot_runtime_common::{
     xcm_sender::NoPriceForMessageDelivery, BlockHashCount, SlowAdjustingFeeUpdate,
 };
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+use sp_core::Get;
 use sp_runtime::Perbill;
 use sp_version::RuntimeVersion;
 use xcm::latest::prelude::BodyId;
@@ -303,4 +304,12 @@ impl pallet_collator_selection::Config for Runtime {
     type ValidatorIdOf = pallet_collator_selection::IdentityCollator;
     type ValidatorRegistration = Session;
     type WeightInfo = (); // Configure based on benchmarking results.
+}
+
+impl ip_pallet::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+    type Currency = Balances;
+    type MaxNameLength = ConstU32<100>;
+    type MaxDescriptionLength = ConstU32<100>;
+
 }
