@@ -135,6 +135,8 @@ pub mod pallet {
     }
 }
 
+pub use pallet::*;
+
 #[cfg(test)]
 mod mock;
 

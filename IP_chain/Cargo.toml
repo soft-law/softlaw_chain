@@ -124,3 +124,7 @@ cumulus-relay-chain-interface = "0.17.0"
 pallet-collator-selection = { version = "18.0.0", default-features = false }
 parachains-common = { version = "17.0.0", default-features = false }
 parachain-info = { version = "0.16.0", package = "staging-parachain-info", default-features = false }
+
+
+# Custom ip_pallet
+ip_pallet = {path = "../IP_pallet", default-features = false}

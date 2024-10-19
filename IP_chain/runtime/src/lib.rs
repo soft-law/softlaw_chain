@@ -61,6 +61,10 @@ pub use sp_runtime::BuildStorage;
 
 use weights::ExtrinsicBaseWeight;
 
+
+//ip_pallet import
+use ip_pallet;
+
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
 
@@ -318,6 +322,8 @@ mod runtime {
     pub type CumulusXcm = cumulus_pallet_xcm::Pallet<Runtime>;
     #[runtime::pallet_index(33)]
     pub type MessageQueue = pallet_message_queue::Pallet<Runtime>;
+    #[runtime::pallet_index(34)]
+    pub type IP = ip_pallet::Pallet<Runtime>;
 }
 
 cumulus_pallet_parachain_system::register_validate_block! {

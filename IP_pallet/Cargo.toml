@@ -1,5 +1,5 @@
 [package]
-name = "pallet-ip_pallet"
+name = "ip_pallet"
 version = "0.1.0"
 edition = "2021"
 
