@@ -1,6 +1,5 @@
 cargo:rerun-if-changed=build.rs
 cargo:rustc-cfg=freebsd11
-cargo:rustc-cfg=emscripten_new_stat_abi
 cargo:rustc-cfg=libc_priv_mod_use
 cargo:rustc-cfg=libc_union
 cargo:rustc-cfg=libc_const_size_of

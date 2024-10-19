@@ -4655,6 +4655,9 @@ dependencies = [
  "frame-system 4.0.0-dev",
  "parity-scale-codec",
  "scale-info",
+ "sp-core 21.0.0",
+ "sp-io 23.0.0",
+ "sp-runtime 24.0.0",
  "sp-std 8.0.0",
 ]
 
