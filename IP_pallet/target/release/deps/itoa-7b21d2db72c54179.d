@@ -1,8 +1,0 @@
-/Users/wario/Documents/GitHub/substrate_chain/IP_pallet/target/release/deps/libitoa-7b21d2db72c54179.rmeta: /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/lib.rs /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/udiv128.rs
-
-/Users/wario/Documents/GitHub/substrate_chain/IP_pallet/target/release/deps/libitoa-7b21d2db72c54179.rlib: /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/lib.rs /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/udiv128.rs
-
-/Users/wario/Documents/GitHub/substrate_chain/IP_pallet/target/release/deps/itoa-7b21d2db72c54179.d: /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/lib.rs /Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/udiv128.rs
-
-/Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/lib.rs:
-/Users/wario/.cargo/registry/src/index.crates.io-6f17d22bba15001f/itoa-1.0.11/src/udiv128.rs:
