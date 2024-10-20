@@ -23,6 +23,8 @@ log.workspace = true
 scale-info.workspace = true
 smallvec.workspace = true
 docify.workspace = true
+pallet-ip_pallet.workspace = true
+
 
 # Substrate
 frame-benchmarking = { optional = true, workspace = true }
@@ -138,6 +140,7 @@ std = [
     "xcm-builder/std",
     "xcm-executor/std",
     "xcm/std",
+	"pallet-ip_pallet/std"
 ]
 
 runtime-benchmarks = [

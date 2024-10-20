@@ -6921,6 +6921,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-ip_pallet"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-membership"
 version = "36.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7744,6 +7755,7 @@ dependencies = [
  "pallet-authorship",
  "pallet-balances",
  "pallet-collator-selection",
+ "pallet-ip_pallet",
  "pallet-message-queue",
  "pallet-nft-fractionalization",
  "pallet-nfts",
