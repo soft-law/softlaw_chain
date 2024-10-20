@@ -334,6 +334,8 @@ mod runtime {
     pub type NftFractionalization = pallet_nft_fractionalization::Pallet<Runtime>;
     #[runtime::pallet_index(42)]
     pub type Assets = pallet_assets::Pallet<Runtime, Instance1>;
+    #[runtime::pallet_index(43)] // Choose an appropriate index
+    pub type IPPallet = pallet_ip_pallet::Pallet<Runtime>;
 }
 
 cumulus_pallet_parachain_system::register_validate_block! {

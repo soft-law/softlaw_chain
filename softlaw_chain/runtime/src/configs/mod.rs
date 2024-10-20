@@ -24,6 +24,7 @@
 // For more information, please refer to <http://unlicense.org>
 
 mod assets;
+mod ip_pallet;
 #[path = "xcm.rs"]
 mod xcm_config;
 
