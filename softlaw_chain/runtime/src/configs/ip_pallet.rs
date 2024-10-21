@@ -7,5 +7,4 @@ impl pallet_ip_pallet::Config for Runtime {
     type LicenseId = u32;
     type MaxNameLength = ConstU32<50>;
     type MaxDescriptionLength = ConstU32<200>;
-    type MaxRightsCount = ConstU32<10>;
 }

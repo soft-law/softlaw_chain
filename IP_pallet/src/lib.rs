@@ -28,8 +28,6 @@ pub mod pallet {
         type MaxNameLength: Get<u32>;
         #[pallet::constant]
         type MaxDescriptionLength: Get<u32>;
-        #[pallet::constant]
-        type MaxRightsCount: Get<u32>;
     }
 
     #[pallet::pallet]
@@ -399,18 +397,22 @@ pub mod pallet {
                 let license = maybe_license.as_mut().ok_or(Error::<T>::LicenseNotFound)?;
 
                 ensure!(license.licensor == who, Error::<T>::NotLicenseOwner);
-                
+
                 // Check if the license is revocable
                 ensure!(
-                    license.status == LicenseStatus::Offered || 
-                    (license.status == LicenseStatus::Active && Self::no_payments_made(license)),
+                    license.status == LicenseStatus::Offered
+                        || (license.status == LicenseStatus::Active
+                            && Self::no_payments_made(license)),
                     Error::<T>::LicenseNotRevocable
                 );
 
-                let licensee = license.licensee.as_ref().ok_or(Error::<T>::LicenseOwnershipNotFound)?;
+                let licensee = license
+                    .licensee
+                    .as_ref()
+                    .ok_or(Error::<T>::LicenseOwnershipNotFound)?;
 
                 LicenseOwnership::<T>::remove(license.nft_id, licensee);
-                
+
                 Self::deposit_event(Event::LicenseRevoked {
                     license_id,
                     nft_id: license.nft_id,
@@ -670,10 +672,7 @@ pub mod pallet {
         fn no_payments_made(license: &License<T>) -> bool {
             match license.payment_type {
                 PaymentType::OneTime(_) => true,
-                PaymentType::Periodic {
-                    last_payment,
-                    ..
-                } => last_payment == Zero::zero(),
+                PaymentType::Periodic { last_payment, .. } => last_payment == Zero::zero(),
             }
         }
     }
@@ -684,4 +683,3 @@ mod mock;
 
 #[cfg(test)]
 mod tests;
-
