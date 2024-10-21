@@ -1,14 +1,11 @@
 use crate as pallet_ip_pallet;
-use frame_support::{
-    parameter_types,
-    traits::ConstU32,
-};
+use frame_support::{parameter_types, traits::ConstU32};
+use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
     traits::{BlakeTwo256, IdentityLookup},
     BuildStorage,
 };
-use frame_system as system;
 
 type Block = frame_system::mocking::MockBlock<Test>;
 
@@ -67,5 +64,8 @@ impl pallet_ip_pallet::Config for Test {
 
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    system::GenesisConfig::<Test>::default().build_storage().unwrap().into()
+    system::GenesisConfig::<Test>::default()
+        .build_storage()
+        .unwrap()
+        .into()
 }

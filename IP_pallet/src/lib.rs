@@ -4,10 +4,12 @@ pub use self::pallet::*;
 
 #[frame_support::pallet(dev_mode)]
 pub mod pallet {
-    use frame_support::sp_runtime::traits::{AtLeast32BitUnsigned, Hash, One, Saturating, Zero};
+    use frame_support::sp_runtime::traits::{AtLeast32BitUnsigned, Hash, One, Saturating};
     use frame_support::traits::ExistenceRequirement;
     use frame_support::{pallet_prelude::*, traits::Currency, traits::Hooks};
     use frame_system::pallet_prelude::*;
+    use scale_info::prelude::format;
+    use scale_info::prelude::string::String;
     use sp_std::prelude::*;
 
     #[pallet::config]
@@ -146,10 +148,19 @@ pub mod pallet {
     pub enum PaymentType<Balance, BlockNumber> {
         OneTime(Balance),
         Periodic {
-            amount: Balance,
-            period: BlockNumber,
-            last_payment: BlockNumber,
+            amount_per_payment: Balance,
+            total_payments: u32,
+            frequency: BlockNumber,
         },
+    }
+
+    #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
+    #[cfg_attr(feature = "std", derive(Debug))]
+    pub struct PaymentSchedule<BlockNumber> {
+        start_block: BlockNumber,
+        next_payment_block: BlockNumber,
+        payments_made: u32,
+        payments_due: u32,
     }
 
     #[pallet::error]
@@ -167,6 +178,13 @@ pub mod pallet {
         AlreadyLicensed,
         NotLicenseOwner,
         LicenseNotRevocable,
+        NftInEscrow,
+        ActiveLicensesExist,
+        ExclusiveLicenseExists,
+        PaymentFailed,
+        LicenseeNotFound,
+        LicenseNotActive,
+        NotLicensee,
     }
 
     #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
@@ -190,7 +208,9 @@ pub mod pallet {
         pub price: BalanceOf<T>,
         pub is_purchase: bool,
         pub duration: Option<BlockNumberFor<T>>,
+        pub start_block: Option<BlockNumberFor<T>>,
         pub payment_type: PaymentType<BalanceOf<T>, BlockNumberFor<T>>,
+        pub payment_schedule: Option<PaymentSchedule<BlockNumberFor<T>>>,
         pub is_exclusive: bool,
         pub status: LicenseStatus,
     }
@@ -201,25 +221,36 @@ pub mod pallet {
         #[pallet::call_index(0)]
         pub fn mint_nft(
             origin: OriginFor<T>,
-            name: Vec<u8>,
-            description: Vec<u8>,
-            filing_date: Vec<u8>,
-            jurisdiction: Vec<u8>,
+            name: String,
+            description: String,
+            filing_date: String,
+            jurisdiction: String,
         ) -> DispatchResult {
             let who = ensure_signed(origin)?;
 
-            let bounded_name: BoundedVec<u8, T::MaxNameLength> =
-                name.try_into().map_err(|_| Error::<T>::NameTooLong)?;
+            let bounded_name: BoundedVec<u8, T::MaxNameLength> = name
+                .as_bytes()
+                .to_vec()
+                .try_into()
+                .map_err(|_| Error::<T>::NameTooLong)?;
 
             let bounded_description: BoundedVec<u8, T::MaxDescriptionLength> = description
+                .as_bytes()
+                .to_vec()
                 .try_into()
                 .map_err(|_| Error::<T>::DescriptionTooLong)?;
 
-            let bounded_filing_date: BoundedVec<u8, T::MaxNameLength> = filing_date
+            let current_block = <frame_system::Pallet<T>>::block_number();
+            let filing_date_with_block = format!("{} (Block: {:?})", filing_date, current_block);
+            let bounded_filing_date: BoundedVec<u8, T::MaxNameLength> = filing_date_with_block
+                .as_bytes()
+                .to_vec()
                 .try_into()
                 .map_err(|_| Error::<T>::FilingDateTooLong)?;
 
             let bounded_jurisdiction: BoundedVec<u8, T::MaxNameLength> = jurisdiction
+                .as_bytes()
+                .to_vec()
                 .try_into()
                 .map_err(|_| Error::<T>::JurisdictionTooLong)?;
 
@@ -242,7 +273,7 @@ pub mod pallet {
             Self::deposit_event(Event::NftMinted {
                 owner: who,
                 nft_id,
-                name: bounded_name.into(),
+                name: bounded_name.to_vec(),
                 number,
             });
 
@@ -294,6 +325,29 @@ pub mod pallet {
                 Error::<T>::NotNftOwner
             );
 
+            // Check if there's an escrow for this NFT
+            ensure!(!Escrow::<T>::contains_key(nft_id), Error::<T>::NftInEscrow);
+
+            // Check for existing licenses
+            let existing_licenses: Vec<_> = LicenseOwnership::<T>::iter_prefix(nft_id).collect();
+
+            if is_exclusive {
+                // Ensure no active licenses exist for exclusive license creation
+                ensure!(
+                    existing_licenses.is_empty(),
+                    Error::<T>::ActiveLicensesExist
+                );
+            } else {
+                // For non-exclusive licenses, check if an exclusive license already exists
+                for (_, license_id) in existing_licenses {
+                    if let Some(license) = Licenses::<T>::get(license_id) {
+                        if license.is_exclusive && license.status == LicenseStatus::Active {
+                            return Err(Error::<T>::ExclusiveLicenseExists.into());
+                        }
+                    }
+                }
+            }
+
             let license = License {
                 nft_id,
                 licensor: licensor.clone(),
@@ -301,7 +355,9 @@ pub mod pallet {
                 price,
                 is_purchase,
                 duration,
+                start_block: None,
                 payment_type,
+                payment_schedule: None,
                 is_exclusive,
                 status: LicenseStatus::Offered,
             };
@@ -339,35 +395,27 @@ pub mod pallet {
                 // Escrow the NFT
                 EscrowedNfts::<T>::insert(license.nft_id, nft.owner.clone());
 
-                // Handle initial payment
+                let current_block = <frame_system::Pallet<T>>::block_number();
+
                 match &license.payment_type {
                     PaymentType::OneTime(amount) => {
+                        // Process one-time payment immediately
                         T::Currency::transfer(
                             &licensee,
                             &license.licensor,
                             *amount,
                             ExistenceRequirement::KeepAlive,
                         )?;
-                        if license.is_purchase {
-                            license.status = LicenseStatus::Completed;
-                            // Transfer NFT ownership to buyer
-                            Nfts::<T>::mutate(license.nft_id, |maybe_nft| {
-                                if let Some(nft) = maybe_nft {
-                                    nft.owner = licensee.clone();
-                                }
-                            });
-                            EscrowedNfts::<T>::remove(license.nft_id);
-                        } else {
-                            license.status = LicenseStatus::Active;
-                        }
+                        license.status = LicenseStatus::Completed;
                     }
-                    PaymentType::Periodic { amount, .. } => {
-                        T::Currency::transfer(
-                            &licensee,
-                            &license.licensor,
-                            *amount,
-                            ExistenceRequirement::KeepAlive,
-                        )?;
+                    PaymentType::Periodic { frequency, .. } => {
+                        // Create payment schedule for periodic payments
+                        license.payment_schedule = Some(PaymentSchedule {
+                            start_block: current_block,
+                            next_payment_block: current_block + *frequency,
+                            payments_made: 0,
+                            payments_due: 0,
+                        });
                         license.status = LicenseStatus::Active;
                     }
                 }
@@ -426,6 +474,67 @@ pub mod pallet {
                 Ok(())
             })
         }
+
+        #[pallet::weight(10_000)]
+        #[pallet::call_index(5)]
+        pub fn make_periodic_payment(
+            origin: OriginFor<T>,
+            license_id: T::LicenseId,
+        ) -> DispatchResult {
+            let licensee = ensure_signed(origin)?;
+            Licenses::<T>::try_mutate(license_id, |maybe_license| -> DispatchResult {
+                let license = maybe_license.as_mut().ok_or(Error::<T>::LicenseNotFound)?;
+                ensure!(
+                    license.status == LicenseStatus::Active,
+                    Error::<T>::LicenseNotActive
+                );
+                ensure!(
+                    license.licensee == Some(licensee.clone()),
+                    Error::<T>::NotLicensee
+                );
+
+                if let (
+                    PaymentType::Periodic {
+                        amount_per_payment,
+                        total_payments,
+                        ..
+                    },
+                    Some(schedule),
+                ) = (&license.payment_type, &mut license.payment_schedule)
+                {
+                    T::Currency::transfer(
+                        &licensee,
+                        &license.licensor,
+                        *amount_per_payment,
+                        ExistenceRequirement::KeepAlive,
+                    )?;
+
+                    schedule.payments_made += 1;
+                    if schedule.payments_due > 0 {
+                        schedule.payments_due -= 1;
+                    }
+
+                    Self::deposit_event(Event::PeriodicPaymentProcessed {
+                        license_id,
+                        nft_id: license.nft_id,
+                        licensee: licensee.clone(),
+                        licensor: license.licensor.clone(),
+                        amount: *amount_per_payment,
+                    });
+
+                    if schedule.payments_made == *total_payments {
+                        license.status = LicenseStatus::Completed;
+                        Self::deposit_event(Event::LicenseCompleted {
+                            license_id,
+                            nft_id: license.nft_id,
+                            licensee: licensee.clone(),
+                        });
+                    }
+                }
+
+                Ok(())
+            })
+        }
     }
 
     #[pallet::hooks]
@@ -452,95 +561,130 @@ pub mod pallet {
         ) -> Weight {
             let mut weight = T::DbWeight::get().reads(1);
 
-            let should_expire = Self::check_license_expiration(&license, n);
-            let payments_completed = Self::check_payments_completed(&license, n);
-
-            if let PaymentType::Periodic {
-                period,
-                last_payment,
-                ..
-            } = license.payment_type
-            {
-                if n >= last_payment + period {
-                    // Time for a periodic payment
-                    match Self::process_periodic_payment(license_id, n) {
-                        Ok(_) => {
-                            // Payment successful, no need to update license here
-                            weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
-                        }
-                        Err(_) => {
-                            // Payment failed, license will be cancelled in process_periodic_payment
-                            weight = weight.saturating_add(T::DbWeight::get().reads_writes(3, 3));
-                            return weight; // Exit early as the license has been cancelled
-                        }
-                    }
+            // Check for expiration
+            if Self::check_license_expiration(&license, n) {
+                if let Some(licensee) = license.licensee.clone() {
+                    return weight
+                        .saturating_add(Self::expire_license(license_id, &license, licensee));
                 }
             }
 
-            if should_expire {
-                if let Some(licensee) = license.licensee.clone() {
-                    weight =
-                        weight.saturating_add(Self::expire_license(license_id, &license, licensee));
-                }
-            } else if payments_completed && license.is_purchase {
-                if let Some(licensee) = license.licensee.clone() {
-                    weight = weight.saturating_add(Self::complete_purchase_license(
-                        license_id,
-                        &mut license,
-                        licensee,
-                    ));
+            // Check for completed payments
+            if Self::check_payments_completed(&license) {
+                return weight.saturating_add(Self::complete_license(
+                    license_id,
+                    &license,
+                    license.is_purchase,
+                ));
+            }
+
+            // Process periodic payment if due
+            if let PaymentType::Periodic { .. } = license.payment_type {
+                if let Some(schedule) = &license.payment_schedule {
+                    if n >= schedule.next_payment_block {
+                        match Self::attempt_periodic_payment(license_id, &mut license) {
+                            Ok(_) => {
+                                weight =
+                                    weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
+                                // Update the license in storage
+                                Licenses::<T>::insert(license_id, license);
+                            }
+                            Err(_) => {
+                                // Payment failed, cancel the license
+                                weight = weight
+                                    .saturating_add(Self::cancel_license(license_id, &license));
+                            }
+                        }
+                    }
                 }
             }
 
             weight
         }
 
-        fn check_license_expiration(license: &License<T>, n: BlockNumberFor<T>) -> bool {
-            if let PaymentType::Periodic {
-                period,
-                last_payment,
-                ..
-            } = license.payment_type
-            {
-                if n >= last_payment + period {
-                    return true;
+        fn check_license_expiration(
+            license: &License<T>,
+            current_block: BlockNumberFor<T>,
+        ) -> bool {
+            if let Some(duration) = license.duration {
+                // Assuming there's a `start_block` field in the License struct
+                current_block
+                    >= license
+                        .start_block
+                        .unwrap_or_default()
+                        .saturating_add(duration)
+            } else {
+                // If there's no duration set, the license doesn't expire
+                false
+            }
+        }
+
+        fn check_payments_completed(license: &License<T>) -> bool {
+            match &license.payment_type {
+                PaymentType::OneTime(_) => false, // One-time payments are handled separately
+                PaymentType::Periodic { total_payments, .. } => {
+                    if let Some(schedule) = &license.payment_schedule {
+                        schedule.payments_made == *total_payments
+                    } else {
+                        false
+                    }
+                }
+            }
+        }
+
+        fn complete_license(
+            license_id: T::LicenseId,
+            license: &License<T>,
+            is_purchase: bool,
+        ) -> Weight {
+            let mut weight = T::DbWeight::get().reads_writes(2, 2);
+
+            if is_purchase {
+                // Transfer NFT to buyer
+                if let Some(licensee) = &license.licensee {
+                    Nfts::<T>::mutate(license.nft_id, |maybe_nft| {
+                        if let Some(nft) = maybe_nft {
+                            nft.owner = licensee.clone();
+                        }
+                    });
+                    weight = weight.saturating_add(T::DbWeight::get().writes(1));
+                }
+            } else {
+                // Return NFT to licensor if it was escrowed
+                if EscrowedNfts::<T>::contains_key(license.nft_id) {
+                    EscrowedNfts::<T>::remove(license.nft_id);
+                    Nfts::<T>::mutate(license.nft_id, |maybe_nft| {
+                        if let Some(nft) = maybe_nft {
+                            nft.owner = license.licensor.clone();
+                        }
+                    });
+                    weight = weight.saturating_add(T::DbWeight::get().writes(2));
                 }
             }
 
-            if let Some(duration) = license.duration {
-                return n >= duration;
+            // Remove from EscrowedNfts if it was there
+            if EscrowedNfts::<T>::contains_key(license.nft_id) {
+                EscrowedNfts::<T>::remove(license.nft_id);
+                weight = weight.saturating_add(T::DbWeight::get().writes(1));
             }
 
-            false
-        }
-
-        fn check_payments_completed(license: &License<T>, _n: BlockNumberFor<T>) -> bool {
-            matches!(license.payment_type, PaymentType::OneTime(_))
-        }
-
-        fn complete_purchase_license(
-            license_id: T::LicenseId,
-            license: &mut License<T>,
-            licensee: T::AccountId,
-        ) -> Weight {
-            let weight = T::DbWeight::get().reads_writes(3, 3);
-
-            // Transfer NFT to buyer
-            Nfts::<T>::mutate(license.nft_id, |maybe_nft| {
-                if let Some(nft) = maybe_nft {
-                    nft.owner = licensee.clone();
+            // Update license status
+            Licenses::<T>::mutate(license_id, |maybe_license| {
+                if let Some(l) = maybe_license {
+                    l.status = LicenseStatus::Completed;
                 }
             });
-            EscrowedNfts::<T>::remove(license.nft_id);
 
-            license.status = LicenseStatus::Completed;
-            Licenses::<T>::insert(license_id, license.clone());
-            LicenseOwnership::<T>::remove(license.nft_id, &licensee);
+            // Remove license ownership
+            if let Some(licensee) = &license.licensee {
+                LicenseOwnership::<T>::remove(license.nft_id, licensee);
+                weight = weight.saturating_add(T::DbWeight::get().writes(1));
+            }
 
             Self::deposit_event(Event::LicenseCompleted {
                 license_id,
                 nft_id: license.nft_id,
-                licensee,
+                licensee: license.licensee.clone().unwrap(),
             });
 
             weight
@@ -576,104 +720,110 @@ pub mod pallet {
             weight
         }
 
-        fn process_periodic_payment(
-            license_id: T::LicenseId,
-            current_block: BlockNumberFor<T>,
-        ) -> Result<(), DispatchError> {
-            Licenses::<T>::try_mutate(license_id, |maybe_license| -> Result<(), DispatchError> {
-                let license = maybe_license.as_mut().ok_or(Error::<T>::LicenseNotFound)?;
+        fn cancel_license(license_id: T::LicenseId, license: &License<T>) -> Weight {
+            let mut weight = T::DbWeight::get().reads_writes(3, 3);
 
-                if let PaymentType::Periodic {
-                    amount,
-                    period,
-                    last_payment,
-                } = &mut license.payment_type
-                {
-                    if current_block >= *last_payment + *period {
-                        // Find the licensee
-                        if let Some(licensee) = license.licensee.as_ref() {
-                            // Attempt to transfer payment from licensee to licensor
-                            match T::Currency::transfer(
-                                licensee,
-                                &license.licensor,
-                                *amount,
-                                ExistenceRequirement::KeepAlive,
-                            ) {
-                                Ok(_) => {
-                                    // Payment successful, update last_payment
-                                    *last_payment = current_block;
-
-                                    Self::deposit_event(Event::PeriodicPaymentProcessed {
-                                        license_id,
-                                        nft_id: license.nft_id,
-                                        licensee: licensee.clone(),
-                                        licensor: license.licensor.clone(),
-                                        amount: *amount,
-                                    });
-                                }
-                                Err(err) => {
-                                    // Payment failed
-                                    Self::deposit_event(Event::PeriodicPaymentFailed {
-                                        license_id,
-                                        nft_id: license.nft_id,
-                                        licensee: licensee.clone(),
-                                        amount: *amount,
-                                    });
-
-                                    // Cancel the license
-                                    Self::cancel_license(
-                                        license_id,
-                                        license.nft_id,
-                                        licensee.clone(),
-                                    )?;
-
-                                    return Err(err);
-                                }
-                            }
-                        } else {
-                            return Err(Error::<T>::LicenseOwnershipNotFound.into());
-                        }
-                    }
-                }
-                Ok(())
-            })
-        }
-
-        fn cancel_license(
-            license_id: T::LicenseId,
-            nft_id: T::Hash,
-            licensee: T::AccountId,
-        ) -> DispatchResult {
             // Remove the license
             Licenses::<T>::remove(license_id);
 
-            // Remove the license ownership
-            LicenseOwnership::<T>::remove(nft_id, &licensee);
+            // Remove license ownership
+            if let Some(licensee) = &license.licensee {
+                LicenseOwnership::<T>::remove(license.nft_id, licensee);
+            }
 
-            // If the NFT was escrowed, return it to the licensor
-            if let Some(licensor) = EscrowedNfts::<T>::take(nft_id) {
-                Nfts::<T>::mutate(nft_id, |maybe_nft| {
+            // Return NFT to licensor if it was escrowed
+            if EscrowedNfts::<T>::contains_key(license.nft_id) {
+                EscrowedNfts::<T>::remove(license.nft_id);
+                Nfts::<T>::mutate(license.nft_id, |maybe_nft| {
                     if let Some(nft) = maybe_nft {
-                        nft.owner = licensor;
+                        nft.owner = license.licensor.clone();
                     }
                 });
+                weight = weight.saturating_add(T::DbWeight::get().writes(1));
             }
 
             Self::deposit_event(Event::LicenseRevoked {
                 license_id,
-                nft_id,
-                licensee,
+                nft_id: license.nft_id,
+                licensee: license.licensee.clone().unwrap(),
                 reason: RevokeReason::PaymentFailure,
             });
 
-            Ok(())
+            weight
+        }
+        fn no_payments_made(license: &License<T>) -> bool {
+            match &license.payment_type {
+                PaymentType::OneTime(_) => true,
+                PaymentType::Periodic { .. } => license
+                    .payment_schedule
+                    .as_ref()
+                    .map_or(true, |schedule| schedule.payments_made == 0),
+            }
         }
 
-        fn no_payments_made(license: &License<T>) -> bool {
-            match license.payment_type {
-                PaymentType::OneTime(_) => true,
-                PaymentType::Periodic { last_payment, .. } => last_payment == Zero::zero(),
+        fn attempt_periodic_payment(
+            license_id: T::LicenseId,
+            license: &mut License<T>,
+        ) -> DispatchResult {
+            let (amount_per_payment, total_payments, frequency) = match &license.payment_type {
+                PaymentType::Periodic {
+                    amount_per_payment,
+                    total_payments,
+                    frequency,
+                } => (*amount_per_payment, *total_payments, *frequency),
+                _ => return Err(Error::<T>::PaymentFailed.into()),
+            };
+
+            let schedule = license
+                .payment_schedule
+                .as_mut()
+                .ok_or(Error::<T>::PaymentFailed)?;
+            let licensee = license
+                .licensee
+                .as_ref()
+                .ok_or(Error::<T>::LicenseeNotFound)?;
+            let licensor = license.licensor.clone();
+            let nft_id = license.nft_id;
+
+            T::Currency::transfer(
+                licensee,
+                &licensor,
+                amount_per_payment,
+                ExistenceRequirement::KeepAlive,
+            )
+            .map_err(|_| {
+                Self::deposit_event(Event::PeriodicPaymentFailed {
+                    license_id,
+                    nft_id,
+                    licensee: licensee.clone(),
+                    amount: amount_per_payment,
+                });
+                Error::<T>::PaymentFailed
+            })?;
+
+            // Update schedule and other logic...
+            schedule.payments_made += 1;
+            schedule.payments_due = schedule.payments_due.saturating_sub(1);
+            schedule.next_payment_block += frequency;
+
+            Self::deposit_event(Event::PeriodicPaymentProcessed {
+                license_id,
+                nft_id,
+                licensee: licensee.clone(),
+                licensor,
+                amount: amount_per_payment,
+            });
+
+            if schedule.payments_made == total_payments {
+                license.status = LicenseStatus::Completed;
+                Self::deposit_event(Event::LicenseCompleted {
+                    license_id,
+                    nft_id,
+                    licensee: licensee.clone(),
+                });
             }
+
+            Ok(())
         }
     }
 }
