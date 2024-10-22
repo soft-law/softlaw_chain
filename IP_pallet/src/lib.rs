@@ -54,6 +54,7 @@ pub mod pallet {
     pub type Licenses<T: Config> = StorageMap<_, Blake2_128Concat, T::LicenseId, License<T>>;
 
     #[pallet::storage]
+    #[pallet::getter(fn license_ownership)]
     pub type LicenseOwnership<T: Config> = StorageDoubleMap<
         _,
         Blake2_128Concat,
