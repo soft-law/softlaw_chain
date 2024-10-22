@@ -57,7 +57,7 @@ The system maintains a clear record of all license transactions and transfers.
 
 # Team
 - Mario Andrade: CEO
-- Luke Barush: Tech Lead & Polkadot Dev
+- Baruch (Luke) Fishman: Tech Lead & Polkadot Dev
 - Favour Chiksze: Front End Dev
 - Pat Sinma: Product Designer
 - Ganesh: Polkadot Dev
