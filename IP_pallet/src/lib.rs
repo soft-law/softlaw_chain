@@ -551,7 +551,7 @@ pub mod pallet {
             let mut weight = T::DbWeight::get().reads(1);
 
             // Check for expiration
-            if Self::check_license_expiration(&license, n) {
+            if Self::check_license_expiration(&license) {
                 if let Some(licensee) = license.licensee.clone() {
                     return weight
                         .saturating_add(Self::expire_license(license_id, &license, licensee));
@@ -591,24 +591,18 @@ pub mod pallet {
             weight
         }
 
-        fn check_license_expiration(
-            license: &License<T>,
-            current_block: BlockNumberFor<T>,
-        ) -> bool {
+        pub(crate) fn check_license_expiration(license: &License<T>) -> bool {
             if let Some(duration) = license.duration {
-                // Assuming there's a `start_block` field in the License struct
-                current_block
-                    >= license
-                        .start_block
-                        .unwrap_or_default()
-                        .saturating_add(duration)
+                let block_number = <frame_system::Pallet<T>>::block_number();
+                let start_block = license.start_block.unwrap_or_default();
+                block_number >= start_block + duration
             } else {
                 // If there's no duration set, the license doesn't expire
                 false
             }
         }
 
-        fn check_payments_completed(license: &License<T>) -> bool {
+        pub(crate) fn check_payments_completed(license: &License<T>) -> bool {
             match &license.payment_type {
                 PaymentType::OneTime(_) => false, // One-time payments are handled separately
                 PaymentType::Periodic { total_payments, .. } => {
@@ -621,7 +615,7 @@ pub mod pallet {
             }
         }
 
-        fn complete_license(
+        pub(crate) fn complete_license(
             license_id: T::LicenseId,
             license: &License<T>,
             is_purchase: bool,
@@ -679,7 +673,7 @@ pub mod pallet {
             weight
         }
 
-        fn expire_license(
+        pub(crate) fn expire_license(
             license_id: T::LicenseId,
             license: &License<T>,
             licensee: T::AccountId,
@@ -709,7 +703,7 @@ pub mod pallet {
             weight
         }
 
-        fn cancel_license(license_id: T::LicenseId, license: &License<T>) -> Weight {
+        pub(crate) fn cancel_license(license_id: T::LicenseId, license: &License<T>) -> Weight {
             let mut weight = T::DbWeight::get().reads_writes(3, 3);
 
             // Remove the license
@@ -740,7 +734,7 @@ pub mod pallet {
 
             weight
         }
-        fn no_payments_made(license: &License<T>) -> bool {
+        pub(crate) fn no_payments_made(license: &License<T>) -> bool {
             match &license.payment_type {
                 PaymentType::OneTime(_) => true,
                 PaymentType::Periodic { .. } => license
@@ -750,7 +744,7 @@ pub mod pallet {
             }
         }
 
-        fn attempt_periodic_payment(
+        pub(crate) fn attempt_periodic_payment(
             license_id: T::LicenseId,
             license: &mut License<T>,
         ) -> DispatchResult {
