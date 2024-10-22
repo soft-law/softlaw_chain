@@ -64,8 +64,7 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn escrow)]
-    pub type Escrow<T: Config> =
-        StorageMap<_, Blake2_128Concat, u32, (T::AccountId, BalanceOf<T>)>;
+    pub type Escrow<T: Config> = StorageMap<_, Blake2_128Concat, u32, (T::AccountId, BalanceOf<T>)>;
 
     #[pallet::storage]
     pub type EscrowedNfts<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
@@ -188,7 +187,7 @@ pub mod pallet {
     #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
     #[scale_info(skip_type_params(T))]
     pub struct NFT<T: Config> {
-        pub id: u32,  // Add this line
+        pub id: u32, // Add this line
         pub owner: T::AccountId,
         pub name: BoundedVec<u8, T::MaxNameLength>,
         pub description: BoundedVec<u8, T::MaxDescriptionLength>,
@@ -268,7 +267,7 @@ pub mod pallet {
 
             Self::deposit_event(Event::NftMinted {
                 owner: who,
-                nft_id: id
+                nft_id: id,
             });
 
             Ok(())

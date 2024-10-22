@@ -16,10 +16,11 @@ frame_support::construct_runtime!(
         IPPallet: pallet_ip_pallet,
     }
 );
-
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
     pub const SS58Prefix: u8 = 42;
+    pub const MaxNameLength: u32 = 50;
+    pub const MaxDescriptionLength: u32 = 200;
 }
 
 impl system::Config for Test {
@@ -58,8 +59,8 @@ impl pallet_ip_pallet::Config for Test {
     type RuntimeEvent = RuntimeEvent;
     type Currency = ();
     type LicenseId = u32;
-    type MaxNameLength = ConstU32<50>;
-    type MaxDescriptionLength = ConstU32<200>;
+    type MaxNameLength = MaxNameLength;
+    type MaxDescriptionLength = MaxDescriptionLength;
 }
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
