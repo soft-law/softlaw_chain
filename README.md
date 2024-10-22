@@ -1,72 +1,82 @@
-## SOFTLAW - The Intellectual Property Chain Secured By Polkadot.
+# SOFTLAW - The Intellectual Property Chain Secured by Polkadot
+![Alt text](https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/QmdWWR5frGwGDYBdJWagXhP3QpxFEoRz9Xmk5CNQnPjs1s)
 
-## Description 
-Intellectual Property AppChain, allows cientist,  builders to protect their Intellectual with Proof of Creations & Manage their Ip Licenses with Smart Legal Contracts.
+## Description
+Softlaw is an Intellectual Property (IP) AppChain designed to empower scientists, builders, and creators to secure their intellectual creations through **Proof of Innovation** and manage their IP licenses using **Smart Legal Contracts aka Ricardian Contracts**. Built on the Polkadot ecosystem, Softlaw ensures secure and transparent handling of IP rights and licensing.
 
-# IP Pallet
-An intellectual Property Pallet
+## What We Built for the Hackathon
 
-NFT Licensing System
-1. NFT Licensing
-As an NFT creator (licensor), I can offer licenses for my NFTs to potential licensees.
-As a licensee, I can accept offered licenses for NFTs I'm interested in using.
-2. Payment Handling
-As a licensor, I can set up recurring payments for my NFT licenses.
-As a licensee, I can make scheduled payments for the NFTs I've licensed.
-The system automatically handles payment transfers between licensors and licensees.
-3. License Management
-As a licensor, I can revoke licenses under certain conditions (e.g., before any payments are made).
-4. Escrow and Conditional Transfers
-The system acts as an escrow service, holding the NFT until license conditions are met.
-When a license expires or is fully paid, the NFT can be automatically transferred to the licensee.
-5. Contract Enforcement
-The system enforces the terms of the license contract, including payment schedules and rights.
-If a licensee fails to make payments, the system can automatically revoke the license.
-6. Transparency and Tracking
-Users can view the current status of any license, including payment history and remaining duration.
-The system maintains a clear record of all license transactions and transfers.
+1. **Intellectual Property Chain**: A blockchain specifically tailored for managing intellectual property licenses and registries.
+2. **Intellectual Property Pallet**: A custom Substrate pallet to manage the creation, licensing, and protection of NFTs representing intellectual property.
+3. **Onboarding Process to Paseo Network**: We reserve a slot to be a parachain in Paseo Network. This is our pull request for para_id:
+4. **Front-End Interface**: A user-friendly interface for interacting with the Softlaw platform.
 
-# Overview Mental Map 
-[image]
+## Intellectual Property Pallet Overview
 
-# General Extrinsics
-1. Encode.
-2. Decode.
-3. Attestate.
+### NFT Licensing System
 
-# Extrinsics Proof of Creation
-3. Mint_ip_collection
-4. Mint_ip_nft
-5. Mint_child_nft
-6. Add_child_nft
-7. Attestate_nft
-8. Attestate_child_nft
+1. **NFT Licensing**:  
+   - *As a licensor*, offer licenses for your NFTs to potential licensees.  
+   - *As a licensee*, accept offered licenses for NFTs you're interested in using.
 
-# Extrinsics Users Identity
-1. Mint_idendity
-2. Attestate_identity
+2. **Payment Handling**:  
+   - *As a licensor*, set up recurring payments for your NFT licenses.  
+   - *As a licensee*, make scheduled payments for licensed NFTs.  
+   - The system automatically manages payment transfers between licensors and licensees.
 
-# Extrinsics Escrow legal Contracts
-7. Mint_terms_&_conditions
-8. Mint_escrow
+3. **License Management**:  
+   - *As a licensor*, revoke licenses under specific conditions (e.g., before any payments are made).
 
+4. **Escrow and Conditional Transfers**:  
+   - The system acts as an escrow, holding NFTs until licensing conditions are met.  
+   - Upon license expiration or full payment, NFTs are automatically transferred to the licensee.
 
+5. **Contract Enforcement**:  
+   - The system enforces license terms, including payment schedules and user rights.  
+   - If a licensee fails to make payments, the system can automatically revoke the license.
 
-# Data Structure.
-[image]
+6. **Transparency and Tracking**:  
+   - Users can track the status of licenses, including payment history and remaining duration.  
+   - The system maintains a clear record of all transactions and transfers.
 
-# Team
-- Mario Andrade: CEO
-- Luke Barush: Tech Lead & Polkadot Dev
-- Favour Chiksze: Front End Dev
-- Pat Sinma: Product Designer
-- Ganesh: Polkadot Dev
+## Overview Mental Map
+*(Include an image of the mental map here)*
 
+## Data Structure
+*(Include an image of the data structure here)*
 
-# Instalation softlaw_chain
+## Team
+- **Mario Andrade**: CEO
+- **Luke Barush**: Tech Lead & Polkadot Developer
+- **Favour Chiksze**: Front-End Developer
+- **Pat Sinma**: Product Designer
+- **Ganesh**: Polkadot Developer
 
-1. Run Softlaw_Chain
-2. Install Pop Network
-3. Pop build --release
+## Installation Guide
+
+### Setting Up Softlaw Chain
+
+1. Clone the repository and navigate to the project directory.
+2. Install the required dependencies.
+3. Build the chain:
+   pop build --release
 4. pop up parachain -f network.toml
-5. Interact with the Intellectual Property Pallet
+
+### Interact with the Intellectual Property Pallet through the provided UI.
+Running the Front-End
+Ensure that the Softlaw Chain is running.
+Navigate to the front-end directory.
+
+
+## Pitch Deck
+Find our comprehensive pitch deck here:
+https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/QmQtXZZnFzSwt4zoAVWwsUu111Yuwcu2121TBpUz4rfece
+
+## Web
+Visit our website: https://soft.law/
+
+## Track
+Track: Building a blockchain with the Polkadot SDK.
+
+## Bounty
+Bounty: Blockchain for Good - Leveraging blockchain technology to protect intellectual property and support creators worldwide.
