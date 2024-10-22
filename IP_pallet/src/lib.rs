@@ -109,7 +109,7 @@ pub mod pallet {
         LicenseRevoked {
             license_id: T::LicenseId,
             nft_id: u32,
-            licensee: T::AccountId,
+            licensee: Option<T::AccountId>,
             reason: RevokeReason,
         },
         PeriodicPaymentProcessed {
@@ -449,17 +449,15 @@ pub mod pallet {
                     Error::<T>::LicenseNotRevocable
                 );
 
-                let licensee = license
-                    .licensee
-                    .as_ref()
-                    .ok_or(Error::<T>::LicenseOwnershipNotFound)?;
-
-                LicenseOwnership::<T>::remove(license.nft_id, licensee);
+                // If there's a licensee, remove the license ownership
+                if let Some(licensee) = &license.licensee {
+                    LicenseOwnership::<T>::remove(license.nft_id, licensee);
+                }
 
                 Self::deposit_event(Event::LicenseRevoked {
                     license_id,
                     nft_id: license.nft_id,
-                    licensee: licensee.clone(),
+                    licensee: license.licensee.clone(),
                     reason: reason.clone(),
                 });
 
@@ -740,7 +738,7 @@ pub mod pallet {
             Self::deposit_event(Event::LicenseRevoked {
                 license_id,
                 nft_id: license.nft_id,
-                licensee: license.licensee.clone().unwrap(),
+                licensee: Some(license.licensee.clone().unwrap()),
                 reason: RevokeReason::PaymentFailure,
             });
 
@@ -828,3 +826,4 @@ mod mock;
 
 #[cfg(test)]
 mod tests;
+
