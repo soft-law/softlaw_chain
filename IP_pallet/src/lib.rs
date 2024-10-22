@@ -115,7 +115,7 @@ pub mod pallet {
         PeriodicPaymentProcessed {
             license_id: T::LicenseId,
             nft_id: u32,
-            licensee: T::AccountId,
+            payer: T::AccountId,
             licensor: T::AccountId,
             amount: BalanceOf<T>,
         },
@@ -474,16 +474,12 @@ pub mod pallet {
             origin: OriginFor<T>,
             license_id: T::LicenseId,
         ) -> DispatchResult {
-            let licensee = ensure_signed(origin)?;
+            let payer = ensure_signed(origin)?;
             Licenses::<T>::try_mutate(license_id, |maybe_license| -> DispatchResult {
                 let license = maybe_license.as_mut().ok_or(Error::<T>::LicenseNotFound)?;
                 ensure!(
                     license.status == LicenseStatus::Active,
                     Error::<T>::LicenseNotActive
-                );
-                ensure!(
-                    license.licensee == Some(licensee.clone()),
-                    Error::<T>::NotLicensee
                 );
 
                 if let (
@@ -496,7 +492,7 @@ pub mod pallet {
                 ) = (&license.payment_type, &mut license.payment_schedule)
                 {
                     T::Currency::transfer(
-                        &licensee,
+                        &payer,
                         &license.licensor,
                         *amount_per_payment,
                         ExistenceRequirement::KeepAlive,
@@ -510,7 +506,7 @@ pub mod pallet {
                     Self::deposit_event(Event::PeriodicPaymentProcessed {
                         license_id,
                         nft_id: license.nft_id,
-                        licensee: licensee.clone(),
+                        payer: payer.clone(),
                         licensor: license.licensor.clone(),
                         amount: *amount_per_payment,
                     });
@@ -520,7 +516,7 @@ pub mod pallet {
                         Self::deposit_event(Event::LicenseCompleted {
                             license_id,
                             nft_id: license.nft_id,
-                            licensee: licensee.clone(),
+                            licensee: license.licensee.clone().unwrap(),
                         });
                     }
                 }
@@ -802,7 +798,7 @@ pub mod pallet {
             Self::deposit_event(Event::PeriodicPaymentProcessed {
                 license_id,
                 nft_id,
-                licensee: licensee.clone(),
+                payer: licensee.clone(),
                 licensor,
                 amount: amount_per_payment,
             });
