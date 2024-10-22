@@ -44,6 +44,10 @@ use sp_runtime::{
     MultiSignature,
 };
 
+
+// //ip_pallet import
+// use ip_pallet;
+
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
@@ -217,6 +221,10 @@ pub const CENTIUNIT: Balance = 10_000_000_000;
 pub const MILLIUNIT: Balance = 1_000_000_000;
 pub const MICROUNIT: Balance = 1_000_000;
 
+// Deposits
+const fn deposit(items: u32, bytes: u32) -> Balance {
+    (items as Balance * UNIT + (bytes as Balance) * (5 * MILLIUNIT / 100)) / 10
+}
 /// The existential deposit. Set to 1/10 of the Connected Relay Chain.
 pub const EXISTENTIAL_DEPOSIT: Balance = MILLIUNIT;
 
@@ -318,6 +326,16 @@ mod runtime {
     pub type CumulusXcm = cumulus_pallet_xcm::Pallet<Runtime>;
     #[runtime::pallet_index(33)]
     pub type MessageQueue = pallet_message_queue::Pallet<Runtime>;
+
+    // Assets
+    #[runtime::pallet_index(40)]
+    pub type Nfts = pallet_nfts::Pallet<Runtime>;
+    #[runtime::pallet_index(41)]
+    pub type NftFractionalization = pallet_nft_fractionalization::Pallet<Runtime>;
+    #[runtime::pallet_index(42)]
+    pub type Assets = pallet_assets::Pallet<Runtime, Instance1>;
+    #[runtime::pallet_index(43)] // Choose an appropriate index
+    pub type IPPallet = pallet_ip_pallet::Pallet<Runtime>;
 }
 
 cumulus_pallet_parachain_system::register_validate_block! {

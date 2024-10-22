@@ -1,6 +1,6 @@
 <div align="center">
 
-# Base Parachain Template
+# Assets Parachain Template
 
 <img height="70px" alt="Polkadot SDK Logo" src="https://github.com/paritytech/polkadot-sdk/raw/master/docs/images/Polkadot_Logo_Horizontal_Pink_White.png#gh-dark-mode-only"/>
 <img height="70px" alt="Polkadot SDK Logo" src="https://github.com/paritytech/polkadot-sdk/raw/master/docs/images/Polkadot_Logo_Horizontal_Pink_Black.png#gh-light-mode-only"/>
@@ -11,19 +11,18 @@
 [![Twitter URL](https://img.shields.io/twitter/follow/R0GUE?style=social)](https://twitter.com/gor0gue)
 [![Telegram](https://img.shields.io/badge/Telegram-gray?logo=telegram)](https://t.me/onpopio)
 
-> This template is used to generate parachains using [Pop CLI](https://github.com/r0gue-io/pop-cli) - an all-in-one tool for Polkadot development.
+> This is the [Pop CLI](https://github.com/r0gue-io/pop-cli) assets parachain template.
 
 > It is based on the [Polkadot SDK](https://github.com/paritytech/polkadot-sdk) and is updated by [R0GUE](r0gue.io) after releases in the main [Polkadot SDK monorepo](https://github.com/paritytech/polkadot-sdk).
 
 </div>
 
-* ⏫ This template provides a starting point to build a [parachain](https://wiki.polkadot.network/docs/learn-parachains).
+* ⏫ This template provides a starting point to build an assets [parachain](https://wiki.polkadot.network/docs/learn-parachains).
 
 * ☁️ It is based on the
 [Cumulus](https://paritytech.github.io/polkadot-sdk/master/polkadot_sdk_docs/polkadot_sdk/cumulus/index.html) framework.
 
-* 🔧 Its runtime is configured with a single custom pallet as a starting point, and a handful of ready-made pallets
-such as a [Balances pallet](https://paritytech.github.io/polkadot-sdk/master/pallet_balances/index.html).
+* 🔧 Its [runtime](./runtime) is configured with fungible and non-fungilble asset functionalities, including asset fractionalization.
 
 ## Template Structure
 
@@ -44,6 +43,9 @@ cargo install --force --locked pop-cli
 ```
 pop new parachain
 ```
+> When prompted, select 'Pop' as the template provider and 'Assets' as the type of parachain.
+>
+> More info can be found [here](https://learn.onpop.io/v/appchains/guides/create-a-new-parachain/create-an-assets-parachain).
 
 #### Learn how to run your parachain using the `pop up` command:
 ```sh
