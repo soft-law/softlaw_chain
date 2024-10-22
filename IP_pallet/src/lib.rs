@@ -50,6 +50,7 @@ pub mod pallet {
     pub type NextLicenseId<T: Config> = StorageValue<_, T::LicenseId, ValueQuery>;
 
     #[pallet::storage]
+    #[pallet::getter(fn licenses)]
     pub type Licenses<T: Config> = StorageMap<_, Blake2_128Concat, T::LicenseId, License<T>>;
 
     #[pallet::storage]
