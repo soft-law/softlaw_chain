@@ -25,7 +25,7 @@ Combining legal principles with blockchain technology, we offer a Smart IP Licen
 
 ## Team
 - **Mario Andrade**: CEO
-- **Luke Barush**: Tech Lead & Polkadot Developer
+- **Baruch(Luke) Fishman**: Tech Lead & Polkadot Developer
 - **Favour Chiksze**: Front-End Developer
 - **Pat Sinma**: Product Designer
 - **Ganesh**: Polkadot Developer
