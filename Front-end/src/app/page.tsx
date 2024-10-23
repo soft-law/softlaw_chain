@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <div className="scrollable pb-[60px] min-[2000px]:pb-0 ">
+    <div className="scrollable ">
       <Hero />
       <OurServices />
       <UseCase />
