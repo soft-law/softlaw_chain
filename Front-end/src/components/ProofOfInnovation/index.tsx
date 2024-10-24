@@ -65,7 +65,7 @@ export default function Dashboard() {
               <div className="flex items-center space-x-2">
                 <TabsTrigger
                   value="collections"
-                  className={`px-4 py-2 space-x-2 ring-0 ${
+                  className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
                     selectedTabDashboard === "collections"
                       ? "bg-yellow-500 text-black"
                       : "text-black"
@@ -76,7 +76,7 @@ export default function Dashboard() {
                       activeTab === "collections"
                         ? "bg-yellow-500 text-black"
                         : "text-black bg-white"
-                    } rounded-full px-3 py-1 min-[2000px]:w-20 min-[2000px]:h-20 w-10 h-10 text-center flex items-center justify-center text-sm`}
+                    } rounded-full px-3 py-1 min-[2000px]:w-[54px] min-[2000px]:h-[54px] min-[2000px]:py-[20px] w-10 h-10 text-center flex items-center justify-center min-[2000px]:text-3xl text-sm`}
                   >
                     1
                   </h1>
@@ -98,7 +98,7 @@ export default function Dashboard() {
               <div className="flex items-center space-x-2 ">
                 <TabsTrigger
                   value="nfts"
-                  className={`px-4 py-2 space-x-2 ring-0 ${
+                  className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
                     activeTab === "nfts"
                       ? "bg-yellow-500   text-black"
                       : "text-white"
@@ -109,7 +109,7 @@ export default function Dashboard() {
                       activeTab === "nfts"
                         ? "bg-yellow-500 text-black"
                         : "text-black bg-white"
-                    } rounded-full px-3 py-1 w-10 h-10 text-center flex items-center justify-center text-[16px] 
+                    } rounded-full px-3 py-1 min-[2000px]:w-[54px] min-[2000px]:h-[54px] min-[2000px]:py-[20px] w-10 h-10 text-center flex items-center justify-center text-[16px] min-[2000px]:text-3xl 
                         font-karla font-normal leading-normal`}
                   >
                     2
@@ -129,7 +129,7 @@ export default function Dashboard() {
               <div className="flex items-center space-x-2">
                 <TabsTrigger
                   value="contracts"
-                  className={`px-4 py-2 space-x-2 ring-0 ${
+                  className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
                     activeTab === "contracts"
                       ? "bg-yellow-500   text-black"
                       : " text-white"
@@ -141,7 +141,7 @@ export default function Dashboard() {
                         ? "bg-yellow-500 text-black"
                         : "text-black bg-white"
                     } rounded-full px-3 py-1  w-10 h-10 text-center flex items-center justify-center text-[16px] 
-                    min-[2000px]:w-[50px] min-[2000px]:h-[50px] min-[2000px]:py-[20px] min-[2000px]:text-3xl font-karla font-normal leading-normal`}
+                    min-[2000px]:w-[54px] min-[2000px]:h-[54px] min-[2000px]:py-[20px] min-[2000px]:text-3xl font-karla font-normal leading-normal`}
                   >
                     3
                   </h1>

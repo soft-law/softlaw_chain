@@ -145,7 +145,9 @@ export default function Identity({onDataChange}: IdentityProps) {
                   <div className="flex flex-col items-start gap-[6px]">
                    
                     <InputField
+
                     label= "Patent Number"
+                    type="number"
                     value={formData.Identity.PatentNumber}
                     onChange={handlePatentNumber}
                       hasDropdown={true}

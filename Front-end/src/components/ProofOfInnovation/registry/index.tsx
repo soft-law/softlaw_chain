@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import { getSubstrateSigner } from "@/utils/getSigner";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import { useToast } from "../../../hooks/use-toast";
 import Footer from "@/components/Footer";
@@ -21,6 +20,12 @@ import VariousTypesSelect from "../VariousTypesSelect";
 import CollectionTypes from "@/utils/collectionTypes.json";
 import { useContext } from 'react';
 import { FormDataContext } from "../FormDataContext";
+import * as yup from 'yup';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import Button from "../../ui/button"
+
+
 
 interface AbiInput {
   name: string;
@@ -43,8 +48,45 @@ interface IpRegistriesProps {
   onDataChange: (data: any) => void;
 }
 
+const supportedImages = ["Doc", "PDF"];
 
 export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
+
+  const schema = yup.object().shape({
+    Reference_number: yup.string().required("Number is required"),
+
+    Doc_Link: yup.string(),
+
+    ip_image: yup
+    .mixed()
+    .required("Document is required")
+    .test("fileSize", "File too large", (value) => {
+      return value && value.size <= 1024 * 1024 * 5;
+    })
+    .test("fileType", "Unsupported file format", (value) => {
+      return (
+        value &&
+        supportedImages.includes(value.name.split(".").pop().toLowerCase())
+      );
+    }),
+   
+  });
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
+
+  const onSubmit = async (values) => {
+    console.log(values);
+    console.log("All fields filled");
+  //   setToCompleted();
+  };
+
+
+
   const {formData, updateFormData} = useContext(FormDataContext);
 
   const [activeButton, setActiveButton] = useState<string | null>(null);
@@ -131,12 +173,14 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
     console.log("uploadIpfS and Mint")
   }
 
+
+
   return (
-    <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[1280px]">
+    <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[2560px]">
     
-      <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-[800px] pt-[120px] justify-center items-center">
-        <div className="flex flex-col w-full justify-items-center gap-[60px] pb-[120px]">
-          <div>
+      <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-screen pt-[120px] justify-center items-center">
+        <div className="flex flex-col w-full justify-items-center gap-[px] pb-[120px]">
+          <div className="mb-[60px]">
             <ReusableHeading text="intellectual property Selection" />
           </div>
 
@@ -206,14 +250,18 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
           </div>
           <form
             action=""
-            className="flex flex-col gap-[60px]"
+            className="flex flex-col"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            <div className="flex flex-col items-start self-stretch gap-[8px]">
+            <div className="flex flex-col items-start self-stretch mt-[60px] gap-[8px]">
               <InputField
-                label="Reference number"
-                className="min-[2000px]:w-[1254px]"
-                value={formData.IpRegistries.ReferenceNumber} //Display current state value
-                onChange={handleInputChange} //this captures the user's input and updates the global form state
+              id="Reference_number"
+              type="number"
+              label="Reference number"
+              className="w-full min-[2000px]:w-[1254px]"
+              {...register ("Reference_number")} error={errors.Reference_number?.message}
+              // value={formData.IpRegistries.ReferenceNumber} //Display current state value
+              // onChange={handleInputChange} //this captures the user's input and updates the global form state
               />
               <TypesComponent
                 className="text-[#8A8A8A]"
@@ -252,40 +300,51 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
                 )}
               </div>
 
-              <div className="flex flex-col gap-[16px] w-full md:w-full mt-[60px]">
-                <UploadFilesField
+              <div className="flex flex-col gap-[16px] w-full md:w-full mt-[60px] rounded-xl">
+              <InputField
+                id="ip_image"
+                type="file"
+                style=""
+                label="Intellectual Property Documentation"
+                error={errors.ip_image?.message}
+                onFileChange={(file) => setValue("ip_image", file)}
+              />
+                {/* <UploadFilesField
                   text="Intellectual Property Documentation"
                   files="files"
                   fileType={` File types: Doc, PDF`}
                   onFileUpload={handleFileUpload} //pass the handler for file upload
-                />
+                /> */}
+
+
 
                 <InputField
+                  id="Doc_Link"
                   label="or paste a link to the document"
-                  className="min-[2000px]:w-[1254px]"
-                  hasDropdown={false}
-                  value={formData.IpRegistries.ReferenceLink} //Display current state value
-                  onChange={handleReferenceLink} //handle input of link
+                  className="min-[2000px]:w-[1254px] mt-[16px]"
+                  {...register ("Doc_Link")} 
+                  error={errors.Doc_Link?.message}
+                  // hasDropdown={false}
+                  // value={formData.IpRegistries.ReferenceLink} 
+                  //Display current state value
+                  // onChange={handleReferenceLink} //handle input of link
                 />
               </div>
             </div>
           </form>
 
-          <div className="flex items-start justify-between w-full ">
-            {/* <button className="bg-transparent rounded-[16px] px-[20px] py-[8px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none">
-                Cancel: selection
-              </button>
-              <button className="bg-[#D0DFE4] rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]">
-                Next: nft
-              </button> */}
-
-            <button className="bg-transparent rounded-[16px] px-[20px] py-[8px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none">
+          <div className="flex items-start justify-between w-full mt-[60px] ">
+            <Link 
+            className="bg-transparent rounded-[16px] px-[20px] py-[8px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none" href="/Innovation">
               Cancel
-            </button>
+            </Link>
 
-            <button className="bg-[#D0DFE4] rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]">
-              Next
-            </button>
+            <Button 
+            cta="Next"
+            purpose='submit'
+            />
+            
+           
           </div>
         </div>
       </MaxWidthWrapper>
@@ -296,3 +355,18 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
     </div>
   );
 }
+
+
+// const IpRegistry = ({ setToCompleted, renderIp }) => {
+//   if (renderIp === "business details") {
+//     return <IpRegistries setToCompleted={setToCompleted} />;
+//   } else {
+//     // return "Complete all fields";
+//     return <IpRegistries setToCompleted={setToCompleted} />;
+//   }
+// };
+
+// npm install react-hook-form @hookform/resolvers yup
+
+
+// export default IpRegistry;
