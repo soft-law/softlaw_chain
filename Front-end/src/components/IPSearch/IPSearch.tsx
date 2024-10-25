@@ -77,22 +77,7 @@ export default function IpSearch() {
   return (
     <>
       <div className="bg-[#1C1A11] flex flex-col items-center justify-center scrollable min-[2000px]:w-[2560px]">
-        {/* Nav Bar starts min-h-screen */}
-        <header className="self-stretch flex py-4 min-[2000px]:px-[320px] px-[200px] items-center bg-[#1C1A11] text-white sticky top-0 z-[100] h-[24] w-full border-b border-[#E5E7EB] backdrop:filter[8px]">
-          {/* Desktop View - Full Menu  */}
-          <div className="flex justify-between items-start w-full py-[16px]">
-            <Link href={"/"} className="">
-              <img
-                src="/images/Logo.svg"
-                className="shrink-0"
-                loading="lazy"
-                alt="Logo"
-              />
-            </Link>
-            <WalletConnectButton />
-          </div>
-        </header>
-        {/* Nav Bar ends */}
+
 
         <div className="flex flex-col w-full  py-[120px] min-[2000px]:px-[320px] px-[200px] scrollable items-start gap-[40px] h-auto">
           <div className="flex justify-between items-center self-stretch">
