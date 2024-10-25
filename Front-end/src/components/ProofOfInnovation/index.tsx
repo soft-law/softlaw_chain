@@ -7,6 +7,7 @@ import UniqueProvider from "@/context/unique";
 import IpfsProvider from "@/context/ipfs";
 import LegalContracts from "./legalContracts";
 import DashboardProvider, { useDashboardTapContext } from "@/context/tab";
+import NavBar from "@/components/NavBar"
 
 export default function Dashboard() {
   const [tabsVisible, setTabsVisible] = useState(true);
@@ -53,6 +54,7 @@ export default function Dashboard() {
 
   return (
     <IpfsProvider >
+      <NavBar />
       <UniqueProvider>
         <DashboardProvider>
         <Tabs

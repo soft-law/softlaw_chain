@@ -8,10 +8,12 @@ import OurProducts from "@/components/landing/OurProducts/OurProducts";
 import Polkadot from "@/components/landing/Polkadot";
 import Team from "@/components/landing/Team/Team";
 import Footer from "@/components/Footer";
+import NavBar from "@/components/NavBar";
 
 export default function Home() {
   return (
     <div className="scrollable ">
+      <NavBar />
       <Hero />
       <OurServices />
       <UseCase />
