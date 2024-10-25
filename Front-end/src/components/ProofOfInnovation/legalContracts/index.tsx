@@ -167,7 +167,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   
   return (
     <>
-      <div className="bg-[#1C1A11] flex flex-col w-full justify-center items-center text-white min-[2000px]:w-[2560px]">
+      <div className="bg-[#1C1A11] flex flex-col w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
         <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-screen pt-[120px] justify-center items-center">
           <div className="flex flex-col w-full justify-items-center gap-[60px] pb-[120px]">
             <div>

@@ -63,7 +63,7 @@ export default function Dashboard() {
           className=" bg-[#1C1A11] pt-[120px] scrollable"
         >
           {tabsVisible && (
-            <TabsList className="flex items-center min-[2000px]:w-[2560px] bg-[#1C1A11]">
+            <TabsList className="flex items-center min-[2000px]:w-[3000px] bg-[#1C1A11]">
               <div className="flex items-center space-x-2">
                 <TabsTrigger
                   value="collections"

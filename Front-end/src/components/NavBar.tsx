@@ -9,7 +9,7 @@ export default function NavBar() {
   const ricardian = "Ricardian Contracts".split("");
 
   return (
-    <header className="self-stretch flex py-4 min-[2000px]:px-[320px] px-[200px] items-center bg-[#1C1A11] text-white sticky top-0 z-[100] h-[24] w-full border-b border-[#E5E7EB] backdrop:filter[8px]">
+    <header className="self-stretch flex min-[2000px]:w-[3000px] py-4 min-[2000px]:px-[320px] px-[200px] items-center bg-[#1C1A11] text-white sticky top-0 z-[100] h-[24] w-full border-b border-[#E5E7EB] backdrop:filter[8px]">
       {/* Desktop View - Full Menu  */}
       <div className="flex justify-between items-start w-full min-[2000px]:py-[25px] py-[16px]">
         <Link href={"/"} className="">

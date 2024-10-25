@@ -76,10 +76,8 @@ export default function IpSearch() {
 
   return (
     <>
-      <div className="bg-[#1C1A11] flex flex-col items-center justify-center scrollable min-[2000px]:w-[2560px]">
-
-
-        <div className="flex flex-col w-full  py-[120px] min-[2000px]:px-[320px] px-[200px] scrollable items-start gap-[40px] h-auto">
+      <div className="bg-[#1C1A11] flex flex-col items-center justify-center scrollable min-[2000px]:w-[3000px]">
+        <div className="flex flex-col w-full py-[120px] min-[2000px]:px-[320px] px-[200px] scrollable items-start gap-[40px] h-auto">
           <div className="flex justify-between items-center self-stretch">
             <TypesComponent
               text="IP SEARCH"
@@ -136,7 +134,7 @@ export default function IpSearch() {
           </div>
 
           {/* Search and filter */}
-          <div className="w-full  p-4">
+          <div className="w-full p-4">
             <form
               onSubmit={handleSearch}
               className="flex flex-col items-start justify-start"
@@ -146,7 +144,7 @@ export default function IpSearch() {
                   type="text"
                   id="search"
                   placeholder="Search for Words in Patents, Products, Owners, or Trademark Name"
-                  className="text-[16px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-[48px] p-3 items-center pl-[40px] gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none rounded-md focus:ring-1 focus:ring-[#FACC15] text-[#fff]"
+                  className="text-[16px] min-[2000px]:text-3xl flex min-[2000px]:w-[3000px] w-full mt-[6px] min-[2000px]:h-[56px] h-[48px] p-3 items-center pl-[40px] gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none rounded-md focus:ring-1 focus:ring-[#FACC15] text-[#fff]"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
@@ -161,7 +159,7 @@ export default function IpSearch() {
               {/* Results Section */}
               {searchPerformed && (
                 <div className="w-full ">
-                  <p className="text-[#EFF4F6] font-Montesarrat text-[16px] min-[2000px]:text-[20px] font-normal leading-[145%] tracking-[0.4px] my-[16px] flex items-start">
+                  <p className="text-[#EFF4F6] font-Montesarrat text-[16px] min-[2000px]:text-[30px] font-normal leading-[145%] tracking-[0.4px] my-[20px] flex items-start">
                     {results.length} results for "{query}"
                   </p>
 
@@ -178,27 +176,27 @@ export default function IpSearch() {
                     {results.map((result, index) => (
                       <div
                         key={index}
-                        className="flex gap-[60px] text-[#EFF4F6] min-[2000px]:p-[10px] min-[2000px]:gap-[80px] p-4 w-full min-[2000px]:w-[2560px] border-b border-[#8A8A8A]"
+                        className="flex gap-[70px] items-center text-[#EFF4F6] min-[2000px]:p-[10px] min-[2000px]:gap-[200px] p-5 w-full min-[2000px]:w-[2560px] border-b border-[#8A8A8A]"
                       >
                         {/* Trademark Overview */}
                         <div className="flex items-center space-x-4">
                           <img
                             src={`API_IMAGE_URL/${result.trademark}`}
                             alt={result.trademark}
-                            className="w-16 h-16"
+                            className="w-16 h-16 min-[2000px]:w-[200px]  min-[2000px]:h-[200px]"
                           />
 
                           <div className="flex flex-col gap-[16px] items-start ">
-                            <h3 className="font-Montesarrat text-[14px] font-normal leading-[145%] tracking-[0.28px] text-[#8A8A8A] ">
+                            <h3 className="font-Montesarrat text-[14px] font-normal leading-[145%] min-[2000px]:text-3xl tracking-[0.28px] text-[#8A8A8A] ">
                               Wordmark{" "}
-                              <span className="block text-[#EFF4F6] text-[16px] tracking-[0.32px]">
+                              <span className="block text-[#EFF4F6] text-[16px] min-[2000px]:text-3xl tracking-[0.32px]">
                                 {result.trademark}
                               </span>
                             </h3>
 
-                            <h3 className="font-Montesarrat text-[14px] font-normal leading-[145%] tracking-[0.28px] text-[#8A8A8A] ">
+                            <h3 className="font-Montesarrat text-[14px] font-normal min-[2000px]:text-3xl leading-[145%] tracking-[0.28px] text-[#8A8A8A] ">
                               Class{" "}
-                              <span className="block text-[#EFF4F6] text-[16px] tracking-[0.32px]">
+                              <span className="block text-[#EFF4F6] text-[16px] min-[2000px]:text-3xl tracking-[0.32px]">
                                 007
                               </span>
                             </h3>
@@ -206,20 +204,21 @@ export default function IpSearch() {
                         </div>
 
                         {/* Owner */}
-
                         <TypesComponent
                           text={result.owner}
-                          className="text-[#EFF4F6] text-[14px]"
+                          className="text-[#EFF4F6] min-[2000px]:text-3xl text-[14px]"
                         />
 
                         {/* Serial Number */}
+                      
                         <TypesComponent
                           text={result.serialNumber}
                           className="text-[#EFF4F6]"
                         />
 
                         {/* Status */}
-                        <div className="flex flex-col items-start gap-2">
+                       
+                        <div className="flex flex-col min-[2000px]:pl-[300px] items-start gap-2">
                           <TypesComponent
                             text={
                               result.status.includes("Live") && (
@@ -244,7 +243,7 @@ export default function IpSearch() {
                         {/* Price */}
                         <TypesComponent
                           text={result.price}
-                          className=" font-bold text-[#EFF4F6]"
+                          className="min-[2000px]:pl-[200px] font-bold text-[#EFF4F6]"
                         />
                       </div>
                     ))}

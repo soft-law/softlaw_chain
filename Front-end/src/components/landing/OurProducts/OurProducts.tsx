@@ -1,7 +1,6 @@
 import React from "react";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import ProofOwnership from "./IpTokenixer";
-import Motoverse from "./Motoverse";
 
 function OurProducts() {
   return (
@@ -11,10 +10,8 @@ function OurProducts() {
           OUR PRODUCTS
         </h1>
 
-        {/* Motoverse */}
-        {/* <Motoverse /> */}
+     
         <div className="border-b border-[#B2CBD3] my-[60px]" />
-        {/* Proof of ownership */}
         <ProofOwnership />
 
       </MaxWidthWrapper>

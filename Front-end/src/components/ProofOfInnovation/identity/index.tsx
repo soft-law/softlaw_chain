@@ -82,7 +82,7 @@ export default function Identity({onDataChange, value}: IdentityProps) {
   
   return (
     <>
-      <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[2560px]">
+      <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
         <MaxWidthWrapper className="flex flex-col self-stretch pt-[120px] justify-center items-center">
           <div className="flex flex-col w-full justify-items-center pb-[120px] gap-[60px]">
             <div className="">
