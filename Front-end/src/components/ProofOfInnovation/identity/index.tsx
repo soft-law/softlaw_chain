@@ -9,13 +9,18 @@ import React, { useEffect, useState } from "react";
 import VariousTypesButton from "../VariousTypesButton";
 import { useContext } from 'react';
 import { FormDataContext } from "../FormDataContext";
+import * as yup from 'yup';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import Button from "../../ui/button"
 
 
 interface IdentityProps {
   onDataChange?: (data: any) => void;
+  value?: string;
 }
 
-export default function Identity({onDataChange}: IdentityProps) {
+export default function Identity({onDataChange, value}: IdentityProps) {
   const {formData, updateFormData} = useContext(FormDataContext);
 
   const [activeButton, setActiveButton] = useState<string | null>(null);
@@ -47,13 +52,40 @@ export default function Identity({onDataChange}: IdentityProps) {
   useEffect(() => {
     callOnDataChange();
   }, [formData, onDataChange]);
+
+  const schema = yup.object().shape({
+    PatentTitle: yup
+      .string()
+      .required("patent title is required"),
+
+    PatentNumber: yup
+    .string()
+    .required("Number is required"),
+
+    FillingDate: yup
+    .string()
+    .required("Date is required"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
+
+  const onSubmit = async (values) => {
+    console.log(values);
+    console.log("All fields filled");
+  //   setToCompleted();
+  };
   
   return (
     <>
-      <div className="bg-[#1C1A11] flex flex-col w-full justify-center items-center text-white pb-[60px] min-[2000px]:w-[2560px] ">
-        <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-screen pt-[120px] justify-center items-center">
-          <div className="flex flex-col w-full justify-items-center gap-[60px] pb-[120px]">
-            <div>
+      <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[2560px]">
+        <MaxWidthWrapper className="flex flex-col self-stretch pt-[120px] justify-center items-center">
+          <div className="flex flex-col w-full justify-items-center pb-[120px] gap-[60px]">
+            <div className="">
               <ReusableHeading
                 text="intellectual property data Entry"
                 detail="Please Fill in the Matching Patent Details"
@@ -127,31 +159,46 @@ export default function Identity({onDataChange}: IdentityProps) {
               </div>
             </div>
 
-            <form action="" className="flex flex-col gap-[60px]">
+            <form action="" className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col items-start self-stretch gap-[8px]">
 
                 <InputField
+                optionText="Select a Patent Title"
+                id="PatentTitle"
                 label= "Patent Title"
                 value={formData.Identity.PatentTitle}
-                type="text"
-                  hasDropdown={false}
-                  className="min-[2000px]:w-[px] min-w-[280px]"
+                type="select"
+                icon={true}
+                className=" min-w-[280px]"
                   onChange={handleInputChange}
+                options={[
+                  { value: "utility",
+                    label: "Utility Patent" },
+                  { value: "design",
+                    label: "Design Patent" },
+                  { value: "provisional",
+                    label: "Provisional Patent" },
+                  { value: "plant",
+                    label: "Plant Patent" },
+                ]}
+                {...register ("PatentTitle")}
+                error={errors.PatentTitle?.message}
                 />
               </div>
 
               
-                <div className="flex items-start gap-[60px]">
+                <div className="flex items-start mt-[60px] gap-[60px]">
                   <div className="flex flex-col items-start gap-[6px]">
                    
                     <InputField
-
+                    id="PatentNumber"
                     label= "Patent Number"
                     type="number"
+                    {...register ("PatentNumber")}
+                    error={errors.PatentNumber?.message}
                     value={formData.Identity.PatentNumber}
                     onChange={handlePatentNumber}
-                      hasDropdown={true}
-                      className=" min-w-[280px] w-full"
+                    className=" min-w-[280px] w-full"
                     />
 
                     <TypesComponent
@@ -162,20 +209,21 @@ export default function Identity({onDataChange}: IdentityProps) {
                     />
                   </div>
                     <InputField
+                    id="FillingDate"
                     label= "Filling Date"
                     value={formData.Identity.FillingDate ? formData.Identity.FillingDate.toISOString().substring(0, 10) : ''}
-                    hasDropdown={true}
+                    {...register ("FillingDate")}
                     onChange={handleFillingDate}
                     type="Date"
-                      className=" w-[280px]"
+                    className=" w-[280px]"
                     />         
                 </div> 
             </form>
 
             <div className="flex items-start justify-between w-full ">
               <Link
-                href="/dashboard"
-                className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px]flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
+                href="/Innovation"
+                className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
                 children="Back"
               />
               <Link

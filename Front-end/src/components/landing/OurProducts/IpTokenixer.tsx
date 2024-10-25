@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Button } from "@/components/ui/button";
+import  Button  from "@/components/ui/button";
 
 function ProofOwnership() {
     return (
@@ -14,10 +14,14 @@ function ProofOwnership() {
               <p className="text-[20px] leading-[28px] min-[2000px]:text-2xl w-full min-[2000px]:tracking-[1px]">Introducing the Intellectual Property Tokenizer Tool, developed in collaboration with <span className="text-[#FACC15]"> Unique Network </span>. This advanced solution enhances IP management with state-of-the-art technology, paving the way for a new era in legal industry digitization. </p>
             </div>
             
-            <Button bgColor="bg-[#D0DFE4]" className="bg-[#D0DFE4] rounded-2xl hover:bg-yellow-400 text-[#1C1A11] text-[16px] font-Montesarrat leading-[145%] tracking-[0.32px] font-bold py-2 px-4 transition-colors duration-300 ease-in-out min-[2000px]:text-2xl">
-            Create Proof of Ownership
+            <Button 
+            cta="Create Proof of Ownership" 
+            Style="bg-[#D0DFE4] rounded-2xl hover:bg-yellow-400 text-[#1C1A11] text-[16px] font-Montesarrat leading-[145%] tracking-[0.32px] font-bold py-2 px-4 transition-colors duration-300 ease-in-out min-[2000px]:text-2xl"
+            purpose="submit"
+            />
+            
 
-              </Button>
+           
           </div>
           <img className="pt-5 md:pt-0 min-[2000px]:w-[500px]  min-[2000px]:h-[500px] w-[350px] h-[350px]" src="/images/uniquenetwork.svg" alt="" />
         </div>

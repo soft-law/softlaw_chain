@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import { Button } from "./ui/button";
+import  Button  from "./ui/button";
 // import { getSubstrateSigner } from "@/utils/substrateAccounts/wallet/getSigner";
 // import { getEvmSigner } from "@/utils/evmAccounts/wallet/getSigner";
 // import { getEvmSigners } from "@/utils/evmAccounts/wallet/getSigners";
@@ -64,8 +64,8 @@ export function WalletConnectButton() {
         <Button
           onClick={handleWallets}
           className="bg-white text-black px-4 py-2 text-base"
+          cta="Connect"
         >
-          Connect
         </Button>
       ) : (
         <Button
@@ -129,8 +129,8 @@ export function WalletConnectButton() {
               )} */}
             </div>
 
-            <Button onClick={() => setIsOpen(false)} className="mt-4">
-              Close
+            <Button onClick={() => setIsOpen(false)} className="mt-4" cta="Close">
+              
             </Button>
           </div>
         </div>

@@ -7,7 +7,6 @@ import ReusableHeading from "../textComponent";
 import TypesComponent from "../TypesProps";
 import InputField from "../input";
 import UploadFilesField from "../UploadFileField";
-import UploadMultipleFilesToIPFS from "@/components/UploadFiles";
 import Link from "next/link";
 import { ethers } from "ethers";
 // import { Address } from "@unique-nft/utils";
@@ -16,16 +15,12 @@ import { ethers } from "ethers";
 import { useUnique } from "@/context/unique";
 import abi from "../../../utils/abi_minter.json";
 import VariousTypesButton from "../VariousTypesButton";
-import VariousTypesSelect from "../VariousTypesSelect";
-import CollectionTypes from "@/utils/collectionTypes.json";
 import { useContext } from 'react';
 import { FormDataContext } from "../FormDataContext";
 import * as yup from 'yup';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import Button from "../../ui/button"
-
-
 
 interface AbiInput {
   name: string;
@@ -48,7 +43,7 @@ interface IpRegistriesProps {
   onDataChange: (data: any) => void;
 }
 
-const supportedImages = ["Doc", "PDF"];
+const supportedImages = ["doc", "pdf"];
 
 export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
 
@@ -84,8 +79,6 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
     console.log("All fields filled");
   //   setToCompleted();
   };
-
-
 
   const {formData, updateFormData} = useContext(FormDataContext);
 
@@ -305,17 +298,13 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
                 id="ip_image"
                 type="file"
                 style=""
+                fileType="File types: DOC, PDF"
                 label="Intellectual Property Documentation"
+                {...register ("ip_image")} 
                 error={errors.ip_image?.message}
                 onFileChange={(file) => setValue("ip_image", file)}
               />
-                {/* <UploadFilesField
-                  text="Intellectual Property Documentation"
-                  files="files"
-                  fileType={` File types: Doc, PDF`}
-                  onFileUpload={handleFileUpload} //pass the handler for file upload
-                /> */}
-
+              
 
 
                 <InputField
@@ -324,10 +313,10 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
                   className="min-[2000px]:w-[1254px] mt-[16px]"
                   {...register ("Doc_Link")} 
                   error={errors.Doc_Link?.message}
-                  // hasDropdown={false}
-                  // value={formData.IpRegistries.ReferenceLink} 
-                  //Display current state value
-                  // onChange={handleReferenceLink} //handle input of link
+                  
+                  value={formData.IpRegistries.ReferenceLink} 
+                  Display current state value
+                  onChange={handleReferenceLink} //handle input of link
                 />
               </div>
             </div>
@@ -335,7 +324,7 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
 
           <div className="flex items-start justify-between w-full mt-[60px] ">
             <Link 
-            className="bg-transparent rounded-[16px] px-[20px] py-[8px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none" href="/Innovation">
+            className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none" href="/Innovation">
               Cancel
             </Link>
 

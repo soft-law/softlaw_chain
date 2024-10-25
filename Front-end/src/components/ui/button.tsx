@@ -19,13 +19,13 @@ export default function Button ({ cta = "Submit", purpose, onClick, onSubmit, St
   return (
     <div className="flex justify-center items-center">
       <button
-        className={` bg-[#D0DFE4] rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15] ${Style} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`bg-[#D0DFE4] rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#1C1A11] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none ${Style} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         type={purpose}
         onClick={onClick} // Handles click events
         onSubmit={onSubmit} // Handles form submissions
         disabled={disabled}
       >
-        <div className="w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center ">
           {cta}
           {icon}
         </div>

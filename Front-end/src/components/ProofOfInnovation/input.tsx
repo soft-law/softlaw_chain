@@ -12,13 +12,14 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   style?: string;
   options?: [];
   optionText?: string;
-  icon?: string;
+  icon?: boolean;
   onFileChange?: () => {};
-  value?: any
+  value?: any;
+  fileType?: string;
 }
 
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ className = '', id, children, label, style, placeholder, type = "text", icon, value, optionText, onFileChange, hasDropdown = true, options = [], ...rest }, ref) => {
+  ({ className = '', id, children, label, style, placeholder, type = "text", icon, value, optionText, onFileChange, fileType, hasDropdown = true, options = [], ...rest }, ref) => {
 
     const [isFocused, setIsFocused] = useState(false);
     const [hasValue, setHasValue] = useState(false);
@@ -69,42 +70,59 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     const renderInput = () => {
       switch(type) {
         case "select":
-
         if (type === "select" && options.length > 0) {
           return (
             <div className='relative '>
                 <select
                 id={id}
                 ref={ref}
-                className={`block my-3 p-4 w-full h-14 bg-white text-base font-normal text-[#1A1A1A] bg-transparent border border-[#B6AFEB] rounded-xl appearance-none focus:outline-none focus:ring-0 peer ${
+                className={`block my-3 p-4 min-[2000px]:pb-[5px] w-full h-14 bg-[#27251C] min-[2000px]:text-2xl text-base font-normal text-[#fff] bg-transparent  appearance-none focus:outline-none focus:ring-0 peer ${
                   error ? "border-red-500" : ""
                 }`}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 {...rest}
                 >
-                  <option value="">{optionText ? optionText : "Select an option"}</option>
+                  <option className='bg-[#27251C]' value="">{optionText ? optionText : "Select an option"}</option>
                   {options.map((option, index) => (
                     <option key={index} value={option.value}>
                       {option.label}
                     </option>
                   ))}
                 </select>
-                {icon ? 
-              <div className='hidden absolute top-1/2 right-4 transform -translate-y-1/2 pointer-events-none border border-[#6A5CD7] w-5 h-5 rounded-full sm:flex justify-center items-center'>
+              {icon 
+              ? <div className='hidden absolute top-1/2 right-4 transform -translate-y-1/2 pointer-events-none border border-yellow-500 w-5 h-5 rounded-full sm:flex justify-center items-center'>
                   <ChevronDownIcon 
-                className="text-[0.55rem] text-gray-500"
+                className="text-[0.55rem] text-yellow-500"
                 />
               </div>  
               : <ChevronDownIcon 
-              className="absolute top-1/2 right-4 transform -translate-y-1/2 pointer-events-none text-gray-500"
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 pointer-events-none text-yellow-500"
               />
-
               }
                 
             </div>
           );
         }
+
+        case "description":
+          if (id === "Description") {
+            // Render a textarea for the business description
+            return (
+              <textarea
+                id={id}
+                ref={ref}
+                rows={5} // You can adjust this based on your height needs
+                className={`block my-3 p-4 w-full ring-0 outline-none bg-[#27251C] text-base font-normal text-[#fff] bg-transparent min-[2000px]:text-2xl  rounded-md appearance-none focus:outline-none focus:ring-0 peer ${
+                  isFocused || hasValue ? "pt-4" : ""
+                } ${error ? "border-red-500" : ""}`}
+                placeholder={placeholder}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                {...rest}
+              />
+            );
+          }
 
         case "file":
           return (
@@ -113,7 +131,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             }`}>
               <div className="absolute inset-0  flex flex-col items-center  justify-center gap-[16px]">
                 {/* <SlCloudUpload className="text-2xl text-[#B6AFEB] sm:mr-2"/> */}
-                <div>
+              <div>
                <p className='flex border border-[#858597] rounded-[60px] items-center py-[10px] px-[16px] text-[#ffff] text-sm font-Montesarrat text-[16px] font-normal leading-[145%] tracking-[0.32px] min-[2000px]:text-2xl min-[2000px]:tracking-[1px]'>Select File</p>   
                 </div>
                 
@@ -122,20 +140,21 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                   {fileName || "Select files to upload or drag and drop file(s)  here, or"}
                   <span className="text-yellow-500"> {fileName ? " change" : " browse"}</span>
                 </p>
-
-                <TypesComponent 
+              <div className='flex flex-col items-center '>
+                 <TypesComponent 
                 className='text-[#8A8A8A] min-[2000px]:text-[24px] min-[2000px]:leading-[32px]'
                 text="You may change this after deploying your contract"
                 />
                 <TypesComponent
                 className='text-[#8A8A8A] min-[2000px]:text-[24px] min-[2000px]:leading-[32px]'
-                text={` File types: Doc, PDF`}
+                text={fileType}
                 />
-
+              </div>
+               
               </div>
               <input 
                 type="file"
-                accept="image/*"
+                accept="pdf, doc, image/*"
                 id={id}
                 ref={ref}
                 className={`absolute top-0 bottom-0 left-0 right-0 rounded-xl  cursor-pointer opacity-0  outline-none block w-full text-base font-normal text-[#ffff] bg-transparent focus:outline-none focus:ring-0 ${style}  ${error ? "border-red-500" : ""}`}
@@ -162,7 +181,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             onBlur={handleBlur}
             {...rest}
           />
-            );
+        );
 
       }
      

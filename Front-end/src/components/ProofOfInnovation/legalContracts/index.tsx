@@ -6,11 +6,13 @@ import VariousTypesButton from "../VariousTypesButton";
 import InputField from "../input";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import UploadFilesField from "../UploadFileField";
 import { useContext, useState, useEffect } from "react";
 import CollectionTypes from "@/utils/collectionTypes.json";
 import { FormDataContext } from "../FormDataContext";
 import ConfirmationModal from "../ConfirmationModal";
+import * as yup from 'yup';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
 
 interface LegalContractsProps {
   onDataChange?: (data: any) => void;
@@ -75,7 +77,6 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
     // onDataChange(formData);
   };
   
-
   const handleEditPage = (page: number) => {
     // Assuming 'collections' = page 1, 'nfts' = page 2, 'contracts' = page 3
     const tabKeys = ["IpRegistries", "Identity", "LegalContracts"];
@@ -105,7 +106,6 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
     setIsModalOpen(false);
   };
 
-
   const handleCollectionSelect = async (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -124,7 +124,43 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   };
 
 
-  ////// create nft function ////
+  const supportedImages = ["JPG", "PNG", "GIF", "SVG"];
+
+  const schema = yup.object().shape({
+    Thumbnail_image: yup
+    .mixed()
+    .required("Document is required")
+    .test("fileSize", "File too large", (value) => {
+      return value && value.size <= 350 * 350;
+    })
+    .test("fileType", "Unsupported file format", (value) => {
+      return (
+        value &&
+        supportedImages.includes(value.name.split(".").pop().toLowerCase())
+      );
+    }),
+
+    NFTName: yup
+    .string()
+    .required("NFT name is required"),
+
+    Description: yup
+    .string()
+    .required("Give a brief description"),
+
+  });
+
+  const {
+    register,
+    setValue,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
+
+  const onSubmit = async (values) => {
+    console.log(values);
+    console.log("All fields filled");
+  //   setToCompleted();
+  };
 
 
 
@@ -141,22 +177,30 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
                 className="text-[#8A8A8A]"
               />
             </div>
-            <form action="" className="flex flex-col gap-[60px]">
-              <UploadFilesField
-                text="Thumbnail Image"
-                files="files"
-                fileType={` Recommended size: 350 x 350. File types: JPG, PNG, SVG, or GIF`}
+
+            <form action="" className="flex flex-col gap-[40px]">
+            <InputField
+                id="Thumbnail_image"
+                type="file"
+                style=""
+                fileType="Recommended size: 350 by 350. File types: JPG, PNG, SVG or GIF"
+                label="Thumbnail Image"
+                {...register ("Thumbnail_image")} 
+                error={errors.Thumbnail_image?.message}
                 onFileUpload={handleFileUpload}
+                onFileChange={(file) => setValue("Thumbnail_image", file)}
               />
 
               <div className="flex items-start gap-[60px]">
                 <div className="flex flex-col items-start gap-[6px]">
                   <InputField
+                    id="NFTName"
                     label="NFT Name"
-                    hasDropdown={false}
                     className=" min-w-[280px] w-full text-[#fff]"
                     type="text"
+                    {...register ("NFTName")}
                     value={formData.LegalContracts.NFTName}
+                    error={errors.NFTName?.message}
                     onChange={handleInputChange}
                   />
 
@@ -165,53 +209,54 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
                     text={`Enter a name that can match your patent name, making it easily searchable. Choose a descriptive and unique name for clear identification.`}
                   />
                 </div>
-
-                <div className="flex flex-col items-start gap-[6px]">
                  
                   <InputField
+                    id="Collection"
+                    optionText="Select a collection" 
                     label="Collection"
+                    type="select"
                     placeholder="select a collection"
+                    className="min-w-[280px]"
+                    icon={true}
                     value={formData.LegalContracts.Collection}
                     onChange={handleSelectCollection}
-                    type="selection"
-                    className=" w-[280px]"
+                    options={[
+                      {value: "First collection",
+                        label: "First Collection"
+                      },
+                      {value: "second collection",
+                        label: "Unique Network"
+                      },
+                      {value: "third collection",
+                        label: "Ricardian"
+                      },
+                    ]}
                   />
-
-                   <InputField
-                    id="collectionSelect"
-                    label="Select a collection"
-                    value={collection.name}
-                  >
-                    {/* <option value="" className="text-balck bg-[#1C1A11]">
-                      Select a collection
-                    </option> */}
-                   
-                     {`${CollectionTypes.map((type, index) => (
-                      <option key={index} value={type.name}>
-                        {type.name}
-                      </option>
-                    ))} `}
-                  
-                    
-                  </InputField>
-                </div>
+             
               </div>
 
               <div className="flex flex-col items-start self-stretch gap-[8px]">
                 <InputField
+                  id="Description"
+                  type="description"
+                  style="w-full min-w-[280px] h-[123px]"
                   value={formData.LegalContracts.Description}
                   hasDropdown={false}
                   label="Description"
-                  className="pr-[24px] h-[123px] pl-[12px] min-w-[280px] text-white"
                   onChange={handleDescription}
+                  {...register("Description")}
+                  error={errors.Description?.message}
                 />
+
                 <TypesComponent
                   text="Write a short description which should clearly describe your product."
                   className=" text-[#8A8A8A] "
                 />
               </div>
             </form>
-            <TypesComponent
+
+            <div className="flex flex-col gap-[16px] pt-[60px]">
+              <TypesComponent
               text="Types of protection"
               className="text-[#fff]"
             />
@@ -255,6 +300,8 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
                 }}
               />
             </div>
+            </div>
+            
             <div className="flex items-start justify-between w-full ">
               <Link
                 href="/Identity"
