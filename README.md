@@ -35,10 +35,10 @@ Combining legal principles with blockchain technology, we offer a Smart IP Licen
 ### Setting Up Softlaw Chain
 
 1. Clone the repository and navigate to the project directory.
-2. Install the required dependencies.
+2. Install pop network https://learn.onpop.io/appchains/guides/set-up-your-development-environment.
 3. Build the chain:
    pop build --release
-4. Deplopy the chain:
+4. Run the chain:
    pop up parachain -f network.toml
 5. Interact with softlaw chain clicking on the collator link.
 
