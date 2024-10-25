@@ -2,11 +2,22 @@
 import React from "react";
 import { TextSpan } from "@/components/TextSpan";
 import Link from "next/link";
+import { getApi } from "@/utils/getApi";
+import { getSigner } from "@/utils/getSigner";
 
 export default function NavBar() {
   const innovation = "Proof Of Innovation".split("");
   const registry = "Registries".split("");
   const ricardian = "Ricardian Contracts".split("");
+
+
+  const walletConnect = async () => {
+    let sdk = await getApi()
+    console.log(sdk)
+
+    let signer = await getSigner()
+    console.log(signer)
+  }
 
   return (
     <header className="self-stretch flex py-4 min-[2000px]:px-[320px] px-[200px] items-center bg-[#1C1A11] text-white sticky top-0 z-[100] h-[24] w-full border-b border-[#E5E7EB] backdrop:filter[8px]">
@@ -52,6 +63,10 @@ export default function NavBar() {
               </TextSpan>
             ))}
           </Link>
+
+          <button onClick={walletConnect}>
+            WALLET
+          </button>
 
      
         </div>

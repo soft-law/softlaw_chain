@@ -25,9 +25,9 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
     onDataChange && onDataChange(formData);
   };
 
-  useEffect(() => {
-    callOnDataChange();
-  }, [formData, onDataChange]);
+  // useEffect(() => {
+  //   callOnDataChange();
+  // }, [formData, onDataChange]);
   
   // const [formData, setFormData] = useState({
   //   IpRegistries: {

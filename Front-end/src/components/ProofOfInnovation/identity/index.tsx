@@ -49,9 +49,9 @@ export default function Identity({onDataChange, value}: IdentityProps) {
     onDataChange && onDataChange(formData);
   };
 
-  useEffect(() => {
-    callOnDataChange();
-  }, [formData, onDataChange]);
+  // useEffect(() => {
+  //   callOnDataChange();
+  // }, [formData, onDataChange]);
 
   const schema = yup.object().shape({
     PatentTitle: yup
