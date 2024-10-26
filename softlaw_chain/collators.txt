@@ -6,14 +6,14 @@
 --force-authoring \
 --chain raw-parachain-chainspec.json \
 --base-path ./tmp/node02 \
---port 40334 \
---rpc-port 8845 \
+--port 40335 \
+--rpc-port 8846 \
 --rpc-cors=all \
 -- \
 --execution wasm \
 --chain paseo.json \
---port 30344 \
---rpc-port 9978 \
+--port 30345 \
+--rpc-port 9979 \
 --rpc-methods unsafe \
 --unsafe-rpc-external \
 --blocks-pruning=256
@@ -26,18 +26,15 @@
 --force-authoring \
 --chain raw-parachain-chainspec.json \
 --base-path ./tmp/node01 \
---port 40333 \
---rpc-port 8844 \
+--port 40332 \
+--rpc-port 8843 \
 --bootnodes /ip4/127.0.0.1/tcp/40334/p2p/12D3KooWEwBnzy7UK4pfrfMHTmvH2mnXuy6KiXkjZh8YTUsLrRcd \
 -- \
 --execution wasm \
 --chain paseo.json \
---port 30343 \
---rpc-port 9977 \
+--port 30342 \
+--rpc-port 9976 \
 --rpc-methods unsafe \
 --unsafe-rpc-external \
 --blocks-pruning=256
 
-
-
-12D3KooWEwBnzy7UK4pfrfMHTmvH2mnXuy6KiXkjZh8YTUsLrRcd
