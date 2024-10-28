@@ -18,7 +18,7 @@ function ProofOwnership() {
 
             <div className="font-Montesarrat flex flex-col items-start gap-[16px] self-stretch text-[#D0DFE4]">
               <div className="flex justify-between w-full items-end">
-              <h1 className="text-[48px] font-normal leading-[110%] tracking-[-0.96px]">IntelliToken </h1>
+              <h1 className="text-[48px] font-normal leading-[110%] tracking-[-0.96px]">InnovaToken </h1>
               <div>
               <Link 
               href=""
@@ -30,10 +30,8 @@ function ProofOwnership() {
               </div>
               
               </div>
-              
-
               <h1 className="text-[28px] font-normal leading-[32px] tracking-[-0.56px] text-[#EFF4F6] uppercase  min-[2000px]:text-3xl min-[2000px]:tracking-[1px]">Proof of Ownership for your creation on an NFT</h1>
-              <p className="text-[20px] leading-[28px] min-[2000px]:text-2xl w-full min-[2000px]:tracking-[1px]">Introducing the Intellectual Property Tokenizer Tool, developed in collaboration with <span className="text-[#FACC15]"> Unique Network </span>. This advanced solution enhances IP management with state-of-the-art technology, paving the way for a new era in legal industry digitization. </p>
+              <p className="text-[20px] leading-[28px] min-[2000px]:text-2xl w-full min-[2000px]:tracking-[1px]">Introducing the Intellectual Property Tokenizer Tool and <span className="text-[#FACC15]"> Licensing Manager </span>. This advanced solution enhances IP management with state-of-the-art technology, paving the way for a new era in legal services. </p>
             </div>
             
 

@@ -15,7 +15,7 @@ const Footer: React.FC<FooterProps> = ({ width, className }) => {
     <footer
         className={`flex ${width} min-h-400px flex-col md:px-[200px] pb-[60px] items-start self-stretch bg-[#1C1A11] gap-[40px] min-[2000px]:py-[120px] "> ${className}`}
       >
-         <MaxWidthWrapper>
+         {/* <MaxWidthWrapper> */}
         <div className="min-[2000px]:pb-5 pb-5">
           <img
             src="/images/logoHero.svg"
@@ -49,7 +49,7 @@ const Footer: React.FC<FooterProps> = ({ width, className }) => {
             </Link>
           </div>
         </div>
-         </MaxWidthWrapper>   
+         {/* </MaxWidthWrapper>    */}
       </footer>
 
       
