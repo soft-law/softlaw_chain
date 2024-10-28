@@ -188,8 +188,8 @@ impl_opaque_keys! {
 
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-    spec_name: create_runtime_str!("parachain-template-runtime"),
-    impl_name: create_runtime_str!("parachain-template-runtime"),
+    spec_name: create_runtime_str!("softlaw_runtime"),
+    impl_name: create_runtime_str!("softlaw_runtime"),
     authoring_version: 1,
     spec_version: 1,
     impl_version: 0,
@@ -334,7 +334,7 @@ mod runtime {
     pub type NftFractionalization = pallet_nft_fractionalization::Pallet<Runtime>;
     #[runtime::pallet_index(42)]
     pub type Assets = pallet_assets::Pallet<Runtime, Instance1>;
-    #[runtime::pallet_index(43)] // Choose an appropriate index
+    #[runtime::pallet_index(43)] 
     pub type IPPallet = pallet_ip_pallet::Pallet<Runtime>;
 }
 
