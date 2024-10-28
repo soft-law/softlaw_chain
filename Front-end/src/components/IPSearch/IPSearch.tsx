@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { WalletConnectButton } from "../WalletConnect";
-import Link from "next/link";
+// import { WalletConnectButton } from "../WalletConnect";
+// import Link from "next/link";
 import TypesComponent from "../ProofOfInnovation/TypesProps";
 import Footer from "../Footer";
-import InputField from "../ProofOfInnovation/input";
+// import InputField from "../ProofOfInnovation/input";
 
 interface SearchResult {
   trademark: string;

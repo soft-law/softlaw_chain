@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+// import { useFormik } from 'formik';
+// import * as Yup from 'yup';
 
 interface MintNFTFormValues {
   name: string;
@@ -14,47 +14,49 @@ const MintNFTPage: React.FC = () => {
   const [submissionStatus, setSubmissionStatus] = useState<string | null>(null);
 
   // Form validation schema using Yup
-  const validationSchema = Yup.object({
-    name: Yup.string()
-      .max(30, 'Name is too long')
-      .required('NFT Name is required'),
-    description: Yup.string()
-      .max(250, 'Description is too long')
-      .required('Description is required'),
-    filingDate: Yup.date()
-      .required('Filing Date is required'),
-    jurisdiction: Yup.string()
-      .max(50, 'Jurisdiction is too long')
-      .required('Jurisdiction is required'),
-  });
+  // const validationSchema = Yup.object({
+  //   name: Yup.string()
+  //     .max(30, 'Name is too long')
+  //     .required('NFT Name is required'),
+  //   description: Yup.string()
+  //     .max(250, 'Description is too long')
+  //     .required('Description is required'),
+  //   filingDate: Yup.date()
+  //     .required('Filing Date is required'),
+  //   jurisdiction: Yup.string()
+  //     .max(50, 'Jurisdiction is too long')
+  //     .required('Jurisdiction is required'),
+  // });
 
-  // Formik form handler
-  const formik = useFormik<MintNFTFormValues>({
-    initialValues: {
-      name: '',
-      description: '',
-      filingDate: '',
-      jurisdiction: '',
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      try {
-        // Call the backend mint function
-        // Replace with actual mint function integration here
-        console.log('Minting NFT with values:', values);
-        setSubmissionStatus('NFT successfully minted!');
-      } catch (error) {
-        setSubmissionStatus('Failed to mint NFT.');
-      }
-    },
-  });
+  // // Formik form handler
+  // const formik = useFormik<MintNFTFormValues>({
+  //   initialValues: {
+  //     name: '',
+  //     description: '',
+  //     filingDate: '',
+  //     jurisdiction: '',
+  //   },
+  //   validationSchema,
+  //   onSubmit: async (values) => {
+  //     try {
+  //       // Call the backend mint function
+  //       // Replace with actual mint function integration here
+  //       console.log('Minting NFT with values:', values);
+  //       setSubmissionStatus('NFT successfully minted!');
+  //     } catch (error) {
+  //       setSubmissionStatus('Failed to mint NFT.');
+  //     }
+  //   },
+  // });
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-semibold mb-6 text-gray-700">Create a New NFT</h2>
         
-        <form onSubmit={formik.handleSubmit} className="space-y-4">
+        <form
+        //  onSubmit={formik.handleSubmit}
+          className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-600">
               NFT Name
@@ -63,14 +65,14 @@ const MintNFTPage: React.FC = () => {
               type="text"
               id="name"
               name="name"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              // value={formik.values.name}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {formik.touched.name && formik.errors.name ? (
-              <p className="text-red-500 text-sm">{formik.errors.name}</p>
-            ) : null}
+            {/* {formik.touched.name && formik.errors.name ? (
+              <p className="text-red-500 text-sm">{formik.errors.name}</p> */}
+            {/* ) : null} */}
           </div>
 
           <div>
@@ -80,14 +82,14 @@ const MintNFTPage: React.FC = () => {
             <textarea
               id="description"
               name="description"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              // value={formik.values.description}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {formik.touched.description && formik.errors.description ? (
-              <p className="text-red-500 text-sm">{formik.errors.description}</p>
-            ) : null}
+            {/* {formik.touched.description && formik.errors.description ? (
+              <p className="text-red-500 text-sm">{formik.errors.description}</p> */}
+            {/* ) : null} */}
           </div>
 
           <div>
@@ -98,14 +100,14 @@ const MintNFTPage: React.FC = () => {
               type="date"
               id="filingDate"
               name="filingDate"
-              value={formik.values.filingDate}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              // value={formik.values.filingDate}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {formik.touched.filingDate && formik.errors.filingDate ? (
+            {/* {formik.touched.filingDate && formik.errors.filingDate ? (
               <p className="text-red-500 text-sm">{formik.errors.filingDate}</p>
-            ) : null}
+            ) : null} */}
           </div>
 
           <div>
@@ -116,14 +118,14 @@ const MintNFTPage: React.FC = () => {
               type="text"
               id="jurisdiction"
               name="jurisdiction"
-              value={formik.values.jurisdiction}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              // value={formik.values.jurisdiction}
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {formik.touched.jurisdiction && formik.errors.jurisdiction ? (
+            {/* {formik.touched.jurisdiction && formik.errors.jurisdiction ? (
               <p className="text-red-500 text-sm">{formik.errors.jurisdiction}</p>
-            ) : null}
+            ) : null} */}
           </div>
 
           <button

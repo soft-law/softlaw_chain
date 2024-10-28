@@ -1,9 +1,16 @@
 "use client";
 
-import NavBar from "@/components/NavBar";
+// import NavBar from "@/components/NavBar";
 import dynamic from "next/dynamic";
 const RicardianContracts = dynamic(
   () => import("@/components/RicardianContracts.tsx"),
+  {
+    ssr: false,
+  }
+);
+
+const NavBar = dynamic(
+  () => import("@/components/NavBar"),
   {
     ssr: false,
   }

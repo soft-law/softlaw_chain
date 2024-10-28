@@ -31,7 +31,7 @@ export default function NavBar() {
             alt="Logo"
           />
         </Link>
-
+{/* 
         <div className="flex items-end justify-between space-x-5">
           <Link
             href={"/Innovation"}
@@ -69,7 +69,7 @@ export default function NavBar() {
           </button>
 
      
-        </div>
+        </div> */}
 
       </div>
     </header>

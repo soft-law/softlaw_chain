@@ -8,8 +8,15 @@ import OurProducts from "@/components/landing/OurProducts/OurProducts";
 import Polkadot from "@/components/landing/Polkadot";
 import Team from "@/components/landing/Team/Team";
 import Footer from "@/components/Footer";
-import NavBar from "@/components/NavBar";
+// import NavBar from "@/components/NavBar";
 
+import dynamic from "next/dynamic";
+const NavBar = dynamic(
+  () => import("@/components/NavBar"),
+  {
+    ssr: false,
+  }
+);
 export default function Home() {
   return (
     <div className="scrollable ">

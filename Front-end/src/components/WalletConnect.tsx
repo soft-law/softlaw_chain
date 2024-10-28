@@ -60,7 +60,7 @@ export function WalletConnectButton() {
 
   return (
     <>
-      {walletAddress === null ? (
+      {/* {walletAddress === null ? (
         <Button
           onClick={handleWallets}
           className="bg-white text-black px-4 py-2 text-base"
@@ -74,7 +74,7 @@ export function WalletConnectButton() {
         >
           {walletAddress} (Disconnect)
         </Button>
-      )}
+      )} */}
 
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -129,9 +129,9 @@ export function WalletConnectButton() {
               )} */}
             </div>
 
-            <Button onClick={() => setIsOpen(false)} className="mt-4" cta="Close">
+            {/* <Button onClick={() => setIsOpen(false)} className="mt-4" cta="Close"> */}
               
-            </Button>
+            {/* </Button> */}
           </div>
         </div>
       )}

@@ -2,16 +2,16 @@
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import ReusableHeading from "../textComponent";
 import TypesComponent from "../TypesProps";
-import InputField from "../input";
+// import InputField from "../input";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import React, { useEffect, useState } from "react";
 import VariousTypesButton from "../VariousTypesButton";
 import { useContext } from 'react';
 import { FormDataContext } from "../FormDataContext";
-import * as yup from 'yup';
-import { useForm } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers/yup';
+// import * as yup from 'yup';
+// import { useForm } from "react-hook-form";
+// import { yupResolver } from '@hookform/resolvers/yup';
 import Button from "../../ui/button"
 
 
@@ -53,33 +53,37 @@ export default function Identity({onDataChange, value}: IdentityProps) {
   //   callOnDataChange();
   // }, [formData, onDataChange]);
 
-  const schema = yup.object().shape({
-    PatentTitle: yup
-      .string()
-      .required("patent title is required"),
+  // const schema = yup.object().shape({
+  //   PatentTitle: yup
+  //     .string()
+  //     .required("patent title is required"),
 
-    PatentNumber: yup
-    .string()
-    .required("Number is required"),
+  //   PatentNumber: yup
+  //   .string()
+  //   .required("Number is required"),
 
-    FillingDate: yup
-    .string()
-    .required("Date is required"),
-  });
+  //   FillingDate: yup
+  //   .string()
+  //   .required("Date is required"),
+  // });
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   setValue,
+  //   formState: { errors },
+  // } = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmit = async (values) => {
-    console.log(values);
-    console.log("All fields filled");
-  //   setToCompleted();
-  };
+  // const onSubmit = async (values) => {
+  //   console.log(values);
+  //   console.log("All fields filled");
+  // //   setToCompleted();
+  // };
   
+const handleSubmitForm = async () => {
+  console.log("hola")
+}
+
   return (
     <>
       <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
@@ -159,10 +163,10 @@ export default function Identity({onDataChange, value}: IdentityProps) {
               </div>
             </div>
 
-            <form action="" className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+            <form action="" className="flex flex-col" onSubmit={handleSubmitForm}>
               <div className="flex flex-col items-start self-stretch gap-[8px]">
 
-                <InputField
+                {/* <InputField
                 optionText="Select a Patent Title"
                 id="PatentTitle"
                 label= "Patent Title"
@@ -183,14 +187,14 @@ export default function Identity({onDataChange, value}: IdentityProps) {
                 ]}
                 {...register ("PatentTitle")}
                 error={errors.PatentTitle?.message}
-                />
+                /> */}
               </div>
 
               
                 <div className="flex items-start mt-[60px] gap-[60px]">
                   <div className="flex flex-col items-start gap-[6px]">
                    
-                    <InputField
+                    {/* <InputField
                     id="PatentNumber"
                     label= "Patent Number"
                     type="number"
@@ -199,7 +203,7 @@ export default function Identity({onDataChange, value}: IdentityProps) {
                     value={formData.Identity.PatentNumber}
                     onChange={handlePatentNumber}
                     className=" min-w-[280px] w-full"
-                    />
+                    /> */}
 
                     <TypesComponent
                       className="text-[#8A8A8A] "
@@ -208,7 +212,7 @@ export default function Identity({onDataChange, value}: IdentityProps) {
                       )} Example: US1234567B1.`}
                     />
                   </div>
-                    <InputField
+                    {/* <InputField
                     id="FillingDate"
                     label= "Filling Date"
                     value={formData.Identity.FillingDate ? formData.Identity.FillingDate.toISOString().substring(0, 10) : ''}
@@ -216,7 +220,7 @@ export default function Identity({onDataChange, value}: IdentityProps) {
                     onChange={handleFillingDate}
                     type="Date"
                     className=" w-[280px]"
-                    />         
+                    />          */}
                 </div> 
             </form>
 

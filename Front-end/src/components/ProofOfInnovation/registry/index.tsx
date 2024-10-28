@@ -5,7 +5,7 @@ import { useToast } from "../../../hooks/use-toast";
 import Footer from "@/components/Footer";
 import ReusableHeading from "../textComponent";
 import TypesComponent from "../TypesProps";
-import InputField from "../input";
+// import InputField from "../input";
 import UploadFilesField from "../UploadFileField";
 import Link from "next/link";
 import { ethers } from "ethers";
@@ -17,9 +17,9 @@ import abi from "../../../utils/abi_minter.json";
 import VariousTypesButton from "../VariousTypesButton";
 import { useContext } from 'react';
 import { FormDataContext } from "../FormDataContext";
-import * as yup from 'yup';
-import { useForm } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers/yup';
+// import * as yup from 'yup';
+// import { useForm } from "react-hook-form";
+// import { yupResolver } from '@hookform/resolvers/yup';
 import Button from "../../ui/button"
 
 interface AbiInput {
@@ -47,38 +47,38 @@ const supportedImages = ["doc", "pdf"];
 
 export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
 
-  const schema = yup.object().shape({
-    Reference_number: yup.string().required("Number is required"),
+  // const schema = yup.object().shape({
+  //   Reference_number: yup.string().required("Number is required"),
 
-    Doc_Link: yup.string(),
+  //   Doc_Link: yup.string(),
 
-    ip_image: yup
-    .mixed()
-    .required("Document is required")
-    .test("fileSize", "File too large", (value) => {
-      return value && value.size <= 1024 * 1024 * 5;
-    })
-    .test("fileType", "Unsupported file format", (value) => {
-      return (
-        value &&
-        supportedImages.includes(value.name.split(".").pop().toLowerCase())
-      );
-    }),
+  //   ip_image: yup
+  //   .mixed()
+  //   .required("Document is required")
+  //   .test("fileSize", "File too large", (value) => {
+  //     return value && value.size <= 1024 * 1024 * 5;
+  //   })
+  //   .test("fileType", "Unsupported file format", (value) => {
+  //     return (
+  //       value &&
+  //       supportedImages.includes(value.name.split(".").pop().toLowerCase())
+  //     );
+  //   }),
    
-  });
+  // });
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   setValue,
+  //   formState: { errors },
+  // } = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmit = async (values) => {
-    console.log(values);
-    console.log("All fields filled");
-  //   setToCompleted();
-  };
+  // const onSubmit = async (values) => {
+  //   console.log(values);
+  //   console.log("All fields filled");
+  // //   setToCompleted();
+  // };
 
   const {formData, updateFormData} = useContext(FormDataContext);
 
@@ -244,18 +244,18 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
           <form
             action=""
             className="flex flex-col"
-            onSubmit={handleSubmit(onSubmit)}
+            // onSubmit={handleSubmit(onSubmit)}
           >
             <div className="flex flex-col items-start self-stretch mt-[60px] gap-[8px]">
-              <InputField
+              {/* <InputField
               id="Reference_number"
               type="number"
               label="Reference number"
               className="w-full min-[2000px]:w-[1254px]"
               {...register ("Reference_number")} error={errors.Reference_number?.message}
-              // value={formData.IpRegistries.ReferenceNumber} //Display current state value
-              // onChange={handleInputChange} //this captures the user's input and updates the global form state
-              />
+              value={formData.IpRegistries.ReferenceNumber} //Display current state value
+              onChange={handleInputChange} //this captures the user's input and updates the global form state
+              /> */}
               <TypesComponent
                 className="text-[#8A8A8A]"
                 text="Eg: Reference number from the USPTO or WIPO database. This number is used to track your application throughout the examination process and may differ from the final patent number. Example: 16/123,456."
@@ -294,7 +294,7 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
               </div>
 
               <div className="flex flex-col gap-[16px] w-full md:w-full mt-[60px] rounded-xl">
-              <InputField
+              {/* <InputField
                 id="ip_image"
                 type="file"
                 style=""
@@ -303,10 +303,10 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
                 {...register ("ip_image")} 
                 error={errors.ip_image?.message}
                 onFileChange={(file) => setValue("ip_image", file)}
-              />
+              /> */}
               
 
-
+{/* 
                 <InputField
                   id="Doc_Link"
                   label="or paste a link to the document"
@@ -315,9 +315,9 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
                   error={errors.Doc_Link?.message}
                   
                   value={formData.IpRegistries.ReferenceLink} 
-                  Display current state value
+  
                   onChange={handleReferenceLink} //handle input of link
-                />
+                /> */}
               </div>
             </div>
           </form>
