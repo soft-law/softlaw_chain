@@ -54,7 +54,7 @@ const License: React.FC = () => {
   });
 
   return (
-    <div className="bg-[#1C1A11] min-[2000px]:w-[2880px] flex items-center justify-center min-[2000px]:h-screen text-white px-4 min-h-[800px]">
+    <div className="bg-[#1C1A11] min-[2000px]:w-[3000px] flex items-center justify-center min-[2000px]:h-screen text-white px-4 min-h-[800px]">
       <MaxWidthWrapper className="flex flex-col items-center w-full max-w-3xl space-y-4">
         <div className="mb-8">
           <ReusableHeading text="Get a License" />
