@@ -14,7 +14,7 @@ export default function Ipsearch() {
   return (
   <div className="min-[2000px]:w-[1280px]">
     <NavBar/>
-  {/* <IPSearch /> */}
+  <IPSearch />
   </div>
   
 

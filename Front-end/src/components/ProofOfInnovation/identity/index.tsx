@@ -13,6 +13,7 @@ import { FormDataContext } from "../FormDataContext";
 // import { useForm } from "react-hook-form";
 // import { yupResolver } from '@hookform/resolvers/yup';
 import Button from "../../ui/button"
+import { useInnovationTapContext } from "@/context/innovation";
 
 
 interface IdentityProps {
@@ -23,6 +24,7 @@ interface IdentityProps {
 export default function Identity({onDataChange, value}: IdentityProps) {
   const {formData, updateFormData} = useContext(FormDataContext);
 
+    const {selectedTabInnovation, setSelectedTabInnovation} = useInnovationTapContext()
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleButtonClick = (buttonName: string) => {
@@ -82,6 +84,25 @@ export default function Identity({onDataChange, value}: IdentityProps) {
   
 const handleSubmitForm = async () => {
   console.log("hola")
+}
+
+
+const handleBack = async () =>{
+  try {
+    setSelectedTabInnovation("1")
+    console.log("test", selectedTabInnovation)
+  } catch(e){
+    console.log(e)
+  }
+}
+
+const handleNext = async () =>{
+  try {
+    setSelectedTabInnovation("3")
+    console.log("test", selectedTabInnovation)
+  } catch(e){
+    console.log(e)
+  }
 }
 
   return (
@@ -230,12 +251,23 @@ const handleSubmitForm = async () => {
                 className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
                 children="Back"
               />
-              <Link
+              {/* <Link
                 href="/LegalContracts"
                 className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
                 children="Next"
-              />
+              /> */}
+              
             </div>
+            <button
+              onClick={handleBack}
+              >
+                Back
+              </button>
+            <button
+              onClick={handleNext}
+              >
+                Next
+              </button>
           </div>
         </MaxWidthWrapper>
       </div>

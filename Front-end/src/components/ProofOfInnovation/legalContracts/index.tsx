@@ -10,6 +10,7 @@ import { useContext, useState, useEffect } from "react";
 import CollectionTypes from "@/utils/collectionTypes.json";
 import { FormDataContext } from "../FormDataContext";
 import ConfirmationModal from "../ConfirmationModal";
+import { useInnovationTapContext } from "@/context/innovation";
 // import * as yup from 'yup';
 // import { useForm } from "react-hook-form";
 // import { yupResolver } from '@hookform/resolvers/yup';
@@ -54,6 +55,8 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("collections");
+
+  const {selectedTabInnovation, setSelectedTabInnovation} = useInnovationTapContext()
 
   const [collection, setCollection] = useState({
     name: "",
@@ -162,6 +165,9 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   // //   setToCompleted();
   // };
 
+  const handleBack = async () => {
+    setSelectedTabInnovation("2")
+  }
 
 
   
@@ -303,11 +309,16 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
             </div>
             
             <div className="flex items-start justify-between w-full ">
-              <Link
+              {/* <Link
                 href="/Identity"
                 className="bg-transparent rounded-[16px] px-[20px] py-[8px] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
                 children="Back"
-              />
+              /> */}
+              <button
+              onClick={handleBack}
+              >
+                Back
+              </button>
               
               <div>
                 {/* Once the final page is completed, submit */}

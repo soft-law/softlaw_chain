@@ -21,6 +21,7 @@ import { FormDataContext } from "../FormDataContext";
 // import { useForm } from "react-hook-form";
 // import { yupResolver } from '@hookform/resolvers/yup';
 import Button from "../../ui/button"
+import { useInnovationTapContext } from "@/context/innovation";
 
 interface AbiInput {
   name: string;
@@ -47,6 +48,8 @@ const supportedImages = ["doc", "pdf"];
 
 export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
 
+  const {selectedTabInnovation,
+    setSelectedTabInnovation} = useInnovationTapContext()
   // const schema = yup.object().shape({
   //   Reference_number: yup.string().required("Number is required"),
 
@@ -164,6 +167,25 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
 
   const handleMintCollection = async () => {
     console.log("uploadIpfS and Mint")
+  }
+
+
+  const handleBack = async () =>{
+    try {
+      setSelectedTabInnovation("1")
+      console.log("test", selectedTabInnovation)
+    } catch(e){
+      console.log(e)
+    }
+  }
+
+  const handleNext = async () =>{
+    try {
+      setSelectedTabInnovation("2")
+      console.log("test", selectedTabInnovation)
+    } catch(e){
+      console.log(e)
+    }
   }
 
 
@@ -323,15 +345,32 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
           </form>
 
           <div className="flex items-start justify-between w-full mt-[60px] ">
-            <Link 
+            {/* <Link 
             className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none" href="/Innovation">
               Cancel
-            </Link>
+            </Link> */}
+            <Link
+                href="/Dashboard"
+                className="bg-transparent rounded-[16px] px-[20px] py-[8px] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
+                children="Cancel"
+              />
 
             <Button 
-            cta="Next"
-            purpose='submit'
+           cta="Next"
+         purpose='submit'
+        //  onClick={handleNext}
             />
+
+            {/* <button
+            onClick={handleBack}
+            >
+              Back
+            </button> */}
+            <button
+            //  className={`bg-[#D0DFE4] rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#1C1A11] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none ${Style} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={handleNext}>
+              next
+            </button>
             
            
           </div>

@@ -13,3 +13,7 @@
 
 # Binaries
 **/bin/
+
+/data
+/para-4528-genesis-state.txt
+para-4528-wasm.txt
