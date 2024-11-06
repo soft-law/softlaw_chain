@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-const ProofOfCreativity = dynamic(() => import('@/components/ProofOfInnovation'), {
+const ProofOfCreativity = dynamic(() => import('@/app/components/ProofOfInnovation'), {
   ssr: false,
 })
 
