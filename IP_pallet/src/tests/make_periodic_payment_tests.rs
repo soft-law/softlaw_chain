@@ -127,7 +127,7 @@ fn test_make_periodic_payment_complete_license() {
             license_id
         ));
 
-        let license = IPPallet::licenses(license_id).unwrap();
+        let license = IPPallet::active_contracts(license_id).unwrap();
         assert_eq!(license.status, LicenseStatus::Completed);
 
         System::assert_last_event(RuntimeEvent::IPPallet(Event::LicenseCompleted {

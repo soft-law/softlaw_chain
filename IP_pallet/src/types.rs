@@ -8,19 +8,18 @@ pub type BalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
-pub enum RevokeReason {
-    Expired,
-    Violation,
-    MutualAgreement,
-    PaymentFailure,
-    Other,
+#[scale_info(skip_type_params(T))]
+pub enum Offer<T: Config> {
+    License(LicenseOffer<T>),
+    Purchase(PurchaseOffer<T>),
 }
-#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
-pub enum LicenseStatus {
-    Offered,
-    Active,
-    Completed,
-    Expired,
+
+// Add a new enum for initiated contracts
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
+#[scale_info(skip_type_params(T))]
+pub enum Contract<T: Config> {
+    License(License<T>),
+    Purchase(PurchaseContract<T>),
 }
 
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
@@ -35,7 +34,7 @@ pub enum PaymentType<T: Config> {
 }
 
 // Implement Debug manually
-impl<T: Config> core::fmt::Debug for PaymentType<T> 
+impl<T: Config> core::fmt::Debug for PaymentType<T>
 where
     BalanceOf<T>: core::fmt::Debug,
     T::Index: core::fmt::Debug,
@@ -44,11 +43,12 @@ where
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             PaymentType::OneTime(amount) => f.debug_tuple("OneTime").field(amount).finish(),
-            PaymentType::Periodic { 
-                amount_per_payment, 
-                total_payments, 
-                frequency 
-            } => f.debug_struct("Periodic")
+            PaymentType::Periodic {
+                amount_per_payment,
+                total_payments,
+                frequency,
+            } => f
+                .debug_struct("Periodic")
                 .field("amount_per_payment", amount_per_payment)
                 .field("total_payments", total_payments)
                 .field("frequency", frequency)
@@ -57,13 +57,25 @@ where
     }
 }
 
-#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
-#[scale_info(skip_type_params(T))]
-pub struct PaymentSchedule<T: Config> {
-    pub start_block: BlockNumberFor<T>,
-    pub next_payment_block: BlockNumberFor<T>,
-    pub payments_made: T::Index,
-    pub payments_due: T::Index,
+#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+pub enum LicenseStatus {
+    Active,
+    Completed,
+    Revoked,
+}
+
+#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+pub enum PurchaseStatus {
+    InProgress,
+    Completed,
+    Cancelled,
+}
+
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
+pub enum RevokeReason {
+    PaymentFailure,
+    TermsViolation,
+    Other,
 }
 
 #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
@@ -77,18 +89,116 @@ pub struct NFT<T: Config> {
     pub jurisdiction: BoundedVec<u8, T::MaxNameLength>,
 }
 
-// Update the License struct
-#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
+#[scale_info(skip_type_params(T))]
+pub struct LicenseOffer<T: Config> {
+    pub nft_id: T::NFTId,
+    pub licensor: T::AccountId,
+    pub payment_type: PaymentType<T>,
+    pub is_exclusive: bool,
+    pub duration: BlockNumberFor<T>,
+}
+
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
+#[scale_info(skip_type_params(T))]
+pub struct PurchaseOffer<T: Config> {
+    pub nft_id: T::NFTId,
+    pub seller: T::AccountId,
+    pub payment_type: PaymentType<T>,
+}
+
+#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 #[scale_info(skip_type_params(T))]
 pub struct License<T: Config> {
     pub nft_id: T::NFTId,
     pub licensor: T::AccountId,
     pub licensee: Option<T::AccountId>,
-    pub is_purchase: bool,
-    pub duration: Option<BlockNumberFor<T>>,
+    pub duration: BlockNumberFor<T>,
     pub start_block: Option<BlockNumberFor<T>>,
     pub payment_type: PaymentType<T>,
     pub payment_schedule: Option<PaymentSchedule<T>>,
     pub is_exclusive: bool,
     pub status: LicenseStatus,
+}
+
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
+#[scale_info(skip_type_params(T))]
+pub struct PurchaseContract<T: Config> {
+    pub nft_id: T::NFTId,
+    pub seller: T::AccountId,
+    pub buyer: Option<T::AccountId>,
+    pub payment_type: PaymentType<T>,
+    pub payment_schedule: Option<PaymentSchedule<T>>,
+    pub status: PurchaseStatus,
+}
+
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
+#[cfg_attr(feature = "std", derive(Debug))]
+#[scale_info(skip_type_params(T))]
+pub struct PaymentSchedule<T: Config> {
+    pub start_block: BlockNumberFor<T>,
+    pub next_payment_block: BlockNumberFor<T>,
+    pub payments_made: T::Index,
+    pub payments_due: T::Index,
+}
+
+impl<T: Config> LicenseOffer<T> {
+    pub fn init(self, licensee: T::AccountId) -> License<T> {
+        let start_block = frame_system::Pallet::<T>::block_number();
+        // Create payment schedule based on payment type
+        let payment_schedule = match &self.payment_type {
+            PaymentType::Periodic {
+                amount_per_payment: _,
+                total_payments,
+                frequency,
+            } => Some(PaymentSchedule {
+                start_block,
+                next_payment_block: start_block + *frequency,
+                payments_made: T::Index::default(),
+                payments_due: *total_payments,
+            }),
+            PaymentType::OneTime(_) => None,
+        };
+
+        License {
+            nft_id: self.nft_id,
+            licensor: self.licensor,
+            licensee: Some(licensee),
+            duration: self.duration,
+            start_block: Some(start_block),
+            payment_type: self.payment_type,
+            payment_schedule,
+            is_exclusive: self.is_exclusive,
+            status: LicenseStatus::Active,
+        }
+    }
+}
+
+impl<T: Config> PurchaseOffer<T> {
+    pub fn init(self, buyer: T::AccountId) -> PurchaseContract<T> {
+        let start_block = frame_system::Pallet::<T>::block_number();
+        // Create payment schedule based on payment type
+        let payment_schedule = match &self.payment_type {
+            PaymentType::Periodic {
+                amount_per_payment: _,
+                total_payments,
+                frequency,
+            } => Some(PaymentSchedule {
+                start_block,
+                next_payment_block: start_block + *frequency,
+                payments_made: T::Index::default(),
+                payments_due: *total_payments,
+            }),
+            PaymentType::OneTime(_) => None,
+        };
+
+        PurchaseContract {
+            nft_id: self.nft_id,
+            seller: self.seller,
+            buyer: Some(buyer),
+            payment_type: self.payment_type,
+            payment_schedule,
+            status: PurchaseStatus::InProgress,
+        }
+    }
 }

@@ -32,7 +32,7 @@ fn test_revoke_license_success_offered() {
             RevokeReason::Other
         ));
 
-        assert!(IPPallet::licenses(license_id).is_none());
+        assert!(IPPallet::active_contracts(license_id).is_none());
 
         System::assert_last_event(RuntimeEvent::IPPallet(Event::LicenseRevoked {
             license_id,
@@ -73,7 +73,7 @@ fn test_revoke_license_success_active_no_payments() {
             RevokeReason::Violation
         ));
 
-        assert!(IPPallet::licenses(license_id).is_none());
+        assert!(IPPallet::active_contracts(license_id).is_none());
         assert!(IPPallet::license_ownership(nft_id, licensee).is_none());
 
         System::assert_last_event(RuntimeEvent::IPPallet(Event::LicenseRevoked {
@@ -120,7 +120,7 @@ fn test_revoke_license_not_revocable_one_time_payment() {
         ));
 
         // Ensure the license status is Completed after acceptance
-        let license = IPPallet::licenses(license_id).unwrap();
+        let license = IPPallet::active_contracts(license_id).unwrap();
         assert_eq!(license.status, LicenseStatus::Completed);
 
         assert_noop!(

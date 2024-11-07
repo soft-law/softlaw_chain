@@ -41,7 +41,7 @@ fn test_check_license_expiration() {
         System::set_block_number(12);
 
         // Get the license and manually call check_license_expiration
-        let license = IPPallet::licenses(license_id).unwrap();
+        let license = IPPallet::active_contracts(license_id).unwrap();
 
         assert!(IPPallet::check_license_expiration(&license));
     });
@@ -72,7 +72,7 @@ fn test_check_license_expiration_not_expired() {
         System::set_block_number(5);
 
         // Get the license and manually call check_license_expiration
-        let license = IPPallet::licenses(license_id).unwrap();
+        let license = IPPallet::active_contracts(license_id).unwrap();
 
         assert!(!IPPallet::check_license_expiration(&license));
     });
