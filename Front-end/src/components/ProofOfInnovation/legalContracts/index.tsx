@@ -5,7 +5,7 @@ import TypesComponent from "../TypesProps";
 import VariousTypesButton from "../VariousTypesButton";
 // import InputField from "../input";
 import Link from "next/link";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 import { useContext, useState, useEffect } from "react";
 import CollectionTypes from "@/utils/collectionTypes.json";
 import { FormDataContext } from "../FormDataContext";
@@ -342,10 +342,10 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
           </div>
         </MaxWidthWrapper>
       </div>
-      <Footer
+      {/* <Footer
         width="py-[60px] max-h-[400px]"
         className="border-t-[1px] border-[#8A8A8A] w-full"
-      />
+      /> */}
     </>
   );
 }

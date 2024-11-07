@@ -1,0 +1,112 @@
+"use client";
+
+import React, { useState } from "react";
+import AccountsProvider, { useAccountsContext } from "@/context/account";
+import { useToast } from "@/hooks/use-toast";
+import {
+  web3Accounts,
+  web3Enable,
+  web3FromSource,
+} from "@polkadot/extension-dapp";
+
+export default function WalletConnect() {
+  const { selectedAccount, setSelectedAccount } =
+    useAccountsContext();
+  const { toast } = useToast();
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const walletConnect = async () => {
+    try {
+      setIsConnecting(true);
+      await web3Enable("Softlaw");
+      const accounts = await web3Accounts();
+      const account = accounts[0];
+
+      if (!account) {
+        throw new Error("No accounts found.");
+      }
+
+      if (!account?.meta?.source) {
+        toast({
+          title: "Invalid Account",
+          description: "Account does not have a source.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Wallet Connected",
+        description: `Connected to account: ${formatAddress(account.address)}`,
+        className: "bg-[#252525] text-white border-[#373737]",
+      });
+
+      console.log("Selected account:", account);
+
+      const address = account?.address;
+      setSelectedAccount(account);
+      console.log("address", address);
+      const injector = await web3FromSource(account.meta.source);
+      console.log("injector", injector);
+
+      if (!injector) {
+        toast({
+          title: "Wallet Connection Failed",
+          description: "Please make sure your wallet is installed and unlocked",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Wallet Connected",
+        description: `Connected to account: ${formatAddress(account.address)}`,
+        className: "bg-[#252525] text-white border-[#373737]",
+      });
+    } catch (error) {
+      console.error("Wallet connection error:", error);
+      toast({
+        title: "Connection Error",
+        description:
+          error instanceof Error ? error.message : "Failed to connect wallet",
+        variant: "destructive",
+      });
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const disconnect = () => {
+    setSelectedAccount(null);
+    toast({
+      title: "Wallet Disconnected",
+      description: "Your wallet has been disconnected",
+      className: "bg-[#252525] text-white border-[#373737]",
+    });
+  };
+
+  const formatAddress = (address: string): string => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  return (
+    <button
+      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+        isConnecting
+          ? "bg-gray-500 cursor-not-allowed text-white"
+          : selectedAccount
+          ? "bg-[#252525] text-white hover:bg-[#373737]"
+          : "bg-[#FACC15] text-[#1C1A11] hover:bg-[#fbd244]"
+      }`}
+      onClick={selectedAccount ? disconnect : walletConnect}
+      disabled={isConnecting}
+    >
+      {isConnecting
+        ? "Connecting..."
+        : selectedAccount
+        ? "Disconnect"
+        : "Connect Wallet"}
+    </button>
+  );
+}
+

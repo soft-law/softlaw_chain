@@ -174,7 +174,7 @@ export default function Dashboard() {
   return (
     <InnovationProvider>
       <IpfsProvider>
-        <NavBar />
+        {/* <NavBar /> */}
         <UniqueProvider>
           <DashboardContent />
         </UniqueProvider>
