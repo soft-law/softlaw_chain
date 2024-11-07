@@ -1,4 +1,4 @@
-use crate as pallet_ip_pallet;
+use crate::pallet;
 use frame_support::parameter_types;
 use frame_system as system;
 use sp_core::H256;
@@ -13,7 +13,7 @@ type Block = frame_system::mocking::MockBlock<Test>;
 frame_support::construct_runtime!(
     pub enum Test {
         System: frame_system,
-        IPPallet: pallet_ip_pallet,
+        IPPallet: pallet,
     }
 );
 parameter_types! {
@@ -55,7 +55,7 @@ impl system::Config for Test {
     type PostTransactions = ();
 }
 
-impl pallet_ip_pallet::Config for Test {
+impl pallet::Config for Test {
     type RuntimeEvent = RuntimeEvent;
     type Currency = ();
     type LicenseId = u32;

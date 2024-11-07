@@ -1,4 +1,5 @@
-use crate::{mock::*, Error, Event, LicenseStatus, PaymentType};
+use crate::{mock::*, pallet::{Error, Event}};
+use crate::types::*;
 use frame_support::{assert_noop, assert_ok};
 
 fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {

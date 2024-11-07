@@ -1,4 +1,8 @@
-use crate::{mock::*, Error, Event, LicenseStatus, PaymentType, RevokeReason};
+use crate::types::*;
+use crate::{
+    mock::*,
+    pallet::{Config, Error, Event},
+};
 use frame_support::{assert_noop, assert_ok};
 
 fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {
@@ -19,7 +23,7 @@ fn create_license(
     price: u32,
     is_exclusive: bool,
     payment_type: PaymentType<u32, u64>,
-) -> <Test as crate::Config>::LicenseId {
+) -> <Test as Config>::LicenseId {
     IPPallet::create_license(
         RuntimeOrigin::signed(licensor),
         nft_id,
@@ -30,7 +34,7 @@ fn create_license(
         is_exclusive,
     )
     .unwrap();
-    IPPallet::next_license_id()  - 1
+    IPPallet::next_license_id() - 1
 }
 
 #[test]
@@ -39,7 +43,8 @@ fn test_revoke_license_success_offered() {
         let licensor = 1;
         let nft_id = mint_nft(licensor);
         let price = 100;
-        let license_id = create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
+        let license_id =
+            create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
 
         assert_ok!(IPPallet::revoke_license(
             RuntimeOrigin::signed(licensor),
@@ -107,7 +112,8 @@ fn test_revoke_license_not_license_owner() {
         let other_account = 2;
         let nft_id = mint_nft(licensor);
         let price = 100;
-        let license_id = create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
+        let license_id =
+            create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
 
         assert_noop!(
             IPPallet::revoke_license(
@@ -127,7 +133,8 @@ fn test_revoke_license_not_revocable_one_time_payment() {
         let licensee = 2;
         let nft_id = mint_nft(licensor);
         let price = 100;
-        let license_id = create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
+        let license_id =
+            create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
 
         assert_ok!(IPPallet::accept_license(
             RuntimeOrigin::signed(licensee),

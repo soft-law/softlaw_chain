@@ -1,7 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use self::pallet::*;
-
+mod types;
 #[frame_support::pallet(dev_mode)]
 pub mod pallet {
     use frame_support::sp_runtime::traits::{AtLeast32BitUnsigned, One, Saturating};
@@ -11,6 +10,7 @@ pub mod pallet {
     use scale_info::prelude::format;
     use scale_info::prelude::string::String;
     use sp_std::prelude::*;
+    use crate::types::*;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -34,8 +34,6 @@ pub mod pallet {
 
     #[pallet::pallet]
     pub struct Pallet<T>(_);
-    type BalanceOf<T> =
-        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
     #[pallet::storage]
     #[pallet::getter(fn nfts)]
@@ -126,42 +124,7 @@ pub mod pallet {
         },
     }
 
-    #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
-    pub enum RevokeReason {
-        Expired,
-        Violation,
-        MutualAgreement,
-        PaymentFailure,
-        Other,
-    }
-    #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
-    pub enum LicenseStatus {
-        Offered,
-        Active,
-        Completed,
-        Expired,
-    }
-
-    #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
-    #[cfg_attr(feature = "std", derive(Debug))]
-    pub enum PaymentType<Balance, BlockNumber> {
-        OneTime(Balance),
-        Periodic {
-            amount_per_payment: Balance,
-            total_payments: u32,
-            frequency: BlockNumber,
-        },
-    }
-
-    #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
-    #[cfg_attr(feature = "std", derive(Debug))]
-    pub struct PaymentSchedule<BlockNumber> {
-        start_block: BlockNumber,
-        next_payment_block: BlockNumber,
-        payments_made: u32,
-        payments_due: u32,
-    }
-
+  
     #[pallet::error]
     pub enum Error<T> {
         NameTooLong,
@@ -186,33 +149,7 @@ pub mod pallet {
         NotLicensee,
     }
 
-    #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
-    #[scale_info(skip_type_params(T))]
-    pub struct NFT<T: Config> {
-        pub id: u32, // Add this line
-        pub owner: T::AccountId,
-        pub name: BoundedVec<u8, T::MaxNameLength>,
-        pub description: BoundedVec<u8, T::MaxDescriptionLength>,
-        pub filing_date: BoundedVec<u8, T::MaxNameLength>,
-        pub jurisdiction: BoundedVec<u8, T::MaxNameLength>,
-    }
-
-    // Update the License struct
-    #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
-    #[scale_info(skip_type_params(T))]
-    pub struct License<T: Config> {
-        pub nft_id: u32,
-        pub licensor: T::AccountId,
-        pub licensee: Option<T::AccountId>,
-        pub price: BalanceOf<T>,
-        pub is_purchase: bool,
-        pub duration: Option<BlockNumberFor<T>>,
-        pub start_block: Option<BlockNumberFor<T>>,
-        pub payment_type: PaymentType<BalanceOf<T>, BlockNumberFor<T>>,
-        pub payment_schedule: Option<PaymentSchedule<BlockNumberFor<T>>>,
-        pub is_exclusive: bool,
-        pub status: LicenseStatus,
-    }
+  
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {

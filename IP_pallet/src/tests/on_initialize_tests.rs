@@ -1,4 +1,6 @@
-use crate::{mock::*, PaymentType};
+use crate::pallet::*;
+use crate::types::*;
+use crate::{mock::*};
 use frame_support::assert_ok;
 use frame_system::pallet_prelude::BlockNumberFor;
 
@@ -21,7 +23,7 @@ fn create_license(
     is_exclusive: bool,
     payment_type: PaymentType<u32, BlockNumberFor<Test>>,
     duration: Option<BlockNumberFor<Test>>,
-) -> <Test as crate::Config>::LicenseId {
+) -> <Test as Config>::LicenseId {
     IPPallet::create_license(
         RuntimeOrigin::signed(licensor),
         nft_id,

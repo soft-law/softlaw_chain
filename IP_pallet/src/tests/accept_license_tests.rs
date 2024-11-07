@@ -1,4 +1,5 @@
-use crate::{mock::*, Error, Event, LicenseStatus, PaymentType};
+use crate::{mock::*, pallet::{Error, Event, Config}};
+use crate::types::*;
 use frame_support::{assert_noop, assert_ok};
 
 fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {
@@ -19,7 +20,7 @@ fn create_license(
     price: u32,
     is_exclusive: bool,
     payment_type: PaymentType<u32, u64>,
-) -> <Test as crate::Config>::LicenseId {
+) -> <Test as Config>::LicenseId {
     IPPallet::create_license(
         RuntimeOrigin::signed(licensor),
         nft_id,
