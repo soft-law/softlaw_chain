@@ -6,9 +6,9 @@ import { getApi } from "@/utils/getApi";
 import { getSigner } from "@/utils/getSigner";
 
 export default function NavBar() {
-  const innovation = "Proof Of Innovation".split("");
-  const registry = "Registries".split("");
-  const ricardian = "Ricardian Contracts".split("");
+  const dashboard = "Dashboard".split("");
+  const legaltech = "Legal-Tech".split("");
+  const licensing = "Licensing".split("");
 
 
   const walletConnect = async () => {
@@ -34,35 +34,35 @@ export default function NavBar() {
 
         <div className="flex items-end justify-between space-x-5">
           <Link
-            href={"/Innovation"}
+            href={"/dashboard"}
             className="text-white font-normal hover:text-[#facc15] min-[2000px]:text-3xl hidden md:flex focus:text-white"
           >
-            {innovation.map((letter, index) => (
+            {dashboard.map((letter, index) => (
               <TextSpan key={index}>
                 {letter === " " ? "\u00A0" : letter}
               </TextSpan>
             ))}
           </Link>
           <Link
-            href={"/IpSearch"}
+            href={"/innovation"}
             className="text-white font-normal hover:text-[#facc15] min-[2000px]:text-3xl hidden md:flex focus:text-white"
           >
-            {registry.map((letter, index) => (
+            {legaltech.map((letter, index) => (
               <TextSpan key={index}>
                 {letter === " " ? "\u00A0" : letter}
               </TextSpan>
             ))}
           </Link>
-          <Link
-            href={"/RicardianContracts"}
+          {/* <Link
+            href={"/licensing"}
             className="text-white font-normal hover:text-[#facc15] min-[2000px]:text-3xl hidden md:flex focus:text-white"
           >
-            {ricardian.map((letter, index) => (
+            {licensing.map((letter, index) => (
               <TextSpan key={index}>
                 {letter === " " ? "\u00A0" : letter}
               </TextSpan>
             ))}
-          </Link>
+          </Link> */}
 
           <button onClick={walletConnect}>
             WALLET
