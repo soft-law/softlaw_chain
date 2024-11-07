@@ -26,7 +26,6 @@ fn test_create_license_success() {
         assert_ok!(IPPallet::create_license(
             RuntimeOrigin::signed(account),
             nft_id,
-            price,
             false,
             duration,
             payment_type.clone(),
@@ -38,7 +37,6 @@ fn test_create_license_success() {
 
         assert_eq!(license.nft_id, nft_id);
         assert_eq!(license.licensor, account);
-        assert_eq!(license.price, price);
         assert_eq!(license.duration, duration);
         assert_eq!(license.payment_type, payment_type);
         assert_eq!(license.status, LicenseStatus::Offered);
@@ -63,7 +61,7 @@ fn test_create_license_not_nft_owner() {
             IPPallet::create_license(
                 RuntimeOrigin::signed(account2),
                 nft_id,
-                price,
+
                 false,
                 None,
                 PaymentType::OneTime(price),
@@ -85,7 +83,6 @@ fn test_create_license_nft_not_found() {
             IPPallet::create_license(
                 RuntimeOrigin::signed(account),
                 nft_id,
-                price,
                 false,
                 None,
                 PaymentType::OneTime(price),
@@ -113,7 +110,6 @@ fn test_create_license_nft_in_escrow() {
             IPPallet::create_license(
                 RuntimeOrigin::signed(account),
                 nft_id,
-                price,
                 false,
                 None,
                 PaymentType::OneTime(price),
@@ -136,7 +132,6 @@ fn test_create_exclusive_license_with_existing_licenses() {
         assert_ok!(IPPallet::create_license(
             RuntimeOrigin::signed(licensor),
             nft_id,
-            price,
             false,
             None,
             PaymentType::OneTime(price),
@@ -155,7 +150,6 @@ fn test_create_exclusive_license_with_existing_licenses() {
             IPPallet::create_license(
                 RuntimeOrigin::signed(licensor),
                 nft_id,
-                price,
                 false,
                 None,
                 PaymentType::OneTime(price),
@@ -178,7 +172,6 @@ fn test_create_non_exclusive_license_with_existing_exclusive() {
         assert_ok!(IPPallet::create_license(
             RuntimeOrigin::signed(licensor),
             nft_id,
-            price,
             false,
             None,
             PaymentType::Periodic { amount_per_payment: 2, total_payments: 12, frequency: 60 },
@@ -197,7 +190,6 @@ fn test_create_non_exclusive_license_with_existing_exclusive() {
             IPPallet::create_license(
                 RuntimeOrigin::signed(licensor),
                 nft_id,
-                price,
                 false,
                 None,
                 PaymentType::OneTime(price),

@@ -1,8 +1,8 @@
-use crate::pallet::*;
+use crate::mock::*;
+
+use crate::tests::util::create_license;
 use crate::types::*;
-use crate::{mock::*};
 use frame_support::assert_ok;
-use frame_system::pallet_prelude::BlockNumberFor;
 
 fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {
     IPPallet::mint_nft(
@@ -16,27 +16,6 @@ fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {
     IPPallet::next_nft_id() - 1
 }
 
-fn create_license(
-    licensor: <Test as frame_system::Config>::AccountId,
-    nft_id: <Test as Config>::NFTId,
-    price: BalanceOf<Test>,
-    is_exclusive: bool,
-    payment_type: PaymentType<Test>,
-    duration: Option<BlockNumberFor<Test>>,
-) -> <Test as Config>::LicenseId {
-    IPPallet::create_license(
-        RuntimeOrigin::signed(licensor),
-        nft_id,
-        price,
-        false,
-        duration,
-        payment_type,
-        is_exclusive,
-    )
-    .unwrap();
-    IPPallet::next_license_id() - 1
-}
-
 #[test]
 fn test_check_license_expiration() {
     new_test_ext().execute_with(|| {
@@ -48,7 +27,6 @@ fn test_check_license_expiration() {
         let license_id = create_license(
             licensor,
             nft_id,
-            price,
             false,
             PaymentType::OneTime(price),
             duration,
@@ -80,7 +58,6 @@ fn test_check_license_expiration_not_expired() {
         let license_id = create_license(
             licensor,
             nft_id,
-            price,
             false,
             PaymentType::OneTime(price),
             duration,

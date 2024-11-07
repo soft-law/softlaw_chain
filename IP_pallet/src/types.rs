@@ -84,7 +84,6 @@ pub struct License<T: Config> {
     pub nft_id: T::NFTId,
     pub licensor: T::AccountId,
     pub licensee: Option<T::AccountId>,
-    pub price: BalanceOf<T>,
     pub is_purchase: bool,
     pub duration: Option<BlockNumberFor<T>>,
     pub start_block: Option<BlockNumberFor<T>>,

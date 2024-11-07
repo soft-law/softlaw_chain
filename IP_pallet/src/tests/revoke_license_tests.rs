@@ -1,7 +1,8 @@
+use crate::tests::util::create_license;
 use crate::types::*;
 use crate::{
     mock::*,
-    pallet::{Config, Error, Event},
+    pallet::{Error, Event},
 };
 use frame_support::{assert_noop, assert_ok};
 
@@ -17,34 +18,13 @@ fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {
     IPPallet::next_nft_id() - 1
 }
 
-fn create_license(
-    licensor: <Test as frame_system::Config>::AccountId,
-    nft_id: <Test as Config>::NFTId,
-    price: BalanceOf<Test>,
-    is_exclusive: bool,
-    payment_type: PaymentType<Test>,
-) -> <Test as Config>::LicenseId {
-    IPPallet::create_license(
-        RuntimeOrigin::signed(licensor),
-        nft_id,
-        price,
-        false,
-        None,
-        payment_type,
-        is_exclusive,
-    )
-    .unwrap();
-    IPPallet::next_license_id() - 1
-}
-
 #[test]
 fn test_revoke_license_success_offered() {
     new_test_ext().execute_with(|| {
         let licensor = 1;
         let nft_id = mint_nft(licensor);
         let price = 100;
-        let license_id =
-            create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
+        let license_id = create_license(licensor, nft_id, false, PaymentType::OneTime(price), None);
 
         assert_ok!(IPPallet::revoke_license(
             RuntimeOrigin::signed(licensor),
@@ -73,13 +53,13 @@ fn test_revoke_license_success_active_no_payments() {
         let license_id = create_license(
             licensor,
             nft_id,
-            price,
             false,
             PaymentType::Periodic {
                 amount_per_payment: price / 4,
                 total_payments: 4,
                 frequency: 10,
             },
+            None,
         );
 
         assert_ok!(IPPallet::accept_license(
@@ -112,8 +92,7 @@ fn test_revoke_license_not_license_owner() {
         let other_account = 2;
         let nft_id = mint_nft(licensor);
         let price = 100;
-        let license_id =
-            create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
+        let license_id = create_license(licensor, nft_id, false, PaymentType::OneTime(price), None);
 
         assert_noop!(
             IPPallet::revoke_license(
@@ -133,8 +112,7 @@ fn test_revoke_license_not_revocable_one_time_payment() {
         let licensee = 2;
         let nft_id = mint_nft(licensor);
         let price = 100;
-        let license_id =
-            create_license(licensor, nft_id, price, false, PaymentType::OneTime(price));
+        let license_id = create_license(licensor, nft_id, false, PaymentType::OneTime(price), None);
 
         assert_ok!(IPPallet::accept_license(
             RuntimeOrigin::signed(licensee),
@@ -166,13 +144,13 @@ fn test_revoke_license_not_revocable_after_payment() {
         let license_id = create_license(
             licensor,
             nft_id,
-            price,
             false,
             PaymentType::Periodic {
                 amount_per_payment: price / 4,
                 total_payments: 4,
                 frequency: 10,
             },
+            None,
         );
 
         assert_ok!(IPPallet::accept_license(

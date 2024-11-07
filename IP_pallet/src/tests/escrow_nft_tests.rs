@@ -1,6 +1,7 @@
 use crate::{mock::*, pallet::{Error, Event}};
 use frame_support::{assert_noop, assert_ok};
 
+
 fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {
     IPPallet::mint_nft(
         RuntimeOrigin::signed(account),

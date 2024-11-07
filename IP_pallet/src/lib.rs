@@ -261,7 +261,6 @@ pub mod pallet {
         pub fn create_license(
             origin: OriginFor<T>,
             nft_id: T::NFTId,
-            price: BalanceOf<T>,
             is_purchase: bool,
             duration: Option<BlockNumberFor<T>>,
             payment_type: PaymentType<T>,
@@ -301,7 +300,6 @@ pub mod pallet {
                 nft_id,
                 licensor: licensor.clone(),
                 licensee: None,
-                price,
                 is_purchase,
                 duration,
                 start_block: None,
