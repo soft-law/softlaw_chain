@@ -112,9 +112,9 @@ pub struct PurchaseOffer<T: Config> {
 pub struct License<T: Config> {
     pub nft_id: T::NFTId,
     pub licensor: T::AccountId,
-    pub licensee: Option<T::AccountId>,
+    pub licensee: T::AccountId,
     pub duration: BlockNumberFor<T>,
-    pub start_block: Option<BlockNumberFor<T>>,
+    pub start_block: BlockNumberFor<T>,
     pub payment_type: PaymentType<T>,
     pub payment_schedule: Option<PaymentSchedule<T>>,
     pub is_exclusive: bool,
@@ -126,7 +126,7 @@ pub struct License<T: Config> {
 pub struct PurchaseContract<T: Config> {
     pub nft_id: T::NFTId,
     pub seller: T::AccountId,
-    pub buyer: Option<T::AccountId>,
+    pub buyer: T::AccountId,
     pub payment_type: PaymentType<T>,
     pub payment_schedule: Option<PaymentSchedule<T>>,
     pub status: PurchaseStatus,
@@ -163,9 +163,9 @@ impl<T: Config> LicenseOffer<T> {
         License {
             nft_id: self.nft_id,
             licensor: self.licensor,
-            licensee: Some(licensee),
+            licensee,
             duration: self.duration,
-            start_block: Some(start_block),
+            start_block,
             payment_type: self.payment_type,
             payment_schedule,
             is_exclusive: self.is_exclusive,
@@ -195,7 +195,7 @@ impl<T: Config> PurchaseOffer<T> {
         PurchaseContract {
             nft_id: self.nft_id,
             seller: self.seller,
-            buyer: Some(buyer),
+            buyer,
             payment_type: self.payment_type,
             payment_schedule,
             status: PurchaseStatus::InProgress,
