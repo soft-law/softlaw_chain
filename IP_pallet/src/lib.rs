@@ -3,6 +3,7 @@
 mod types;
 #[frame_support::pallet(dev_mode)]
 pub mod pallet {
+    use crate::types::*;
     use frame_support::sp_runtime::traits::{AtLeast32BitUnsigned, One, Saturating};
     use frame_support::traits::ExistenceRequirement;
     use frame_support::{pallet_prelude::*, traits::Currency, traits::Hooks};
@@ -10,7 +11,6 @@ pub mod pallet {
     use scale_info::prelude::format;
     use scale_info::prelude::string::String;
     use sp_std::prelude::*;
-    use crate::types::*;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -18,6 +18,16 @@ pub mod pallet {
         type Currency: Currency<Self::AccountId>;
         /// The type used to identify licenses
         type LicenseId: Member
+            + Parameter
+            + MaxEncodedLen
+            + Copy
+            + Default
+            + From<u32>
+            + AtLeast32BitUnsigned
+            + One
+            + TypeInfo;
+
+        type NFTId: Member
             + Parameter
             + MaxEncodedLen
             + Copy
@@ -37,11 +47,11 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn nfts)]
-    pub type Nfts<T: Config> = StorageMap<_, Blake2_128Concat, u32, NFT<T>>;
+    pub type Nfts<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, NFT<T>>;
 
     #[pallet::storage]
     #[pallet::getter(fn next_nft_id)]
-    pub type NextNftId<T: Config> = StorageValue<_, u32, ValueQuery>;
+    pub type NextNftId<T: Config> = StorageValue<_, T::NFTId, ValueQuery>;
 
     #[pallet::storage]
     #[pallet::getter(fn next_license_id)]
@@ -56,7 +66,7 @@ pub mod pallet {
     pub type LicenseOwnership<T: Config> = StorageDoubleMap<
         _,
         Blake2_128Concat,
-        u32, // NFT ID
+        T::NFTId, // NFT ID
         Blake2_128Concat,
         T::AccountId, // Licensee
         T::LicenseId, // License ID
@@ -64,67 +74,66 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn escrow)]
-    pub type Escrow<T: Config> = StorageMap<_, Blake2_128Concat, u32, (T::AccountId, BalanceOf<T>)>;
+    pub type Escrow<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, (T::AccountId, BalanceOf<T>)>;
 
     #[pallet::storage]
-    pub type EscrowedNfts<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
+    pub type EscrowedNfts<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, T::AccountId>;
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         NftMinted {
             owner: T::AccountId,
-            nft_id: u32,
+            nft_id: T::NFTId,
         },
         NftEscrowed {
-            nft_id: u32,
+            nft_id: T::NFTId,
             owner: T::AccountId,
             price: BalanceOf<T>,
         },
 
         LicenseExpired {
             license_id: T::LicenseId,
-            nft_id: u32,
+            nft_id: T::NFTId,
             licensee: T::AccountId,
         },
 
         PeriodicPaymentFailed {
             license_id: T::LicenseId,
-            nft_id: u32,
+            nft_id: T::NFTId,
             licensee: T::AccountId,
             amount: BalanceOf<T>,
         },
         LicenseOffered {
-            nft_id: u32,
+            nft_id: T::NFTId,
             license_id: T::LicenseId,
             licensor: T::AccountId,
         },
         LicenseAccepted {
-            nft_id: u32,
+            nft_id: T::NFTId,
             license_id: T::LicenseId,
             licensee: T::AccountId,
         },
         LicenseRevoked {
             license_id: T::LicenseId,
-            nft_id: u32,
+            nft_id: T::NFTId,
             licensee: Option<T::AccountId>,
             reason: RevokeReason,
         },
         PeriodicPaymentProcessed {
             license_id: T::LicenseId,
-            nft_id: u32,
+            nft_id: T::NFTId,
             payer: T::AccountId,
             licensor: T::AccountId,
             amount: BalanceOf<T>,
         },
         LicenseCompleted {
             license_id: T::LicenseId,
-            nft_id: u32,
+            nft_id: T::NFTId,
             licensee: T::AccountId,
         },
     }
 
-  
     #[pallet::error]
     pub enum Error<T> {
         NameTooLong,
@@ -148,8 +157,6 @@ pub mod pallet {
         LicenseNotActive,
         NotLicensee,
     }
-
-  
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
@@ -191,7 +198,7 @@ pub mod pallet {
                 .map_err(|_| Error::<T>::JurisdictionTooLong)?;
 
             let id = Self::next_nft_id();
-            NextNftId::<T>::put(id.saturating_add(1));
+            NextNftId::<T>::put(id.saturating_add(T::NFTId::one()));
 
             let nft = NFT {
                 id,
@@ -216,7 +223,7 @@ pub mod pallet {
         #[pallet::call_index(1)]
         pub fn escrow_nft(
             origin: OriginFor<T>,
-            nft_id: u32,
+            nft_id: T::NFTId,
             price: BalanceOf<T>,
         ) -> DispatchResult {
             let who = ensure_signed(origin)?;
@@ -243,7 +250,7 @@ pub mod pallet {
         #[pallet::call_index(2)]
         pub fn create_license(
             origin: OriginFor<T>,
-            nft_id: u32,
+            nft_id: T::NFTId,
             price: BalanceOf<T>,
             is_purchase: bool,
             duration: Option<BlockNumberFor<T>>,
@@ -753,4 +760,3 @@ mod mock;
 
 #[cfg(test)]
 mod tests;
-

@@ -59,6 +59,7 @@ impl pallet::Config for Test {
     type RuntimeEvent = RuntimeEvent;
     type Currency = ();
     type LicenseId = u32;
+    type NFTId = u32;
     type MaxNameLength = MaxNameLength;
     type MaxDescriptionLength = MaxDescriptionLength;
 }

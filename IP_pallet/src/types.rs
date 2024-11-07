@@ -46,7 +46,7 @@ pub struct PaymentSchedule<BlockNumber> {
 #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 #[scale_info(skip_type_params(T))]
 pub struct NFT<T: Config> {
-    pub id: u32, // Add this line
+    pub id: T::NFTId,
     pub owner: T::AccountId,
     pub name: BoundedVec<u8, T::MaxNameLength>,
     pub description: BoundedVec<u8, T::MaxDescriptionLength>,
@@ -58,7 +58,7 @@ pub struct NFT<T: Config> {
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
 #[scale_info(skip_type_params(T))]
 pub struct License<T: Config> {
-    pub nft_id: u32,
+    pub nft_id: T::NFTId,
     pub licensor: T::AccountId,
     pub licensee: Option<T::AccountId>,
     pub price: BalanceOf<T>,
