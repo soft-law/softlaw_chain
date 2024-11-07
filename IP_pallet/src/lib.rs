@@ -4,14 +4,13 @@ mod types;
 #[frame_support::pallet(dev_mode)]
 pub mod pallet {
     use crate::types::*;
-    use frame_support::sp_runtime::traits::{AtLeast32BitUnsigned, One, Saturating};
+    use frame_support::sp_runtime::traits::{AtLeast32BitUnsigned, One, Saturating, Zero};
     use frame_support::traits::ExistenceRequirement;
     use frame_support::{pallet_prelude::*, traits::Currency, traits::Hooks};
     use frame_system::pallet_prelude::*;
     use scale_info::prelude::format;
     use scale_info::prelude::string::String;
     use sp_std::prelude::*;
-
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
@@ -28,6 +27,16 @@ pub mod pallet {
             + TypeInfo;
 
         type NFTId: Member
+            + Parameter
+            + MaxEncodedLen
+            + Copy
+            + Default
+            + From<u32>
+            + AtLeast32BitUnsigned
+            + One
+            + TypeInfo;
+
+        type Index: Member
             + Parameter
             + MaxEncodedLen
             + Copy
@@ -74,7 +83,8 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn escrow)]
-    pub type Escrow<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, (T::AccountId, BalanceOf<T>)>;
+    pub type Escrow<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::NFTId, (T::AccountId, BalanceOf<T>)>;
 
     #[pallet::storage]
     pub type EscrowedNfts<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, T::AccountId>;
@@ -254,7 +264,7 @@ pub mod pallet {
             price: BalanceOf<T>,
             is_purchase: bool,
             duration: Option<BlockNumberFor<T>>,
-            payment_type: PaymentType<BalanceOf<T>, BlockNumberFor<T>>,
+            payment_type: PaymentType<T>,
             is_exclusive: bool,
         ) -> DispatchResult {
             let licensor = ensure_signed(origin)?;
@@ -352,8 +362,8 @@ pub mod pallet {
                         license.payment_schedule = Some(PaymentSchedule {
                             start_block: current_block,
                             next_payment_block: current_block + *frequency,
-                            payments_made: 0,
-                            payments_due: 0,
+                            payments_made: T::Index::zero(),
+                            payments_due: T::Index::zero(),
                         });
                         license.status = LicenseStatus::Active;
                     }
@@ -442,9 +452,10 @@ pub mod pallet {
                         ExistenceRequirement::KeepAlive,
                     )?;
 
-                    schedule.payments_made += 1;
-                    if schedule.payments_due > 0 {
-                        schedule.payments_due -= 1;
+                    schedule.payments_made = schedule.payments_made.saturating_add(T::Index::one());
+                    if schedule.payments_due > T::Index::zero() {
+                        schedule.payments_due =
+                            schedule.payments_due.saturating_sub(T::Index::one());
                     }
 
                     Self::deposit_event(Event::PeriodicPaymentProcessed {
@@ -684,7 +695,7 @@ pub mod pallet {
                 PaymentType::Periodic { .. } => license
                     .payment_schedule
                     .as_ref()
-                    .map_or(true, |schedule| schedule.payments_made == 0),
+                    .map_or(true, |schedule| schedule.payments_made == T::Index::zero()),
             }
         }
 
@@ -729,8 +740,8 @@ pub mod pallet {
             })?;
 
             // Update schedule and other logic...
-            schedule.payments_made += 1;
-            schedule.payments_due = schedule.payments_due.saturating_sub(1);
+            schedule.payments_made = schedule.payments_made.saturating_add(T::Index::one());
+            schedule.payments_due = schedule.payments_due.saturating_sub(T::Index::one());
             schedule.next_payment_block += frequency;
 
             Self::deposit_event(Event::PeriodicPaymentProcessed {

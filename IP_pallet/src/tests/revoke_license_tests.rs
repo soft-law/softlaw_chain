@@ -19,10 +19,10 @@ fn mint_nft(account: <Test as frame_system::Config>::AccountId) -> u32 {
 
 fn create_license(
     licensor: <Test as frame_system::Config>::AccountId,
-    nft_id: u32,
-    price: u32,
+    nft_id: <Test as Config>::NFTId,
+    price: BalanceOf<Test>,
     is_exclusive: bool,
-    payment_type: PaymentType<u32, u64>,
+    payment_type: PaymentType<Test>,
 ) -> <Test as Config>::LicenseId {
     IPPallet::create_license(
         RuntimeOrigin::signed(licensor),

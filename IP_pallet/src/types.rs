@@ -24,23 +24,46 @@ pub enum LicenseStatus {
 }
 
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
-#[cfg_attr(feature = "std", derive(Debug))]
-pub enum PaymentType<Balance, BlockNumber> {
-    OneTime(Balance),
+#[scale_info(skip_type_params(T))]
+pub enum PaymentType<T: Config> {
+    OneTime(BalanceOf<T>),
     Periodic {
-        amount_per_payment: Balance,
-        total_payments: u32,
-        frequency: BlockNumber,
+        amount_per_payment: BalanceOf<T>,
+        total_payments: T::Index,
+        frequency: BlockNumberFor<T>,
     },
 }
 
-#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
-#[cfg_attr(feature = "std", derive(Debug))]
-pub struct PaymentSchedule<BlockNumber> {
-    pub start_block: BlockNumber,
-    pub next_payment_block: BlockNumber,
-    pub payments_made: u32,
-    pub payments_due: u32,
+// Implement Debug manually
+impl<T: Config> core::fmt::Debug for PaymentType<T> 
+where
+    BalanceOf<T>: core::fmt::Debug,
+    T::Index: core::fmt::Debug,
+    BlockNumberFor<T>: core::fmt::Debug,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            PaymentType::OneTime(amount) => f.debug_tuple("OneTime").field(amount).finish(),
+            PaymentType::Periodic { 
+                amount_per_payment, 
+                total_payments, 
+                frequency 
+            } => f.debug_struct("Periodic")
+                .field("amount_per_payment", amount_per_payment)
+                .field("total_payments", total_payments)
+                .field("frequency", frequency)
+                .finish(),
+        }
+    }
+}
+
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
+#[scale_info(skip_type_params(T))]
+pub struct PaymentSchedule<T: Config> {
+    pub start_block: BlockNumberFor<T>,
+    pub next_payment_block: BlockNumberFor<T>,
+    pub payments_made: T::Index,
+    pub payments_due: T::Index,
 }
 
 #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
@@ -65,8 +88,8 @@ pub struct License<T: Config> {
     pub is_purchase: bool,
     pub duration: Option<BlockNumberFor<T>>,
     pub start_block: Option<BlockNumberFor<T>>,
-    pub payment_type: PaymentType<BalanceOf<T>, BlockNumberFor<T>>,
-    pub payment_schedule: Option<PaymentSchedule<BlockNumberFor<T>>>,
+    pub payment_type: PaymentType<T>,
+    pub payment_schedule: Option<PaymentSchedule<T>>,
     pub is_exclusive: bool,
     pub status: LicenseStatus,
 }

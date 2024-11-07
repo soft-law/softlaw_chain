@@ -60,6 +60,7 @@ impl pallet::Config for Test {
     type Currency = ();
     type LicenseId = u32;
     type NFTId = u32;
+    type Index = u32;
     type MaxNameLength = MaxNameLength;
     type MaxDescriptionLength = MaxDescriptionLength;
 }
