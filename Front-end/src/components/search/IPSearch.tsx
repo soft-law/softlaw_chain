@@ -1,14 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-<<<<<<<< HEAD:Front-end/src/components/search/IPSearch.tsx
-// import { WalletConnectButton } from "../WalletConnect";
-// import Link from "next/link";
-import TypesComponent from "../TypesProps";
-========
-import TypesComponent from "../ProofOfInnovation/TypesProps";
->>>>>>>> Makzy-main:Front-end/src/components/Dashboard/IPSearch.tsx
 import Footer from "../Footer";
 import Link from "next/link";
+import TypesComponent from "../TypesProps";
+
 
 interface SearchResult {
   trademark: string;
