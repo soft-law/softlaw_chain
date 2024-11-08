@@ -11,9 +11,7 @@ import CollectionTypes from "@/utils/collectionTypes.json";
 import { FormDataContext } from "../../FormDataContext";
 import ConfirmationModal from "../ConfirmationModal";
 import { useInnovationTapContext } from "@/context/innovation";
-// import * as yup from 'yup';
-// import { useForm } from "react-hook-form";
-// import { yupResolver } from '@hookform/resolvers/yup';
+
 
 interface LegalContractsProps {
   onDataChange?: (data: any) => void;
@@ -86,11 +84,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
     const tabKeys = ["IpRegistries", "Identity", "LegalContracts"];
     setActiveTab(tabKeys[page - 1]); // Navigate to the right tab/page
   };
-  const handleDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateFormData("LegalContracts", { Description: e.target.value });
-    // onDataChange(formData);
-  };
-
+  
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
     updateFormData("LegalContracts", { TypesOfProtection: buttonName });
@@ -173,7 +167,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
     <>
       <div className="bg-[#1C1A11] flex flex-col w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
         <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-screen pt-[120px] justify-center items-center">
-          <div className="flex flex-col w-full justify-items-center gap-[60px] pb-[120px]">
+          <div className="flex flex-col w-full justify-items-center pb-[120px]">
             <div>
               <ReusableHeading
                 text="NFT DETAIL"
@@ -317,7 +311,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
                 {/* Once the final page is completed, submit */}
                 <button
                   onClick={handleOpenModal}
-                  className="bg-transparent rounded-[16px] px-[20px] py-[8px] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15] hover:text-[#1C1A11] hover:border-none"
+                  className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
                 >
                   Submit
                 </button>

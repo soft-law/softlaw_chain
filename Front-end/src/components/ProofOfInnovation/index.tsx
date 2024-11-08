@@ -10,7 +10,7 @@ import LegalContracts from "./legalContracts";
 import InnovationProvider, { useInnovationTapContext } from "@/context/innovation";
 
 // Separate component for the dashboard content
-function NFTContent() {
+function DashboardContent() {
   const { selectedTabInnovation, setSelectedTabInnovation } = useInnovationTapContext();
 
   const [formData, setFormData] = useState({
@@ -154,7 +154,7 @@ function NFTContent() {
         </TabsContent> */}
         <TabsContent value="2">
           <Identity
-            onDataChange={(data) => setFormData({ ...formData, IpProofData: data })}
+            onDataChange={(data) => setFormData({ ...formData, Identity: data })}
           />
         </TabsContent>
         <TabsContent value="3">
@@ -174,7 +174,7 @@ export default function Dashboard() {
   return (
     <InnovationProvider>
       <IpfsProvider>
-        {/* <NavBar /> */}
+        <NavBar />
         <UniqueProvider>
           <NFTContent />
         </UniqueProvider>

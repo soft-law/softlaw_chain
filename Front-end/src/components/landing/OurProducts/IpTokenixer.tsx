@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import  Button  from "@/components/ui/button";
+import  {Button}  from "@/components/ui/button";
 import Link from "next/link";
 
 function ProofOwnership() {
@@ -37,14 +37,14 @@ function ProofOwnership() {
 
             <div className="flex items-center gap-[24px]">
             <Button 
-            cta="Intellectual Property Tokenizer" 
-            Style="bg-[#373737] rounded-2xl hover:bg-yellow-400 text-[#1C1A11] text-[16px] w-full min-[2000px]:w-full font-Montesarrat leading-[145%] tracking-[0.32px] font-bold py-2 px-4 transition-colors duration-300 ease-in-out min-[2000px]:text-2xl"
-            purpose="submit"
+            // cta="Intellectual Property Tokenizer" 
+            // Style="bg-[#373737] rounded-2xl hover:bg-yellow-400 text-[#1C1A11] text-[16px] w-full min-[2000px]:w-full font-Montesarrat leading-[145%] tracking-[0.32px] font-bold py-2 px-4 transition-colors duration-300 ease-in-out min-[2000px]:text-2xl"
+            // purpose="submit"
             />
             <Button 
-            cta="IP Token Search" 
-            Style="bg-[#373737] rounded-2xl hover:bg-yellow-400 text-[#1C1A11] text-[16px] w-full min-[2000px]:w-full font-Montesarrat leading-[145%] tracking-[0.32px] font-bold py-2 px-4 transition-colors duration-300 ease-in-out min-[2000px]:text-2xl"
-            purpose="submit"
+            // cta="IP Token Search" 
+            // Style="bg-[#373737] rounded-2xl hover:bg-yellow-400 text-[#1C1A11] text-[16px] w-full min-[2000px]:w-full font-Montesarrat leading-[145%] tracking-[0.32px] font-bold py-2 px-4 transition-colors duration-300 ease-in-out min-[2000px]:text-2xl"
+            // purpose="submit"
             />
             </div>
           

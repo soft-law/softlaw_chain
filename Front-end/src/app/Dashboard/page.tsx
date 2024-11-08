@@ -12,9 +12,12 @@ const NavBar = dynamic(() => import("@/components/NavBar"), {
   ssr: false,
 });
 export default function Ipsearch() {
+  
   return (
       <AccountsProvider>
         <div className="scrollable">
+      
+        <Dash />
           <NavBar />
           <Link href={"/search"}>Ip Search</Link>
           <Link href={"/collection"}> Collection</Link>
@@ -24,3 +27,6 @@ export default function Ipsearch() {
       </AccountsProvider>
   );
 }
+   
+  
+
