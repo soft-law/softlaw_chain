@@ -2,26 +2,39 @@ import React from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useAccountsContext } from "@/context/account";
+import { useInnovationContext } from "@/context/innovation";
 
-interface CollectionType {
-  name: string;
-  description: string;
-  image: string;
-}
+// interface CollectionType {
+//   name: string;
+//   description: string;
+//   image: string;
+// }
 interface ButtonMintCollectionProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
-  collection: CollectionType;
+  // collection: CollectionType;
 }
+
 
 export default function ButtonMintCollection({
   loading,
   setLoading,
-  collection,
 }: ButtonMintCollectionProps) {
+  const {collection, setCollection} = useInnovationContext()
   const { toast } = useToast();
   const router = useRouter();
   const { selectedAccount } = useAccountsContext();
+
+  const {setSelectedTabInnovation, selectedTabInnovation} = useInnovationContext()
+
+  const handleNext = async () => {
+    try {
+      setSelectedTabInnovation("2");
+      console.log("test", selectedTabInnovation);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleMintCollection = async () => {
     try {
@@ -51,7 +64,7 @@ export default function ButtonMintCollection({
       setLoading(true);
       // Mint logic here
       alert(selectedAccount);
-      console.log("Minting collection...");
+      console.log("Minting collection...", collection);
 
       toast({
         title: "Collection minted successfully",
@@ -63,7 +76,9 @@ export default function ButtonMintCollection({
 
       console.log(collection, pinataUrl);
 
-      router.push("/dashboard");
+      setSelectedTabInnovation("2");
+
+      // router.push("/dashboard");
     } catch (error) {
       toast({
         title: "Error minting collection",

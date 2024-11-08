@@ -8,6 +8,7 @@ import {
   web3Enable,
   web3FromSource,
 } from "@polkadot/extension-dapp";
+import { getApi } from "@/utils/getApi";
 
 export default function WalletConnect() {
   const { selectedAccount, setSelectedAccount } =
@@ -21,6 +22,8 @@ export default function WalletConnect() {
       await web3Enable("Softlaw");
       const accounts = await web3Accounts();
       const account = accounts[0];
+      let api = await getApi()
+      console.log("api AssetHub",api.call.core)
 
       if (!account) {
         throw new Error("No accounts found.");

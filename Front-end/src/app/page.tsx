@@ -9,6 +9,8 @@ import Polkadot from "@/components/landing/Polkadot";
 import Team from "@/components/landing/Team/Team";
 import Footer from "@/components/Footer";
 import dynamic from "next/dynamic";
+import AccountsProvider from "@/context/account";
+import InnovationProvider from "@/context/innovation";
 const NavBar = dynamic(
   () => import("@/components/NavBar"),
   {
@@ -18,7 +20,10 @@ const NavBar = dynamic(
 
 export default function Home() {
   return (
-    <div className="scrollable ">
+   <InnovationProvider>
+
+<AccountsProvider>
+       <div className="scrollable ">
       <NavBar />
       <Hero />
       <OurServices />
@@ -28,5 +33,8 @@ export default function Home() {
       <Team />
       <Footer />
     </div>
+    </AccountsProvider>
+   </InnovationProvider>
+   
   );
 }

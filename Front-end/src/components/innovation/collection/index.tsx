@@ -1,12 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import { useToast } from "../../hooks/use-toast";
+import { useToast } from "../../../hooks/use-toast";
 import Link from "next/link";
-import ReusableHeading from "../ProofOfInnovation/textComponent";
-import TypesComponent from "../ProofOfInnovation/TypesProps";
-import VariousTypesButton from "../ProofOfInnovation/VariousTypesButton";
-import MaxWidthWrapper from "../MaxWidhWrapper";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
+import VariousTypesButton from "../../VariousTypesButton";
+import MaxWidthWrapper from "../../MaxWidhWrapper";
 import ButtonMintCollection from "./mintButton";
+import { useInnovationContext } from "@/context/innovation";
 
 interface CollectionData {
   name: string;
@@ -23,7 +24,7 @@ const COLLECTION_TYPES = {
     prefix: "pt",
     image:
       "https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/QmY6zjfSQoS6txxrFPprrPG1rmuh4akkeAPDCspyDiR41j",
-  },
+  } ,
   TRADEMARK: {
     name: "trademark",
     description:
@@ -43,14 +44,19 @@ const COLLECTION_TYPES = {
 } as const;
 
 export default function CollectionPage() {
-  const [collection, setCollection] = useState<CollectionData>({
-    name: "",
-    description: "",
-    prefix: "",
-    image: "",
-  });
+  // const [collection, setCollection] = useState<CollectionData>({
+  //   name: "",
+  //   description: "",
+  //   prefix: "",
+  //   image: "",
+  // });
+
+
+  const {collection, setCollection} = useInnovationContext()
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const { selectedTabInnovation, setSelectedTabInnovation } =
+  useInnovationContext(); 
 
   const { toast } = useToast();
 
@@ -73,20 +79,25 @@ export default function CollectionPage() {
     }
   };
 
+  const handleNext = async () => {
+    try {
+      setSelectedTabInnovation("2");
+      console.log("test", selectedTabInnovation);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto  pb-24 bg-[#1C1A11]">
       <MaxWidthWrapper className="min-h-screen flex flex-col ">
         <main className="px-4 py-24">
           <div className="max-w-7xl mx-auto space-y-16">
-            <ReusableHeading text="Intellectual Property Types Selection" />
+            <ReusableHeading text="Intellectual Property Collection Types Selection" />
             <section className="space-y-8">
               <TypesComponent
                 className="text-[#8A8A8A]"
-                text="Types of Collections"
-              />
-              <TypesComponent
-                className="text-[#8A8A8A]"
-                text="Select the type of intellectual property you want to protect. Each type offers different protection for your creations."
+                text="Select the type of intellectual property you want to protect. Each collection offers diferent ways to manage your proof of innovation."
               />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {Object.entries(COLLECTION_TYPES).map(([key, value]) => (
@@ -111,7 +122,7 @@ export default function CollectionPage() {
               </div>
             </section>
 
-            {collection.name && (
+            {collection?.name && (
               <section className="bg-[#252525] p-6 rounded-lg mt-8">
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   Selected Collection
@@ -141,7 +152,7 @@ export default function CollectionPage() {
 
             <div className="flex justify-between items-center mt-16">
               <Link
-                href="/Dashboard"
+                href="/dashboard"
                 className="bg-transparent border border-[#D0DFE4] text-[#D0DFE4] px-6 py-2 rounded-lg hover:bg-[#FACC15] hover:text-[#1C1A11] hover:border-transparent transition-colors"
               >
                 Cancel
@@ -149,7 +160,7 @@ export default function CollectionPage() {
               <ButtonMintCollection
                 loading={loading}
                 setLoading={setLoading}
-                collection={collection}
+                // collection={collection}
               />
             </div>
           </div>

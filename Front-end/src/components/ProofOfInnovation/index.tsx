@@ -6,27 +6,27 @@ import Identity from "./identity";
 import UniqueProvider from "@/context/unique";
 import IpfsProvider from "@/context/ipfs";
 import LegalContracts from "./legalContracts";
-import NavBar from "@/components/NavBar";
+// import NavBar from "@/components/NavBar";
 import InnovationProvider, { useInnovationTapContext } from "@/context/innovation";
 
 // Separate component for the dashboard content
-function DashboardContent() {
+function NFTContent() {
   const { selectedTabInnovation, setSelectedTabInnovation } = useInnovationTapContext();
 
   const [formData, setFormData] = useState({
-    IpRegistries: {
-      UploadFile: [],
-      TypeOfIntellectualProperty: "",
-      ReferenceNumber: "",
-      ReferenceLink: "",
-    },
-    Identity: {
+    // IpProofData: {
+    //   UploadFile: [],
+    //   TypeOfIntellectualProperty: "",
+    //   ReferenceNumber: "",
+    //   ReferenceLink: "",
+    // },
+    IpProofData: {
       TypeOfPatent: "",
       PatentTitle: "",
       FillingDate: null,
       PatentNumber: "",
     },
-    LegalContracts: {
+    IpProofDetail: {
       UploadFile: null,
       NFTName: "",
       Collection: "",
@@ -46,10 +46,10 @@ function DashboardContent() {
     <Tabs
       value={selectedTabInnovation}
       onValueChange={setSelectedTabInnovation}
-      className="bg-[#1C1A11] pt-[120px] scrollable"
+      className="bg-[#1C1A11] pt-[120px]"
     >
       <TabsList className="flex items-center min-[2000px]:w-[3000px] bg-[#1C1A11]">
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <TabsTrigger
             value="1"
             className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
@@ -77,9 +77,9 @@ function DashboardContent() {
               Selection
             </span>
           </TabsTrigger>
-        </div>
+        </div> */}
 
-        <span className="w-[16px] h-[1px] bg-[#B2CBD3]" />
+        {/* <span className="w-[16px] h-[1px] bg-[#B2CBD3]" /> */}
 
         <div className="flex items-center space-x-2">
           <TabsTrigger
@@ -98,7 +98,7 @@ function DashboardContent() {
               } rounded-full px-3 py-1 min-[2000px]:w-[54px] min-[2000px]:h-[54px] min-[2000px]:py-[20px] w-10 h-10 text-center flex items-center justify-center text-[16px] min-[2000px]:text-3xl 
                   font-karla font-normal leading-normal`}
             >
-              2
+              1
             </h1>
             <span
               className={`font-Karla text-[16px] font-normal leading-normal min-[2000px]:text-3xl ${
@@ -131,7 +131,7 @@ function DashboardContent() {
               } rounded-full px-3 py-1 w-10 h-10 text-center flex items-center justify-center text-[16px] 
               min-[2000px]:w-[54px] min-[2000px]:h-[54px] min-[2000px]:py-[20px] min-[2000px]:text-3xl font-karla font-normal leading-normal`}
             >
-              3
+              2
             </h1>
             <span
               className={`font-Karla text-[16px] font-normal leading-normal min-[2000px]:text-3xl ${
@@ -140,27 +140,27 @@ function DashboardContent() {
                   : " text-white"
               }`}
             >
-              NFT Detail
+              IP Detail
             </span>
           </TabsTrigger>
         </div>
       </TabsList>
 
       <div className="flex h-screen min-[2000px]:w-[2560px]">
-        <TabsContent value="1">
+        {/* <TabsContent value="1">
           <IpRegistries
             onDataChange={(data) => handleFormDataChange("IpRegistries", data)}
           />
-        </TabsContent>
+        </TabsContent> */}
         <TabsContent value="2">
           <Identity
-            onDataChange={(data) => setFormData({ ...formData, Identity: data })}
+            onDataChange={(data) => setFormData({ ...formData, IpProofData: data })}
           />
         </TabsContent>
         <TabsContent value="3">
           <LegalContracts
             onDataChange={(data) =>
-              setFormData({ ...formData, LegalContracts: data })
+              setFormData({ ...formData, IpProofDetail: data })
             }
           />
         </TabsContent>
@@ -176,7 +176,7 @@ export default function Dashboard() {
       <IpfsProvider>
         {/* <NavBar /> */}
         <UniqueProvider>
-          <DashboardContent />
+          <NFTContent />
         </UniqueProvider>
       </IpfsProvider>
     </InnovationProvider>

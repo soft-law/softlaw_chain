@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 // import { WalletConnectButton } from "../WalletConnect";
 // import Link from "next/link";
-import TypesComponent from "../ProofOfInnovation/TypesProps";
+import TypesComponent from "../TypesProps";
 import Footer from "../Footer";
 import Link from "next/link";
 // import InputField from "../ProofOfInnovation/input";

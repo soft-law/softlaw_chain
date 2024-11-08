@@ -1,14 +1,14 @@
-'use client'
+"use client";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
-import ReusableHeading from "../textComponent";
-import TypesComponent from "../TypesProps";
-import VariousTypesButton from "../VariousTypesButton";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
+import VariousTypesButton from "../../VariousTypesButton";
 // import InputField from "../input";
 import Link from "next/link";
 // import Footer from "@/components/Footer";
 import { useContext, useState, useEffect } from "react";
 import CollectionTypes from "@/utils/collectionTypes.json";
-import { FormDataContext } from "../FormDataContext";
+import { FormDataContext } from "../../FormDataContext";
 import ConfirmationModal from "../ConfirmationModal";
 import { useInnovationTapContext } from "@/context/innovation";
 // import * as yup from 'yup';
@@ -20,7 +20,7 @@ interface LegalContractsProps {
 }
 
 export default function LegalContracts({ onDataChange }: LegalContractsProps) {
-  const {formData, updateFormData} = useContext(FormDataContext);
+  const { formData, updateFormData } = useContext(FormDataContext);
 
   const callOnDataChange = () => {
     onDataChange && onDataChange(formData);
@@ -29,7 +29,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   // useEffect(() => {
   //   callOnDataChange();
   // }, [formData, onDataChange]);
-  
+
   // const [formData, setFormData] = useState({
   //   IpRegistries: {
   //     UploadFile: [],
@@ -56,7 +56,8 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("collections");
 
-  const {selectedTabInnovation, setSelectedTabInnovation} = useInnovationTapContext()
+  const { selectedTabInnovation, setSelectedTabInnovation } =
+    useInnovationTapContext();
 
   const [collection, setCollection] = useState({
     name: "",
@@ -79,7 +80,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
     updateFormData("LegalContracts", { Collection: e.target.value });
     // onDataChange(formData);
   };
-  
+
   const handleEditPage = (page: number) => {
     // Assuming 'collections' = page 1, 'nfts' = page 2, 'contracts' = page 3
     const tabKeys = ["IpRegistries", "Identity", "LegalContracts"];
@@ -104,7 +105,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
-  
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -125,7 +126,6 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
       });
     }
   };
-
 
   const supportedImages = ["JPG", "PNG", "GIF", "SVG"];
 
@@ -166,11 +166,9 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   // };
 
   const handleBack = async () => {
-    setSelectedTabInnovation("2")
-  }
+    setSelectedTabInnovation("2");
+  };
 
-
-  
   return (
     <>
       <div className="bg-[#1C1A11] flex flex-col w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
@@ -185,7 +183,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
             </div>
 
             <form action="" className="flex flex-col gap-[40px]">
-            {/* <InputField
+              {/* <InputField
                 id="Thumbnail_image"
                 type="file"
                 style=""
@@ -215,8 +213,8 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
                     text={`Enter a name that can match your patent name, making it easily searchable. Choose a descriptive and unique name for clear identification.`}
                   />
                 </div>
-                 
-                  {/* <InputField
+
+                {/* <InputField
                     id="Collection"
                     optionText="Select a collection" 
                     label="Collection"
@@ -238,7 +236,6 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
                       },
                     ]}
                   /> */}
-             
               </div>
 
               <div className="flex flex-col items-start self-stretch gap-[8px]">
@@ -263,63 +260,59 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
 
             <div className="flex flex-col gap-[16px] pt-[60px]">
               <TypesComponent
-              text="Types of protection"
-              className="text-[#fff]"
-            />
-            <div className="flex items-start space-x-4 gap-[16px] self-stretch">
-              <VariousTypesButton
-                isActive={activeButton === "NFT-based protection"}
-                img="/images/shield.svg"
-                className={`h-[auto] ${
-                  activeButton === "NFT-based protection"
-                    ? "border-[#FACC15] bg-[#373737]"
-                    : "border-[#8A8A8A]"
-                } text-[#D0DFE4] hover:border-[#FACC15] hover:bg-[#373737]`}
-                width="full"
-                text="NFT-based protection"
-                detail="Secure your creation by turning it into an NFT, providing instant blockchain-based ownership and protection against unauthorized use.
+                text="Types of protection"
+                className="text-[#fff]"
+              />
+              <div className="flex items-start space-x-4 gap-[16px] self-stretch">
+                <VariousTypesButton
+                  isActive={activeButton === "NFT-based protection"}
+                  img="/images/shield.svg"
+                  className={`h-[auto] ${
+                    activeButton === "NFT-based protection"
+                      ? "border-[#FACC15] bg-[#373737]"
+                      : "border-[#8A8A8A]"
+                  } text-[#D0DFE4] hover:border-[#FACC15] hover:bg-[#373737]`}
+                  width="full"
+                  text="NFT-based protection"
+                  detail="Secure your creation by turning it into an NFT, providing instant blockchain-based ownership and protection against unauthorized use.
 
                 Recommend For: Creators looking for instant, blockchain-based security for their creations."
-                onClick={() => {
-                  handleButtonClick("NFT-based protection");
-                }}
-              />
-              <VariousTypesButton
-                isActive={
-                  activeButton ===
-                  "NFT-Based Protection + Jurisdiction Registries"
-                }
-                img="/images/yellowshield.svg"
-                className={`h-[auto] ${
-                  activeButton ===
-                  "NFT-Based Protection + Jurisdiction Registries"
-                    ? "border-[#FACC15] bg-[#373737]"
-                    : "border-[#8A8A8A]"
-                } text-[#D0DFE4] hover:border-[#FACC15] hover:bg-[#373737]`}
-                width="full"
-                text="NFT-Based Protection + Jurisdiction Registries"
-                detail="Boost your protection by registering your NFT with legal authorities globally, combining blockchain security with legal recognition across jurisdictions. Recommended for: Creators seeking comprehensive protection, combining blockchain security with legal jurisdictional safeguards."
-                onClick={() => {
-                  handleButtonClick(
+                  onClick={() => {
+                    handleButtonClick("NFT-based protection");
+                  }}
+                />
+                <VariousTypesButton
+                  isActive={
+                    activeButton ===
                     "NFT-Based Protection + Jurisdiction Registries"
-                  );
-                }}
-              />
+                  }
+                  img="/images/yellowshield.svg"
+                  className={`h-[auto] ${
+                    activeButton ===
+                    "NFT-Based Protection + Jurisdiction Registries"
+                      ? "border-[#FACC15] bg-[#373737]"
+                      : "border-[#8A8A8A]"
+                  } text-[#D0DFE4] hover:border-[#FACC15] hover:bg-[#373737]`}
+                  width="full"
+                  text="NFT-Based Protection + Jurisdiction Registries"
+                  detail="Boost your protection by registering your NFT with legal authorities globally, combining blockchain security with legal recognition across jurisdictions. Recommended for: Creators seeking comprehensive protection, combining blockchain security with legal jurisdictional safeguards."
+                  onClick={() => {
+                    handleButtonClick(
+                      "NFT-Based Protection + Jurisdiction Registries"
+                    );
+                  }}
+                />
+              </div>
             </div>
-            </div>
-            
+
             <div className="flex items-start justify-between w-full ">
               {/* <Link
                 href="/Identity"
                 className="bg-transparent rounded-[16px] px-[20px] py-[8px] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
                 children="Back"
               /> */}
-              <button
-              onClick={handleBack}
-              >
-                Back
-              </button>
-              
+              <button onClick={handleBack}>Back</button>
+
               <div>
                 {/* Once the final page is completed, submit */}
                 <button

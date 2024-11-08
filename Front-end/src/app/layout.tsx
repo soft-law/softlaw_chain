@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster"
+// import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {
   title: "soft.law",
   description: "The Itellectual Property Chain",
 };
+// const NavBar = dynamic(
+//   () => import("@/components/NavBar"),
+//   {
+//     ssr: false,
+//   }
+// );
+// import Footer from "@/components/Footer";
 
 export default function RootLayout({
   children,
@@ -14,15 +22,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-
-      >
+      <body>
         {/* <NavBar/> */}
         {children}
         <Toaster />
         {/* <Footer/> */}
-        
       </body>
     </html>
   );
 }
+
+
+

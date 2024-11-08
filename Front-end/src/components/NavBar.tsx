@@ -7,7 +7,7 @@ import WalletConnect from "./WalletConnext";
 
 export default function NavBar() {
   const dashboard = "Dashboard".split("");
-  const legaltech = "Legal-Tech".split("");
+  const legaltech = "Proof of Innovation".split("");
   const licensing = "Licensing".split("");
 
   return (
