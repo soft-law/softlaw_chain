@@ -5,9 +5,8 @@ import InnovationProvider from "@/context/innovation";
 // import NavBar from "@/components/NavBar";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-const IPSearch = dynamic(() => import("@/components/search/IPSearch"), {
-  ssr: false,
-});
+import Dash from "../../components/dashboard/Dash"
+
 const NavBar = dynamic(() => import("@/components/NavBar"), {
   ssr: false,
 });
@@ -17,8 +16,9 @@ export default function Ipsearch() {
       <AccountsProvider>
         <div className="scrollable">
       
-        <Dash />
+       
           <NavBar />
+          <Dash />
           <Link href={"/search"}>Ip Search</Link>
           <Link href={"/collection"}> Collection</Link>
           <Link href={"/nft"}> Nft</Link>

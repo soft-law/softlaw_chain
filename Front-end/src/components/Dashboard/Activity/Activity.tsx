@@ -2,19 +2,23 @@
 import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import { useContext } from "react";
-import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
-import { useDashboardTapContext } from "@/context/dashboard";
+// import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
+// import { useDashboardTapContext } from "@/context/dashboard";
 import Footer from "../../Footer";
 import Searchfilter from "../Searchfilter";
-import TypesComponent from "../../ProofOfInnovation/TypesProps";
+// import TypesComponent from "../../ProofOfInnovation/TypesProps";
+import { FormDataContext } from "@/components/FormDataContext";
+import TypesComponent from "@/components/TypesProps";
+import { useDashboardContext } from "@/context/dashboard";
 
 interface ActivityProps {
   onDataChange: (data: any) => void;
 }
 
+
 export default function Activity({ onDataChange }: ActivityProps) {
   const { selectedTabDashboard, setSelectedTabDashboard } =
-    useDashboardTapContext();
+    useDashboardContext()
 
   const { formData, updateFormData } = useContext(FormDataContext);
 

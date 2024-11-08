@@ -3,7 +3,7 @@
 import React from "react";
 import { TextSpan } from "@/components/TextSpan";
 import Link from "next/link";
-import WalletConnect from "./WalletConnext";
+import WalletConnect from "./WalletConnect";
 
 export default function NavBar() {
   const dashboard = "Dashboard".split("");
