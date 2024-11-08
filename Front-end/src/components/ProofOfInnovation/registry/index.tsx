@@ -3,15 +3,20 @@ import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import { useToast } from "../../../hooks/use-toast";
 import Footer from "@/components/Footer";
-import ReusableHeading from "../textComponent";
-import TypesComponent from "../TypesProps";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
+// import InputField from "../input";
 import UploadFilesField from "../UploadFileField";
 import Link from "next/link";
 import { ethers } from "ethers";
 import { useUnique } from "@/context/unique";
-import VariousTypesButton from "../VariousTypesButton";
+import abi from "../../../utils/abi_minter.json";
+import VariousTypesButton from "../../VariousTypesButton";
 import { useContext } from 'react';
-import { FormDataContext } from "../FormDataContext";
+import { FormDataContext } from "../../FormDataContext";
+// import * as yup from 'yup';
+// import { useForm } from "react-hook-form";
+// import { yupResolver } from '@hookform/resolvers/yup';
 import Button from "../../ui/button"
 import { useInnovationTapContext } from "@/context/innovation";
 
@@ -274,10 +279,10 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
           </div>
         </div>
       </MaxWidthWrapper>
-      <Footer
+      {/* <Footer
         width="py-[60px] max-h-[400px]"
         className="border-t-[1px] border-[#8A8A8A] w-full"
-      />
+      /> */}
     </div>
   );
 }

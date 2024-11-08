@@ -2,21 +2,26 @@
 import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import { useContext } from 'react';
-import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
-import { useDashboardTapContext } from "@/context/dashboard";
+// import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
+// import { useDashboardTapContext } from "@/context/dashboard";
 import Footer from "../../Footer"
-import ReusableHeading from "../../ProofOfInnovation/textComponent";
+// import ReusableHeading from "../../ProofOfInnovation/textComponent";
 import Image from "next/image";
 import Link from "next/link";
+import { FormDataContext } from "@/components/FormDataContext";
+import { useDashboardContext } from "@/context/dashboard";
+import ReusableHeading from "@/components/textComponent";
 
 interface MyProductsProps {
   onDataChange: (data: any) => void;
 }
 
+
+
 export default function MyProducts ({onDataChange}: MyProductsProps) {
 
   const {selectedTabDashboard,
-    setSelectedTabDashboard} = useDashboardTapContext()
+    setSelectedTabDashboard} = useDashboardContext()
 
   const {formData, updateFormData} = useContext(FormDataContext);
 

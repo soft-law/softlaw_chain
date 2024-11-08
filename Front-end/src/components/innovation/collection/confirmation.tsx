@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import ReusableHeading from "../textComponent";
-import TypesComponent from "../TypesProps";
-import Footer from "../Footer";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
+import Footer from "../../Footer";
 
 interface ConfirmationModalProps {
   formData: any; // Accept the global form state as a prop

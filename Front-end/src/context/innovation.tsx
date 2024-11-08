@@ -1,44 +1,72 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface InnovationTapContextType {
-  selectedTabInnovation: string;
-  setSelectedTabInnovation: React.Dispatch<React.SetStateAction<string>>;
+interface CollectionType {
+  name: string;
+  description: string;
+  prefix: string;
+  image: string;
 }
 
-const defaultContextValue: InnovationTapContextType = {
+interface NftType {
+  name: string;
+  description: string;
+  metadata: string;
+}
+
+interface InnovationContextType {
+  selectedTabInnovation: string;
+  setSelectedTabInnovation: React.Dispatch<React.SetStateAction<string>>;
+  collection: CollectionType |null ;
+  setCollection: React.Dispatch<React.SetStateAction<CollectionType | null>>;
+  nft: NftType | null;
+  setNft: React.Dispatch<React.SetStateAction<NftType | null>>;
+}
+
+const defaultContextValue: InnovationContextType = {
   selectedTabInnovation: "1",
   setSelectedTabInnovation: () => {},
+  collection: null,
+  setCollection: () => {},
+  nft: null,
+  setNft: () => {},
 };
 
-const InnovationTabContext =
-  createContext<InnovationTapContextType>(defaultContextValue);
+const InnovationContext =
+  createContext<InnovationContextType>(defaultContextValue);
 
-export function useInnovationTapContext() {
-  const context = useContext(InnovationTabContext);
+export function useInnovationContext() {
+  const context = useContext(InnovationContext);
   if (context === undefined) {
     throw new Error(
-      "useInnovationTapContext must be used within an InnovationTabProvider"
+      "useInnovationContext must be used within an InnovationProvider"
     );
   }
   return context;
 }
 
-interface InnovationTabProviderProps {
+interface InnovationProviderProps {
   children: ReactNode;
 }
 
 export default function InnovationProvider({
   children,
-}: InnovationTabProviderProps) {
-  const [selectedTabInnovation, setSelectedTabInnovation] = useState<string>("1");
-  const value: InnovationTapContextType = {
+}: InnovationProviderProps) {
+  const [selectedTabInnovation, setSelectedTabInnovation] =
+    useState<string>("1");
+  const [collection, setCollection] = useState<CollectionType | null>(null);
+  const [nft, setNft] = useState<NftType | null>(null);
+  const value: InnovationContextType = {
     selectedTabInnovation,
     setSelectedTabInnovation,
+    collection,
+    setCollection,
+    nft,
+    setNft,
   };
 
   return (
-    <InnovationTabContext.Provider value={value}>
+    <InnovationContext.Provider value={value}>
       {children}
-    </InnovationTabContext.Provider>
+    </InnovationContext.Provider>
   );
 }

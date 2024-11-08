@@ -1,12 +1,18 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
-import ReusableHeading from "../textComponent";
-import TypesComponent from "../TypesProps";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
+// import InputField from "../input";
+import Link from "next/link";
 import Footer from "@/components/Footer";
 import React, { useEffect, useState } from "react";
-import VariousTypesButton from "../VariousTypesButton";
-import { useContext } from "react";
-import { FormDataContext } from "../FormDataContext";
+import VariousTypesButton from "../../VariousTypesButton";
+import { useContext } from 'react';
+import { FormDataContext } from "../../FormDataContext";
+// import * as yup from 'yup';
+// import { useForm } from "react-hook-form";
+// import { yupResolver } from '@hookform/resolvers/yup';
+import Button from "../../ui/button"
 import { useInnovationTapContext } from "@/context/innovation";
 
 interface IdentityProps {
@@ -140,10 +146,10 @@ export default function Identity({ onDataChange, value }: IdentityProps) {
           </div>
         </MaxWidthWrapper>
       </div>
-      <Footer
+      {/* <Footer
         width="py-[60px] min-[2000px]:py-[70px] max-h-[400px]"
         className="border-t-[1px] border-[#8A8A8A] w-full"
-      />
+      /> */}
     </>
   );
 }

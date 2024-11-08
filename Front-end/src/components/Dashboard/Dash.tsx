@@ -1,15 +1,16 @@
 "use client";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DashboardProvider, { useDashboardTapContext } from "@/context/dashboard";
+// import DashboardProvider, { useDashboardContext } from "@/context/dashboard";
 import MyProducts from "./MyProducts/MyProducts";
 import Manage from "./Manage/Manage";
 import Activity from "./Activity/Activity";
+import DashboardProvider, { useDashboardContext } from "@/context/dashboard";
 
 function DashboardContent() {
   
   const { selectedTabDashboard, setSelectedTabDashboard } =
-    useDashboardTapContext();
+    useDashboardContext();
 
   const [formData, setFormData] = useState({
     MyProducts: {

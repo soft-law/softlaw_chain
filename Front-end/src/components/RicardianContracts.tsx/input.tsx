@@ -7,10 +7,11 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   id?: string;
   hasDropdown?: boolean;
   children?: string;
+  type: string;
 }
 
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ className = '', id, children, label, hasDropdown = true, ...props }, ref) => {
+  ({ className = '', id, children, type, label, hasDropdown = true, ...props }, ref) => {
     const [ error, setError ] = useState<string>('');
 
     const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -37,9 +38,9 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         {label}
         </label>
         <input 
-        type="text" 
-        ref={ref}
-        {...props}
+        type={type}
+        // ref={ref}
+        // {...props}
         className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] ${className}`} onBlur={handleBlur}
         onChange={handleChange}
         /> 

@@ -12,7 +12,7 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
-  const { ipfsHashes, setIpfsHashes, setImageHash, setImagesLinks } = useIpfs();
+  const { ipfsHashes, setIpfsHashes, setImageHash, setImagesLinks, imagesLinks } = useIpfs();
 
   const handleIpfsHashes = useCallback(() => {
     const hashesArray = ipfsHashes ? ipfsHashes.split(',') : [];
@@ -133,6 +133,10 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
       >
         Upload to IPFS
       </button>
+
+      {imagesLinks?.map((value)=>(
+        <img src={value}/>
+      ))}
     </div>
   );
 };

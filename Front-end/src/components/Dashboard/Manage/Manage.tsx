@@ -2,21 +2,27 @@
 import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import { useContext } from "react";
-import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
-import { useDashboardTapContext } from "@/context/dashboard";
+// import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
+// import { useDashboardTapContext } from "@/context/dashboard";
 import Footer from "../../Footer";
-import ReusableHeading from "../../ProofOfInnovation/textComponent";
+// import ReusableHeading from "../../ProofOfInnovation/textComponent";
 import Image from "next/image";
 import Link from "next/link";
-import TypesComponent from "@/components/ProofOfInnovation/TypesProps";
+// import TypesComponent from "@/components/ProofOfInnovation/TypesProps";
 import { Button } from "@/components/ui/button";
-import { LicenseCreationFlow } from "@/components/Dashboard/Manage/LicenseCreation/LicenseFlowCreation";
-import type { LicenseFormData } from "@/components/Dashboard/Manage/LicenseCreation/types";
+// import { LicenseCreationFlow } from "@/components/Dashboard/Manage/LicenseCreation/LicenseFlowCreation";
+import type { LicenseFormData } from "./LicenseCreation/types";
 import { Card } from "@/components/ui/card";
+import { FormDataContext } from "@/components/FormDataContext";
+import { useDashboardContext } from "@/context/dashboard";
+import ReusableHeading from "@/components/textComponent";
+import TypesComponent from "@/components/TypesProps";
+import { LicenseCreationFlow } from "./LicenseCreation/LicenseFlowCreation";
 
 interface ManageProps {
   onDataChange: (data: any) => void;
 }
+
 
 interface License extends LicenseFormData {
   status: string;
@@ -49,8 +55,9 @@ export default function Manage({ onDataChange }: ManageProps) {
     setShowLicenseCreation(false);
   };
 
-  const { selectedTabDashboard, setSelectedTabDashboard } =
-    useDashboardTapContext();
+  const { selectedTabDashboard,
+    setSelectedTabDashboard } =
+    useDashboardContext();
 
   const { formData, updateFormData } = useContext(FormDataContext);
 

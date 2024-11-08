@@ -8,18 +8,23 @@ import OurProducts from "@/components/landing/OurProducts/OurProducts";
 import Polkadot from "@/components/landing/Polkadot";
 import Team from "@/components/landing/Team/Team";
 import Footer from "@/components/Footer";
-// import NavBar from "@/components/NavBar";
+import dynamic from "next/dynamic";
+import AccountsProvider from "@/context/account";
+import InnovationProvider from "@/context/innovation";
+const NavBar = dynamic(
+  () => import("@/components/NavBar"),
+  {
+    ssr: false,
+  }
+);
 
-// import dynamic from "next/dynamic";
-// const NavBar = dynamic(
-//   () => import("@/components/NavBar"),
-//   {
-//     ssr: false,
-//   }
-// );
 export default function Home() {
   return (
-    <div className="scrollable ">
+   <InnovationProvider>
+
+<AccountsProvider>
+       <div className="scrollable ">
+      <NavBar />
       <Hero />
       <OurServices />
       <UseCase />
@@ -28,5 +33,8 @@ export default function Home() {
       <Team />
       <Footer />
     </div>
+    </AccountsProvider>
+   </InnovationProvider>
+   
   );
 }
