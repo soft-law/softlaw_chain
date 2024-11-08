@@ -9,6 +9,7 @@ export interface LicenseFormData {
   customDuration?: {
     value: number;
     unit: 'days' | 'months' | 'years';
+    expirationDate?: string;
   };
   paymentType: 'oneTime' | 'recurring';
   recurringPayment?: {

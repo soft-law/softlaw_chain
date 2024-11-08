@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { InitialForm } from './InitialForm';
-// import { LicenseDetailsForm } from './LicenseDetailsForm';
+import { LicenseCreationForm } from './LicenseCreationForm';
+import { LicenseSampleForm } from './LicenseSampleForm';
 import type { LicenseFormData } from './types';
 
 interface LicenseCreationFlowProps {
@@ -10,6 +10,7 @@ interface LicenseCreationFlowProps {
 
 export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlowProps) {
   const [step, setStep] = useState(1);
+  
   const [formData, setFormData] = useState<LicenseFormData>({
     nftId: '',
     price: {
@@ -32,34 +33,39 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
   const handleBack = () => {
     if (step === 1) {
       onCancel();
-    } else {
+    }else {
       setStep(prev => prev - 1);
     }
   };
+
+
 
   const handleComplete = () => {
     onComplete(formData);
   };
 
+
+
   return (
     <div className="w-full">
       {step === 1 && (
-        <InitialForm
+        <LicenseCreationForm
           formData={formData}
           onSubmit={(data) => {
             handleFormUpdate(data);
             handleNext();
           }}
-        />
-      )}
-{/*       
-      {step === 2 && (
-        <LicenseDetailsForm
-          formData={formData}
-          onSubmit={handleComplete}
           onBack={handleBack}
         />
-      )} */}
+      )}
+
+      {step === 2 && (
+        <LicenseSampleForm 
+        formData={formData}
+        onSubmit={handleComplete}
+        onBack={handleBack}
+        />
+      )}
     </div>
   );
 }

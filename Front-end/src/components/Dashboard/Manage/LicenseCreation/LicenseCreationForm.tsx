@@ -1,22 +1,24 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import type { LicenseFormData } from './types';
 
 
-interface InitialFormProps {
+interface LicenseCreationFormProps {
     formData: LicenseFormData;
     onSubmit: (data: Partial<LicenseFormData>) => void;
+    onBack: () => void;
   }
 
-  export function InitialForm({ formData, onSubmit }: InitialFormProps) {
+  export function LicenseCreationForm({ formData, onSubmit, onBack }: LicenseCreationFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       onSubmit(formData);
     };
   
     return (
-      <Card className="max-w-2xl mx-auto p-6 bg-[#1C1A11] border-[#373737]">
+      <Card className="w-full max-w-2xl mx-auto p-6 bg-[#1C1A11] border-[#373737]">
         <h2 className="text-2xl font-bold mb-6 text-[#F6E18B]">LICENSE CREATION FORM</h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -128,11 +130,13 @@ interface InitialFormProps {
           <div className="flex justify-between pt-4">
             <Button
               type="button"
+              onClick={onBack}
               className="bg-transparent border border-[#F6E18B] text-[#F6E18B] hover:bg-[#373737]"
             >
               Back
             </Button>
             <Button
+              onClick={handleSubmit}
               type="submit"
               className="bg-[#F6E18B] text-black hover:bg-[#dcc87d]"
             >

@@ -10,8 +10,9 @@ import Image from "next/image";
 import Link from "next/link";
 import TypesComponent from "@/components/ProofOfInnovation/TypesProps";
 import { Button } from '@/components/ui/button';
-import { LicenseCreationFlow } from '@/components/Dashboard/Manage/LicenseCreation/LicenseCreationFlow';
+import { LicenseCreationFlow } from '@/components/Dashboard/Manage/LicenseCreation/LicenseFlowCreation';
 import type { LicenseFormData } from '@/components/Dashboard/Manage/LicenseCreation/types';
+import {Card} from '@/components/ui/card'
 
 interface ManageProps {
   onDataChange: (data: any) => void;
@@ -19,11 +20,26 @@ interface ManageProps {
 
 export default function Manage ({onDataChange}: ManageProps) {
 
+
   const [showLicenseCreation, setShowLicenseCreation] = useState(false);
   const [licenses, setLicenses] = useState<LicenseFormData[]>([]);
 
   const handleLicenseCreation = (data: LicenseFormData) => {
     setLicenses(prev => [...prev, data]);
+    setShowLicenseCreation(false);
+  };
+
+  const handleLicenseComplete = (data: LicenseFormData) => {
+    // Add the new license to the list
+    setLicenses(prev => [...prev, {
+      id: Date.now(), // temporary ID for demo
+      ...data,
+      status: 'Active',
+      royaltyRate: '10%',
+      lifetimeEarnings: '$2.45',
+      recentPayment: 'Oct. 24',
+      amount: '+$252'
+    }]);
     setShowLicenseCreation(false);
   };
 
@@ -36,6 +52,24 @@ export default function Manage ({onDataChange}: ManageProps) {
     <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
     
       <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-screen pt-[120px] justify-center items-center">
+         {/* Important Updates Section */}
+         <div className="space-y-4">
+          <h2 className="text-xl font-bold text-[#F6E18B]">Important Updates</h2>
+          {licenses.length > 0 && (
+            <div className="space-y-2">
+              {licenses.map(setLicenses => (
+                <div key={licenses.id} className="bg-[#373737] p-4 rounded-lg flex justify-between items-center">
+                  <span>The license for NFT ID: {licenses.nftId} has been created successfully.</span>
+                  <div className="space-x-2">
+                    <button className="px-3 py-1 bg-red-500 text-white rounded">Cancel</button>
+                    <button className="px-3 py-1 bg-green-500 text-white rounded">Accept</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="flex flex-col w-full gap-[40px] self-stretch items-center p-[16px] border border-[#8A8A8A] rounded-md">
           <div className="flex justify-between items-start self-stretch mb-[60px]">
             <ReusableHeading text="All IPs" />
@@ -59,16 +93,33 @@ export default function Manage ({onDataChange}: ManageProps) {
             ) : (
               <div className="space-y-4">
                 {licenses.map((license, index) => (
-                  <div
+                  <Card key={index} className="p-4 bg-[#1C1A11] border-[#373737]">
+                    <div
                     key={index}
-                    className="bg-[#373737] p-4 rounded-md"
+                    className="bg-[#373737] p-4 rounded-md grid grid-cols-6 gap-4 items-center"
                   >
                     <p>NFT ID: {license.nftId}</p>
                     <p>Price: {license.price.amount} {license.price.currency}</p>
+                    <div className="text-center">
+                      <span className="px-2 py-1 bg-green-500 rounded text-sm">
+                        {license.status}
+                      </span>
+                    </div>
+                    <div className="text-center text-green-500">
+                      {license.lifetimeEarnings}
+                    </div>
+                    <div className="text-center">
+                      {license.recentPayment}
+                    </div>
+                    <div className="text-right text-green-500">
+                      {license.amount}
+                    </div>
                     <p>Type: {license.licenseType}</p>
                     <p>Duration: {license.durationType}</p>
                     <p>Payment: {license.paymentType}</p>
                   </div>
+                  </Card>
+                 
                 ))}
               </div>
             )}
