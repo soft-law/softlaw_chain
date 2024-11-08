@@ -14,6 +14,12 @@ pub enum Offer<T: Config> {
     Purchase(PurchaseOffer<T>),
 }
 
+#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
+pub enum ContractType {
+    License,
+    Purchase,
+}
+
 // Add a new enum for initiated contracts
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
 #[scale_info(skip_type_params(T))]
