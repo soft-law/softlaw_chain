@@ -6,6 +6,7 @@ const ProofOfCreativity = dynamic(() => import('@/components/ProofOfInnovation')
 export default function DashPage() {
   return (
   <div className="">
+    
   <ProofOfCreativity />
   </div>
   

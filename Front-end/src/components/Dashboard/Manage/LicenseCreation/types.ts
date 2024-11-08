@@ -1,4 +1,6 @@
 export interface LicenseFormData {
+  name?: string;
+  description?: string;
     nftId: string;
   price: {
     amount: number;

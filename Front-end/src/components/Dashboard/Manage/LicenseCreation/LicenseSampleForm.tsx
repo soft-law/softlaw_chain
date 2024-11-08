@@ -3,16 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { LicenseFormData } from "./types";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import AlertDialog from "./AlertDialogue"; 
 
 interface LicenseSampleFormProps {
   formData: LicenseFormData;
@@ -224,28 +215,15 @@ export function LicenseSampleForm({
         </form>
       </Card>
 
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="bg-[#1C1A11] border-[#373737]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm License Creation</AlertDialogTitle>
-            <AlertDialogDescription>
-              Please review your answers carefully. Once created, the license
-              details cannot be edited.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-[#373737] text-white hover:bg-[#444444]">
-              Review Again
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirm}
-              className="bg-[#F6E18B] text-black hover:bg-[#dcc87d]"
-            >
-              Create License
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+     <AlertDialog
+        open={showConfirmDialog}
+        onClose={() => setShowConfirmDialog(false)}
+        onConfirm={handleConfirm}
+        title="Confirm License Creation"
+        description="Please review your answers carefully. Once created, the license details cannot be edited."
+        confirmText="Create License"
+        cancelText="Review Again"
+      />
     </div>
   );
 }
