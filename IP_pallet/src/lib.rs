@@ -90,6 +90,7 @@ pub mod pallet {
     // This maps NFT -> Vec<LicenseId>
     // Helps us quickly check what active contracts exist for an NFT
     #[pallet::storage]
+    #[pallet::getter(fn nft_contracts)]
     pub type NFTContracts<T: Config> =
         StorageMap<_, Blake2_128Concat, T::NFTId, Vec<T::ContractId>, ValueQuery>;
 
@@ -517,8 +518,7 @@ pub mod pallet {
             let payer = ensure_signed(origin)?;
 
             // Get and validate contract exists
-            let mut contract =
-                Contracts::<T>::get(contract_id).ok_or(Error::<T>::ContractNotFound)?;
+            let mut contract = Contracts::<T>::get(contract_id).ok_or(Error::<T>::ContractNotFound)?;
 
             // Get common fields based on contract type
             let (status, payment_type, payment_schedule, nft_id, payee) = match &mut contract {
@@ -541,37 +541,37 @@ pub mod pallet {
             // Ensure contract is active
             ensure!(status, Error::<T>::LicenseNotActive);
 
-            // Get payment details
-            let (amount, frequency, schedule) = match (payment_type, payment_schedule) {
-                (
-                    PaymentType::Periodic {
-                        amount_per_payment,
-                        frequency,
-                        ..
-                    },
-                    Some(schedule),
-                ) => {
-                    // Ensure payment is due
-                    let current_block = frame_system::Pallet::<T>::block_number();
-                    ensure!(
-                        current_block >= schedule.next_payment_block
-                            && schedule.payments_due > 0u32.into(),
-                        Error::<T>::PaymentNotDue
-                    );
+            // Get payment schedule
+            let schedule = payment_schedule.as_mut().ok_or(Error::<T>::NotPeriodicPayment)?;
 
-                    (*amount_per_payment, *frequency, schedule)
-                }
+            // Ensure payment is due
+            let current_block = frame_system::Pallet::<T>::block_number();
+            ensure!(
+                current_block >= schedule.next_payment_block && schedule.payments_due > 0u32.into(),
+                Error::<T>::PaymentNotDue
+            );
+
+            let amount_per_payment = match payment_type {
+                PaymentType::Periodic { amount_per_payment, .. } => amount_per_payment,
                 _ => return Err(Error::<T>::NotPeriodicPayment.into()),
             };
 
+            // Calculate amount including any penalties
+            let amount = Self::calculate_amount_due(*amount_per_payment, schedule);
+
             // Process payment
-            Self::process_payment(&payer, &payee, amount).map_err(|_| Error::<T>::PaymentFailed)?;
+            Self::process_payment(&payer, &payee, amount)?;
 
             // Update payment schedule
             schedule.payments_made += 1u32.into();
             schedule.payments_due = schedule.payments_due.saturating_sub(1u32.into());
+            schedule.missed_payments = None;  // Reset missed payments
+            schedule.penalty_amount = None;   // Reset penalty
             if !schedule.payments_due.is_zero() {
-                schedule.next_payment_block += frequency;
+                schedule.next_payment_block += match payment_type {
+                    PaymentType::Periodic { frequency, .. } => *frequency,
+                    _ => Zero::zero(),
+                };
             }
 
             // Emit periodic payment event first
@@ -824,121 +824,147 @@ pub mod pallet {
                 PaymentType::OneTime(amount) => *amount,
             }
         }
+
+        // Get periodic payment details from contract
+        fn get_periodic_payment_details(
+            contract: &Contract<T>,
+        ) -> Option<(
+            &PaymentSchedule<T>,
+            &PaymentType<T>,
+            T::NFTId,
+            &T::AccountId,
+            &T::AccountId,
+        )> {
+            match contract {
+                Contract::License(license) if license.status == LicenseStatus::Active => {
+                    license.payment_schedule.as_ref().map(|schedule| {
+                        (
+                            schedule,
+                            &license.payment_type,
+                            license.nft_id,
+                            &license.licensee,
+                            &license.licensor,
+                        )
+                    })
+                }
+                Contract::Purchase(purchase) if purchase.status == PurchaseStatus::InProgress => {
+                    purchase.payment_schedule.as_ref().map(|schedule| {
+                        (
+                            schedule,
+                            &purchase.payment_type,
+                            purchase.nft_id,
+                            &purchase.buyer,
+                            &purchase.seller,
+                        )
+                    })
+                }
+                _ => None,
+            }
+        }
+
+        // Helper to calculate total amount due including penalties
+        fn calculate_amount_due(
+            base_amount: BalanceOf<T>,
+            schedule: &PaymentSchedule<T>,
+        ) -> BalanceOf<T> {
+            let missed_amount = schedule
+                .missed_payments
+                .map(|m| base_amount * m.into())
+                .unwrap_or_else(Zero::zero);
+
+            base_amount
+                .saturating_add(missed_amount)
+                .saturating_add(schedule.penalty_amount.unwrap_or_else(Zero::zero))
+        }
+
+        fn update_schedule_with_penalty(
+            schedule: &PaymentSchedule<T>,
+            amount_per_payment: &BalanceOf<T>,
+        ) -> PaymentSchedule<T> {
+            let mut new_schedule = schedule.clone();
+            new_schedule.missed_payments = Some(1u32.into());
+            new_schedule.penalty_amount = Some(*amount_per_payment * 20u32.into() / 100u32.into());
+            new_schedule
+        }
     }
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        fn on_initialize(n: BlockNumberFor<T>) -> Weight {
+            let mut weight = T::DbWeight::get().reads(1);
 
-    // #[pallet::hooks]
-    // impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-    //     fn on_initialize(n: BlockNumberFor<T>) -> Weight {
-    //         let mut weight = T::DbWeight::get().reads(1);
+            for (contract_id, contract) in Contracts::<T>::iter() {
+                if let Some((schedule, payment_type, nft_id, payer, payee)) =
+                    Self::get_periodic_payment_details(&contract)
+                {
+                    if n > schedule.next_payment_block {
+                        if schedule.missed_payments.is_some() {
+                            // Second miss - cancel contract
+                            Self::cleanup_contract(contract_id, nft_id);
+                            Self::deposit_event(Event::ContractExpired {
+                                contract_id,
+                                contract_type: match contract {
+                                    Contract::License(_) => ContractType::License,
+                                    Contract::Purchase(_) => ContractType::Purchase,
+                                },
+                                nft_id,
+                                offered_by: payee.clone(),
+                                accepted_by: payer.clone(),
+                                payments_made: schedule.payments_made,
+                                total_paid: Self::calculate_total_paid(
+                                    payment_type,
+                                    schedule.payments_made,
+                                ),
+                            });
+                        } else {
+                            // First miss - mark missed payment and add penalty
+                            let PaymentType::Periodic {
+                                amount_per_payment, ..
+                            } = payment_type
+                            else {
+                                continue;
+                            };
 
-    //         for (license_id, license) in Licenses::<T>::iter() {
-    //             if license.status == LicenseStatus::Active {
-    //                 weight =
-    //                     weight.saturating_add(Self::process_active_license(license_id, license, n));
-    //             }
-    //         }
+                            let new_contract = match &contract {
+                                Contract::License(license) => {
+                                    let new_schedule = Self::update_schedule_with_penalty(
+                                        license.payment_schedule.as_ref().unwrap(),
+                                        amount_per_payment,
+                                    );
+                                    Contract::License(License {
+                                        payment_schedule: Some(new_schedule),
+                                        ..license.clone()
+                                    })
+                                }
+                                Contract::Purchase(purchase) => {
+                                    let new_schedule = Self::update_schedule_with_penalty(
+                                        purchase.payment_schedule.as_ref().unwrap(),
+                                        amount_per_payment,
+                                    );
+                                    Contract::Purchase(PurchaseContract {
+                                        payment_schedule: Some(new_schedule),
+                                        ..purchase.clone()
+                                    })
+                                }
+                            };
 
-    //         weight
-    //     }
-    // }
-
-    // impl<T: Config> Pallet<T> {
-    //     fn process_active_license(
-    //         license_id: T::LicenseId,
-    //         mut license: License<T>,
-    //         n: BlockNumberFor<T>,
-    //     ) -> Weight {
-    //         let mut weight = T::DbWeight::get().reads(1);
-
-    //         // Process periodic payment if due
-    //         if let PaymentType::Periodic { .. } = license.payment_type {
-    //             if let Some(schedule) = &license.payment_schedule {
-    //                 if n >= schedule.next_payment_block {
-    //                     match Self::attempt_periodic_payment(license_id, &mut license) {
-    //                         Ok(_) => {
-    //                             weight =
-    //                                 weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
-    //                             // Update the license in storage
-    //                             Licenses::<T>::insert(license_id, license);
-    //                         }
-    //                         Err(_) => {
-    //                             // Payment failed, cancel the license
-    //                             weight = weight
-    //                                 .saturating_add(Self::cancel_license(license_id, &license));
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-    //         weight
-    //     }
-
-    //     pub(crate) fn attempt_periodic_payment(
-    //         license_id: T::LicenseId,
-    //         license: &mut License<T>,
-    //     ) -> DispatchResult {
-    //         let (amount_per_payment, total_payments, frequency) = match &license.payment_type {
-    //             PaymentType::Periodic {
-    //                 amount_per_payment,
-    //                 total_payments,
-    //                 frequency,
-    //             } => (*amount_per_payment, *total_payments, *frequency),
-    //             _ => return Err(Error::<T>::PaymentFailed.into()),
-    //         };
-
-    //         let schedule = license
-    //             .payment_schedule
-    //             .as_mut()
-    //             .ok_or(Error::<T>::PaymentFailed)?;
-    //         let licensee = license
-    //             .licensee
-    //             .as_ref()
-    //             .ok_or(Error::<T>::LicenseeNotFound)?;
-    //         let licensor = license.licensor.clone();
-    //         let nft_id = license.nft_id;
-
-    //         T::Currency::transfer(
-    //             licensee,
-    //             &licensor,
-    //             amount_per_payment,
-    //             ExistenceRequirement::KeepAlive,
-    //         )
-    //         .map_err(|_| {
-    //             Self::deposit_event(Event::PeriodicPaymentFailed {
-    //                 license_id,
-    //                 nft_id,
-    //                 licensee: licensee.clone(),
-    //                 amount: amount_per_payment,
-    //             });
-    //             Error::<T>::PaymentFailed
-    //         })?;
-
-    //         // Update schedule and other logic...
-    //         schedule.payments_made = schedule.payments_made.saturating_add(T::Index::one());
-    //         schedule.payments_due = schedule.payments_due.saturating_sub(T::Index::one());
-    //         schedule.next_payment_block += frequency;
-
-    //         Self::deposit_event(Event::PeriodicPaymentMade {
-    //             license_id,
-    //             nft_id,
-    //             payer: licensee.clone(),
-    //             licensor,
-    //             amount: amount_per_payment,
-    //         });
-
-    //         if schedule.payments_made == total_payments {
-    //             license.status = LicenseStatus::Completed;
-    //             Self::deposit_event(Event::PaymentsCompleted {
-    //                 license_id,
-    //                 nft_id,
-    //                 licensee: licensee.clone(),
-    //             });
-    //         }
-
-    //         Ok(())
-    //     }
-    // }
+                            Contracts::<T>::insert(contract_id, new_contract);
+                            Self::deposit_event(Event::PeriodicPaymentFailed {
+                                contract_id,
+                                nft_id,
+                                licensee: payer.clone(),
+                                amount: Self::calculate_amount_due(
+                                    *amount_per_payment,
+                                    schedule,
+                                ),
+                            });
+                        }
+                        weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));
+                    }
+                }
+            }
+            weight
+        }
+    }
 }
 
 #[cfg(test)]

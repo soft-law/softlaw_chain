@@ -146,6 +146,8 @@ pub struct PaymentSchedule<T: Config> {
     pub next_payment_block: BlockNumberFor<T>,
     pub payments_made: T::Index,
     pub payments_due: T::Index,
+    pub missed_payments: Option<T::Index>,
+    pub penalty_amount: Option<BalanceOf<T>>,
 }
 
 impl<T: Config> LicenseOffer<T> {
@@ -162,6 +164,8 @@ impl<T: Config> LicenseOffer<T> {
                 next_payment_block: start_block + *frequency,
                 payments_made: T::Index::default(),
                 payments_due: *total_payments,
+                missed_payments: None,
+                penalty_amount: None,
             }),
             PaymentType::OneTime(_) => None,
         };
@@ -194,6 +198,8 @@ impl<T: Config> PurchaseOffer<T> {
                 next_payment_block: start_block + *frequency,
                 payments_made: T::Index::default(),
                 payments_due: *total_payments,
+                missed_payments: None,
+                penalty_amount: None,
             }),
             PaymentType::OneTime(_) => None,
         };
