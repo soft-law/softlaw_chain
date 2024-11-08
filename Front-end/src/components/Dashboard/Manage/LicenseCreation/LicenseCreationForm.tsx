@@ -7,7 +7,7 @@ import type { LicenseFormData } from './types';
 
 interface LicenseCreationFormProps {
     formData: LicenseFormData;
-    onSubmit: (data: Partial<LicenseFormData>) => void;
+    onSubmit: (data: LicenseFormData) => void;
     onBack: () => void;
   }
 
@@ -136,7 +136,7 @@ interface LicenseCreationFormProps {
               Back
             </Button>
             <Button
-              onClick={handleSubmit}
+             onClick={handleSubmit}
               type="submit"
               className="bg-[#F6E18B] text-black hover:bg-[#dcc87d]"
             >
