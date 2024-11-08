@@ -293,17 +293,7 @@ pub mod pallet {
             duration: BlockNumberFor<T>,
         ) -> DispatchResult {
             let licensor = ensure_signed(origin)?;
-
-            // Ensure caller owns the NFT
-            let nft = Nfts::<T>::get(nft_id).ok_or(Error::<T>::NftNotFound)?;
-            ensure!(nft.owner == licensor, Error::<T>::NotNftOwner);
-
-            // Check if there's an escrow for this NFT
-
-            ensure!(
-                !EscrowedNfts::<T>::contains_key(nft_id),
-                Error::<T>::NftInEscrow
-            );
+            Self::validate_nft_for_offer(nft_id, &licensor)?;
 
             let existing_contracts = NFTContracts::<T>::get(nft_id);
             if is_exclusive {
@@ -329,13 +319,7 @@ pub mod pallet {
                 duration,
             });
 
-            // Get and increment offer ID
-            let offer_id = NextOfferId::<T>::mutate(|id| {
-                let current = *id;
-                *id = id.saturating_add(T::OfferId::one());
-                current
-            });
-
+            let offer_id = Self::get_next_offer_id();
             // Store offer
             Offers::<T>::insert(offer_id, offer);
 
@@ -357,15 +341,7 @@ pub mod pallet {
             payment_type: PaymentType<T>,
         ) -> DispatchResult {
             let seller = ensure_signed(origin)?;
-
-            // Ensure caller owns the NFT
-            let nft = Nfts::<T>::get(nft_id).ok_or(Error::<T>::NftNotFound)?;
-            ensure!(nft.owner == seller, Error::<T>::NotNftOwner);
-            // Ensure NFT not in escrow
-            ensure!(
-                !EscrowedNfts::<T>::contains_key(nft_id),
-                Error::<T>::NftInEscrow
-            );
+            Self::validate_nft_for_offer(nft_id, &seller)?;
 
             // Check no active licenses exist
             let existing_contracts = NFTContracts::<T>::get(nft_id);
@@ -380,12 +356,7 @@ pub mod pallet {
                 payment_type,
             });
 
-            // Get and increment offer ID
-            let offer_id = NextOfferId::<T>::mutate(|id| {
-                let current = *id;
-                *id = id.saturating_add(T::OfferId::one());
-                current
-            });
+            let offer_id = Self::get_next_offer_id();
 
             // Store offer
             Offers::<T>::insert(offer_id, offer);
@@ -412,12 +383,16 @@ pub mod pallet {
             // Handle payment
             match &license_offer.payment_type {
                 PaymentType::OneTime(amount) => {
-                    Self::process_payment(&licensee, &license_offer.licensor, amount.clone())?;
+                    Self::handle_initial_payment(
+                        &licensee,
+                        &license_offer.licensor,
+                        amount.clone(),
+                    )?;
                 }
                 PaymentType::Periodic {
                     amount_per_payment, ..
                 } => {
-                    Self::process_payment(
+                    Self::handle_initial_payment(
                         &licensee,
                         &license_offer.licensor,
                         amount_per_payment.clone(),
@@ -465,7 +440,7 @@ pub mod pallet {
             match purchase_offer.payment_type {
                 PaymentType::OneTime(amount) => {
                     // Process full payment
-                    Self::process_payment(&buyer, &purchase_offer.seller, amount.clone())?;
+                    Self::handle_initial_payment(&buyer, &purchase_offer.seller, amount.clone())?;
 
                     // Transfer NFT ownership
                     Nfts::<T>::mutate(purchase_offer.nft_id, |maybe_nft| {
@@ -496,19 +471,14 @@ pub mod pallet {
                     amount_per_payment, ..
                 } => {
                     // Process first payment
-                    Self::process_payment(
+                    Self::handle_initial_payment(
                         &buyer,
                         &purchase_offer.seller,
                         amount_per_payment.clone(),
                     )?;
 
                     // Put NFT in escrow
-                    EscrowedNfts::<T>::insert(&purchase_offer.nft_id, &purchase_offer.seller);
-                    // emit event
-                    Self::deposit_event(Event::NftEscrowed {
-                        nft_id: purchase_offer.nft_id.clone(),
-                        owner: purchase_offer.seller.clone(),
-                    });
+                    Self::escrow_nft(purchase_offer.nft_id, &purchase_offer.seller);
 
                     // Create active purchase contract
                     let active_purchase = purchase_offer.init(buyer.clone());
@@ -616,9 +586,9 @@ pub mod pallet {
             // Handle completion if all payments are made
             if schedule.payments_due.is_zero() {
                 let total_paid = match payment_type {
-                    PaymentType::Periodic { amount_per_payment, .. } => {
-                        *amount_per_payment * schedule.payments_made.into()
-                    },
+                    PaymentType::Periodic {
+                        amount_per_payment, ..
+                    } => *amount_per_payment * schedule.payments_made.into(),
                     PaymentType::OneTime(amount) => *amount,
                 };
 
@@ -654,55 +624,40 @@ pub mod pallet {
 
             // Get and validate contract
             let contract = Contracts::<T>::get(contract_id).ok_or(Error::<T>::ContractNotFound)?;
-
             let license = match contract {
                 Contract::License(l) => l,
                 Contract::Purchase(_) => return Err(Error::<T>::NotALicenseContract.into()),
             };
 
-            // check if license is active
+            // Check if license is active and expired
             ensure!(
                 license.status == LicenseStatus::Active,
                 Error::<T>::LicenseNotActive
             );
-
-            // Check if license has expired
             let current_block = frame_system::Pallet::<T>::block_number();
-            let expiry_block = license.start_block + license.duration;
-            ensure!(current_block >= expiry_block, Error::<T>::LicenseNotExpired);
+            ensure!(
+                current_block >= license.start_block + license.duration,
+                Error::<T>::LicenseNotExpired
+            );
+
+            let payments_made = license
+                .payment_schedule
+                .map_or(One::one(), |schedule| schedule.payments_made);
 
             // Calculate total paid
-            let total_paid = match &license.payment_type {
-                PaymentType::Periodic {
-                    amount_per_payment, ..
-                } => {
-                    let schedule = license
-                        .payment_schedule
-                        .as_ref()
-                        .expect("Payment schedule must exist for periodic payments");
-                    *amount_per_payment * schedule.payments_made.into()
-                }
-                PaymentType::OneTime(amount) => *amount,
-            };
+            let total_paid = Self::calculate_total_paid(&license.payment_type, payments_made);
 
-            // Remove from NFT contracts list
-            NFTContracts::<T>::mutate(license.nft_id, |contracts| {
-                contracts.retain(|&id| id != contract_id);
-            });
+            // Cleanup contract
+            Self::cleanup_contract(contract_id, license.nft_id);
 
-            // Remove from active contracts
-            Contracts::<T>::remove(contract_id);
-
-            // Emit comprehensive expiry event
+            // Emit expiry event
             Self::deposit_event(Event::ContractExpired {
                 contract_id,
                 contract_type: ContractType::License,
                 nft_id: license.nft_id,
-                offered_by: license.licensor.clone(),
-                accepted_by: license.licensee.clone(),
-                payments_made: license
-                    .payment_schedule
-                    .map_or(One::one(), |schedule| schedule.payments_made),
+                offered_by: license.licensor,
+                accepted_by: license.licensee,
+                payments_made,
                 total_paid,
             });
 
@@ -750,22 +705,15 @@ pub mod pallet {
                 }
             });
 
-            // Calculate total paid
-            let total_paid = match purchase.payment_type {
-                PaymentType::Periodic { amount_per_payment, .. } => {
-                    let schedule = purchase.payment_schedule
-                        .as_ref()
-                        .expect("Payment schedule must exist for periodic payments");
-                    amount_per_payment * schedule.payments_made.into()
-                },
-                PaymentType::OneTime(amount) => amount,
-            };
+            let payments_made = purchase
+                .payment_schedule
+                .map_or(One::one(), |schedule| schedule.payments_made);
 
-            // Remove contract and update NFT contracts list
-            Contracts::<T>::remove(contract_id);
-            NFTContracts::<T>::mutate(purchase.nft_id, |contracts| {
-                contracts.retain(|&id| id != contract_id);
-            });
+            // Calculate total paid
+            let total_paid = Self::calculate_total_paid(&purchase.payment_type, payments_made);
+
+            // Cleanup contract
+            Self::cleanup_contract(contract_id, purchase.nft_id);
 
             // Emit contract completion event
             Self::deposit_event(Event::ContractCompleted {
@@ -782,6 +730,30 @@ pub mod pallet {
     }
 
     impl<T: Config> Pallet<T> {
+        fn validate_nft_for_offer(
+            nft_id: T::NFTId,
+            owner: &T::AccountId,
+        ) -> Result<(), DispatchError> {
+            // Ensure caller owns the NFT
+            let nft = Nfts::<T>::get(nft_id).ok_or(Error::<T>::NftNotFound)?;
+            ensure!(nft.owner == *owner, Error::<T>::NotNftOwner);
+            // Ensure NFT not in escrow
+            ensure!(
+                !EscrowedNfts::<T>::contains_key(nft_id),
+                Error::<T>::NftInEscrow
+            );
+            Ok(())
+        }
+
+        // Shared offer ID generation
+        fn get_next_offer_id() -> T::OfferId {
+            NextOfferId::<T>::mutate(|id| {
+                let current = *id;
+                *id = id.saturating_add(T::OfferId::one());
+                current
+            })
+        }
+
         /// Process a payment from payer to payee
         /// Returns Ok(()) if successful, Err if failed
         pub fn process_payment(
@@ -809,6 +781,48 @@ pub mod pallet {
             });
 
             Ok(())
+        }
+
+        // Handles initial payment and emits payment event
+        fn handle_initial_payment(
+            payer: &T::AccountId,
+            payee: &T::AccountId,
+            amount: BalanceOf<T>,
+        ) -> DispatchResult {
+            Self::process_payment(payer, payee, amount)?;
+            Ok(())
+        }
+
+        // Handles NFT escrow process and emits event
+        fn escrow_nft(nft_id: T::NFTId, owner: &T::AccountId) {
+            EscrowedNfts::<T>::insert(&nft_id, owner);
+            Self::deposit_event(Event::NftEscrowed {
+                nft_id,
+                owner: owner.clone(),
+            });
+        }
+
+        // Cleanup contract and NFT contract mappings
+        fn cleanup_contract(contract_id: T::ContractId, nft_id: T::NFTId) {
+            // Remove from NFT contracts list
+            NFTContracts::<T>::mutate(nft_id, |contracts| {
+                contracts.retain(|&id| id != contract_id);
+            });
+            // Remove from active contracts
+            Contracts::<T>::remove(contract_id);
+        }
+
+        // Calculate total paid for a contract
+        fn calculate_total_paid(
+            payment_type: &PaymentType<T>,
+            payments_made: T::Index,
+        ) -> BalanceOf<T> {
+            match payment_type {
+                PaymentType::Periodic {
+                    amount_per_payment, ..
+                } => *amount_per_payment * payments_made.into(),
+                PaymentType::OneTime(amount) => *amount,
+            }
         }
     }
 
