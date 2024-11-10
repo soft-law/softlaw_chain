@@ -5,7 +5,6 @@ use crate::{
     types::{Contract, LicenseStatus, PaymentType},
 };
 use frame_support::{assert_noop, assert_ok};
-use frame_support::traits::Currency;
 
 
 // Failure Tests
@@ -33,7 +32,7 @@ fn fail_accept_wrong_offer_type() {
             nft_id,
             create_one_time_payment_type(),
         ));
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Try to accept as license
         assert_noop!(
@@ -58,7 +57,7 @@ fn fail_accept_license_insufficient_balance_onetime() {
             false,
             100u32.into()
         ));
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Try to accept offer without sufficient balance
         assert_noop!(
@@ -87,7 +86,7 @@ fn fail_accept_license_insufficient_balance_periodic() {
             false,
             100u32.into()
         ));
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Try to accept offer without sufficient balance for first payment
         assert_noop!(
@@ -100,106 +99,6 @@ fn fail_accept_license_insufficient_balance_periodic() {
 // Success Tests
 #[test]
 fn success_accept_onetime_license() {
-    new_test_ext().execute_with(|| {
-        let owner = 1u64;
-        let licensee = 2u64;
-        let nft_id = create_nft(owner);
-
-        // Create license offer
-        assert_ok!(IPPallet::offer_license(
-            RuntimeOrigin::signed(owner),
-            nft_id,
-            create_one_time_payment_type(),
-            false, // non-exclusive
-            100u32.into()
-        ));
-        let offer_id = IPPallet::next_offer_id() - 1;
-
-        // Accept offer
-        assert_ok!(IPPallet::accept_license(
-            RuntimeOrigin::signed(licensee),
-            offer_id
-        ));
-
-        // Verify contract created
-        let contracts = IPPallet::nft_contracts(nft_id);
-        assert_eq!(contracts.len(), 1);
-        let contract_id = contracts[0];
-
-        // Verify contract details
-        if let Some(Contract::License(license)) = IPPallet::contracts(contract_id) {
-            assert_eq!(license.licensee, licensee);
-            assert_eq!(license.licensor, owner);
-            assert_eq!(license.nft_id, nft_id);
-            assert_eq!(license.status, LicenseStatus::Active);
-            assert_eq!(license.payment_schedule, None); // One-time payment has no schedule
-        } else {
-            panic!("Contract not found or wrong type");
-        }
-
-        // Verify events
-        System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
-            offer_id,
-            licensee,
-        }));
-    });
-}
-
-#[test]
-fn success_accept_periodic_license() {
-    new_test_ext().execute_with(|| {
-        let owner = 1u64;
-        let licensee = 2u64;
-        let nft_id = create_nft(owner);
-
-        // Create periodic license offer
-        assert_ok!(IPPallet::offer_license(
-            RuntimeOrigin::signed(owner),
-            nft_id,
-            create_periodic_payment_type(),
-            false,
-            100u32.into()
-        ));
-        let offer_id = IPPallet::next_offer_id() - 1;
-
-        // Accept offer
-        assert_ok!(IPPallet::accept_license(
-            RuntimeOrigin::signed(licensee),
-            offer_id
-        ));
-
-        // Verify contract created
-        let contracts = IPPallet::nft_contracts(nft_id);
-        assert_eq!(contracts.len(), 1);
-        let contract_id = contracts[0];
-
-        // Verify contract details
-        if let Some(Contract::License(license)) = IPPallet::contracts(contract_id) {
-            assert_eq!(license.licensee, licensee);
-            assert_eq!(license.licensor, owner);
-            assert_eq!(license.nft_id, nft_id);
-            assert_eq!(license.status, LicenseStatus::Active);
-            assert!(license.payment_schedule.is_some()); // Periodic payment has schedule
-            
-            let schedule = license.payment_schedule.unwrap();
-            assert_eq!(schedule.payments_made, 0u32);
-            assert_eq!(schedule.payments_due, 10u32);
-            assert!(schedule.missed_payments.is_none());
-            assert!(schedule.penalty_amount.is_none());
-        } else {
-            panic!("Contract not found or wrong type");
-        }
-
-        // Verify events
-        System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
-            offer_id,
-            licensee,
-        }));
-    });
-}
-
-#[test]
-fn success_accept_license_with_payment_onetime() {
     new_test_ext().execute_with(|| {
         let owner = 1u64;
         let licensee = 2u64;
@@ -217,7 +116,7 @@ fn success_accept_license_with_payment_onetime() {
             false,
             100u32.into()
         ));
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Accept offer
         assert_ok!(IPPallet::accept_license(
@@ -235,6 +134,21 @@ fn success_accept_license_with_payment_onetime() {
             licensee_initial_balance - payment_amount
         );
 
+        // Verify contract state
+        let contracts = IPPallet::nft_contracts(nft_id);
+        assert_eq!(contracts.len(), 1);
+        let contract_id = contracts[0];
+
+        if let Some(Contract::License(license)) = IPPallet::contracts(contract_id) {
+            assert_eq!(license.licensee, licensee);
+            assert_eq!(license.licensor, owner);
+            assert_eq!(license.nft_id, nft_id);
+            assert_eq!(license.status, LicenseStatus::Active);
+            assert!(license.payment_schedule.is_none());
+        } else {
+            panic!("Contract not found or wrong type");
+        }
+
         // Verify events
         System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
             offer_id,
@@ -249,7 +163,7 @@ fn success_accept_license_with_payment_onetime() {
 }
 
 #[test]
-fn success_accept_license_with_payment_periodic() {
+fn success_accept_periodic_license() {
     new_test_ext().execute_with(|| {
         let owner = 1u64;
         let licensee = 2u64;
@@ -271,7 +185,7 @@ fn success_accept_license_with_payment_periodic() {
             false,
             100u32.into()
         ));
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Accept offer
         assert_ok!(IPPallet::accept_license(
@@ -279,7 +193,7 @@ fn success_accept_license_with_payment_periodic() {
             offer_id
         ));
 
-        // Verify first payment balances
+        // Verify balances after first payment
         assert_eq!(
             Balances::free_balance(owner),
             owner_initial_balance + payment_amount
@@ -288,6 +202,21 @@ fn success_accept_license_with_payment_periodic() {
             Balances::free_balance(licensee),
             licensee_initial_balance - payment_amount
         );
+
+        // Verify contract state
+        let contracts = IPPallet::nft_contracts(nft_id);
+        assert_eq!(contracts.len(), 1);
+        let contract_id = contracts[0];
+
+        if let Some(Contract::License(license)) = IPPallet::contracts(contract_id) {
+            let schedule = license.payment_schedule.unwrap();
+            assert_eq!(schedule.payments_made, 1u32);
+            assert_eq!(schedule.payments_due, 9u32);
+            assert!(schedule.missed_payments.is_none());
+            assert!(schedule.penalty_amount.is_none());
+            assert_eq!(schedule.frequency, 10u64);
+            assert_eq!(schedule.next_payment_block, frame_system::Pallet::<Test>::block_number() + 10u64);
+        }
 
         // Verify events
         System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
@@ -299,5 +228,6 @@ fn success_accept_license_with_payment_periodic() {
             payee: owner,
             amount: payment_amount.into(),
         }));
+
     });
 }

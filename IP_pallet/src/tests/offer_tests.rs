@@ -17,7 +17,7 @@ fn create_and_accept_periodic_purchase(owner: u64, buyer: u64, nft_id: u32) {
         nft_id,
         create_periodic_payment_type(),
     ));
-    let offer_id = IPPallet::next_offer_id() - 1;
+    let offer_id = get_last_event_offer_id();
     assert_ok!(IPPallet::accept_purchase(
         RuntimeOrigin::signed(buyer),
         offer_id
@@ -32,7 +32,7 @@ fn create_active_license(owner: u64, licensee: u64, nft_id: u32, is_exclusive: b
         is_exclusive,
         100u32.into()
     ));
-    let offer_id = IPPallet::next_offer_id() - 1;
+    let offer_id = get_last_event_offer_id();
     assert_ok!(IPPallet::accept_license(
         RuntimeOrigin::signed(licensee),
         offer_id
@@ -55,7 +55,7 @@ fn success_license_onetime_payment() {
             100u32.into()  // duration
         ));
 
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Check storage
         let stored_offer = IPPallet::offers(offer_id).unwrap();
@@ -93,7 +93,7 @@ fn success_license_periodic_payment() {
             100u32.into()
         ));
 
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Check storage and event
         assert!(IPPallet::offers(offer_id).is_some());
@@ -230,7 +230,7 @@ fn success_purchase_onetime_payment() {
             payment_type.clone(),
         ));
 
-        let offer_id = IPPallet::next_offer_id() - 1;
+        let offer_id = get_last_event_offer_id();
 
         // Check storage
         let stored_offer = IPPallet::offers(offer_id).unwrap();

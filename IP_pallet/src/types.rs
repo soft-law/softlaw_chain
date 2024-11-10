@@ -148,6 +148,16 @@ pub struct PaymentSchedule<T: Config> {
     pub payments_due: T::Index,
     pub missed_payments: Option<T::Index>,
     pub penalty_amount: Option<BalanceOf<T>>,
+    pub frequency: BlockNumberFor<T>,
+}
+
+
+impl<T: Config> PaymentSchedule<T> {
+    pub fn increment(&mut self) {
+        self.next_payment_block = self.next_payment_block + self.frequency;
+        self.payments_made = self.payments_made + 1u32.into();
+        self.payments_due = self.payments_due - 1u32.into();
+    }
 }
 
 impl<T: Config> LicenseOffer<T> {
@@ -161,11 +171,12 @@ impl<T: Config> LicenseOffer<T> {
                 frequency,
             } => Some(PaymentSchedule {
                 start_block,
-                next_payment_block: start_block + *frequency,
+                next_payment_block: start_block,
                 payments_made: T::Index::default(),
                 payments_due: *total_payments,
                 missed_payments: None,
                 penalty_amount: None,
+                frequency: *frequency,
             }),
             PaymentType::OneTime(_) => None,
         };
@@ -195,11 +206,12 @@ impl<T: Config> PurchaseOffer<T> {
                 frequency,
             } => Some(PaymentSchedule {
                 start_block,
-                next_payment_block: start_block + *frequency,
+                next_payment_block: start_block,
                 payments_made: T::Index::default(),
                 payments_due: *total_payments,
                 missed_payments: None,
                 penalty_amount: None,
+                frequency: *frequency,
             }),
             PaymentType::OneTime(_) => None,
         };
@@ -213,4 +225,5 @@ impl<T: Config> PurchaseOffer<T> {
             status: PurchaseStatus::InProgress,
         }
     }
+
 }

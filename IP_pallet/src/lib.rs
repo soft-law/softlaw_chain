@@ -92,12 +92,9 @@ pub mod pallet {
     pub type NFTContracts<T: Config> =
         StorageMap<_, Blake2_128Concat, T::NFTId, Vec<T::ContractId>, ValueQuery>;
 
-    #[pallet::storage]
-    #[pallet::getter(fn escrow)]
-    pub type Escrow<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::NFTId, (T::AccountId, BalanceOf<T>)>;
 
     #[pallet::storage]
+    #[pallet::getter(fn escrowed_nfts)] 
     pub type EscrowedNfts<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, T::AccountId>;
 
     #[pallet::event]
@@ -196,7 +193,6 @@ pub mod pallet {
         // NFT state errors
         NftNotFound,
         NotNftOwner,
-        NftAlreadyEscrowed,
         NftInEscrow,
 
         // Contract/offer errors
@@ -379,13 +375,14 @@ pub mod pallet {
                 Offer::License(o) => o,
                 _ => return Err(Error::<T>::NotALicenseOffer.into()),
             };
+            let mut active_license = license_offer.init(licensee.clone());
 
             // Handle payment
-            match &license_offer.payment_type {
+            match &active_license.payment_type {
                 PaymentType::OneTime(amount) => {
                     Self::process_payment(
                         &licensee,
-                        &license_offer.licensor,
+                        &active_license.licensor,
                         amount.clone(),
                     ).map_err(|_| Error::<T>::InsufficientBalance)?;
                 }
@@ -394,14 +391,15 @@ pub mod pallet {
                 } => {
                     Self::process_payment(
                         &licensee,
-                        &license_offer.licensor,
+                        &active_license.licensor,
                         amount_per_payment.clone(),
                     ).map_err(|_| Error::<T>::InsufficientBalance)?;
+                    active_license.payment_schedule.as_mut().unwrap().increment();
                 }
             }
 
             // Create active license
-            let active_license = license_offer.init(licensee.clone());
+            
             let contract_id = T::ContractId::from(offer_id);
 
             Contracts::<T>::insert(contract_id, Contract::License(active_license.clone()));
@@ -482,8 +480,8 @@ pub mod pallet {
                     Self::escrow_nft(purchase_offer.nft_id, &purchase_offer.seller);
 
                     // Create active purchase contract
-                    let active_purchase = purchase_offer.init(buyer.clone());
-
+                    let mut active_purchase = purchase_offer.init(buyer.clone());
+                    active_purchase.payment_schedule.as_mut().unwrap().increment();
                     Contracts::<T>::insert(
                         T::ContractId::from(offer_id),
                         Contract::Purchase(active_purchase.clone()),
