@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UniqueProvider from "@/context/unique";
-import IpfsProvider from "@/context/ipfs";
+
 import InnovationProvider, { useInnovationContext } from "@/context/innovation";
 import CollectionPage from "./collection";
 import NFT2 from "./nft/ipDetails";
@@ -180,10 +180,8 @@ function NFTContent() {
 // Main Dashboard component that provides the context
 export default function InnovationPage() {
   return (
-    <IpfsProvider>
-      {/* <UniqueProvider> */}
+    
       <NFTContent />
-      {/* </UniqueProvider> */}
-    </IpfsProvider>
+
   );
 }

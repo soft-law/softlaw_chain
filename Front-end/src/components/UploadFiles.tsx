@@ -1,7 +1,8 @@
 import React, { useState, ChangeEvent, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useIpfs } from '../context/ipfs';
+
 import uploadFilePinata from '../utils/pinataPin';
+import { useInnovationContext } from '@/context/innovation';
 
 interface FileUploadResult {
   IpfsHash?: string;
@@ -12,7 +13,7 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
-  const { ipfsHashes, setIpfsHashes, setImageHash, setImagesLinks, imagesLinks } = useIpfs();
+  const { ipfsHashes, setIpfsHashes, setImageHash, setImagesLinks, imagesLinks } = useInnovationContext();
 
   const handleIpfsHashes = useCallback(() => {
     const hashesArray = ipfsHashes ? ipfsHashes.split(',') : [];
@@ -37,11 +38,22 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
     setSelectedFiles(files);
 
     if (files.length === 0) {
-      // toast.info("No files selected");
+      toast({
+        title: "No Files",
+        description: "No Files Selected",
+        variant: "destructive",
+      });
     } else {
-      // toast.info(`${files.length} file(s) selected`);
+      toast({
+        title: "Files Selected",
+        description: "`${files.length} file(s) selected`",
+        className: "bg-[#252525] text-white border-[#373737]",
+      });
     }
-  };
+
+    
+  }
+  
 
   const uploadImagesToIPFS = async (files: File[]): Promise<string[]> => {
     try {
@@ -88,7 +100,11 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
 };
 
   const handleUpload = async () => {
-    // toast.info("Uploading your files");
+    toast({
+      title: "Uploading your files",
+      description: "`Uploading ${files.length} file(s) selected`",
+      className: "bg-[#252525] text-white border-[#373737]",
+    });
 
     try {
       const newImageHashes = await uploadImagesToIPFS(selectedFiles);
@@ -97,7 +113,11 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
 
     } catch (error) {
       console.error("Error uploading files:", error);
-      // toast.error("Error uploading files");
+      toast({
+        title: "Error Uploading",
+        description: `Error uploading files ${error}`,
+        variant: 'destructive'
+      });
     }
   };
 

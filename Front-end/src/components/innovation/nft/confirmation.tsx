@@ -1,22 +1,25 @@
 "use client";
 import React from "react";
-import ReusableHeading from "../textComponent";
-import TypesComponent from "../TypesProps";
-import Footer from "../Footer";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
+import MintNftUnique from "./mintUnique";
+import { useInnovationContext } from "@/context/innovation";
+import { ChainSelector } from "./chainSelector";
+// import Footer from "../Footer";
 
 interface ConfirmationModalProps {
-  formData: any; // Accept the global form state as a prop
+
   onClose: () => void; // Function to close the modal
   onEditPage: (page: number) => void; // Function to allow editing specific page
-  onSubmit: () => void; // Function to handle final form submission
+
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
-  formData,
   onClose,
   onEditPage,
-  onSubmit,
 }) => {
+
+ const {chain, setChain} = useInnovationContext();
   // Handle both close and edit in one function
   const handleEditPage = (page: number) => {
     const tabKeys = ["collections", "nfts", "contracts"];
@@ -24,12 +27,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     onEditPage(page); // Open the page to edit
     onClose(); // Close the modal
   };
-
-  // const handleSubmit = () => {
-  //   // Handle final form submission
-  //   console.log("Final form data:", formData);
-  //   handleOpenModal();
-  // };
 
   return (
     <>
@@ -59,14 +56,14 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                               text="Types of Intellectual Property"
                             />
 
-                            <TypesComponent
+                            {/* <TypesComponent
                               className="text-[#8A8A8A]"
                               text={`
                           ${
                             formData.IpRegistries.TypeOfIntellectualProperty ||
                             "N/A"
                           }`}
-                            />
+                            /> */}
                           </div>
 
                           <div className="flex flex-col gap-[8px]">
@@ -75,11 +72,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                               text="Reference Number"
                             />
 
-                            <TypesComponent
+                            {/* <TypesComponent
                               className="text-[#8A8A8A]"
                               text={`
                       ${formData.IpRegistries.ReferenceNumber || "N/A"}`}
-                            />
+                            /> */}
 
                             {/* <p>
                       Reference Number:{" "}
@@ -92,13 +89,13 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                               className="font-bold"
                               text="Reference Link"
                             />
-
+{/* 
                             <TypesComponent
                               className="text-[#8A8A8A]"
                               text={`
                         ${formData.IpRegistries.ReferenceLink || "N/A"}
-                        `}
-                            />
+                        `} 
+                            /> */}
                           </div>
                         </div>
                         {/* page 1 ends */}
@@ -126,12 +123,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                               className="font-bold"
                               text="Types of Patent"
                             />
-                            <TypesComponent
+                            {/* <TypesComponent
                               className="text-[#8A8A8A]"
                               text={`${
                                 formData.Identity.TypeOfPatent || "N/A"
                               }`}
-                            />
+                            /> */}
                           </div>
                           {/* Types of patent start */}
 
@@ -141,10 +138,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                               className="font-bold"
                               text="Patent Title"
                             />
-                            <TypesComponent
+                            {/* <TypesComponent
                               className="text-[#8A8A8A]"
                               text={`${formData.Identity.PatentTitle || "N/A"}`}
-                            />
+                            /> */}
                           </div>
                           {/* Patent Title ends */}
 
@@ -156,12 +153,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                                 className="font-bold"
                                 text="Patent Number"
                               />
-                              <TypesComponent
+                              {/* <TypesComponent
                                 className="text-[#8A8A8A]"
                                 text={`${
                                   formData.Identity.PatentNumber || "N/A"
                                 }`}
-                              />
+                              /> */}
                             </div>
                             {/* patent number ends */}
 
@@ -171,12 +168,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                                 className="font-bold "
                                 text="Filling Date"
                               />
-                              <TypesComponent
+                              {/* <TypesComponent
                                 className="text-[#8A8A8A]"
                                 text={`${
                                   formData.Identity?.FillingDate || "N/A"
                                 }`}
-                              />
+                              /> */}
                             </div>
                             {/* Filling Date ends */}
                           </div>
@@ -203,20 +200,20 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                     <div className="flex flex-col items-start gap-[60px] self-stretch">
                       <div className="flex flex-col gap-2">
                         <TypesComponent text="Thumbnail Image" />
-                        <p>
+                        {/* <p>
                           Files Uploaded:{""}{" "}
                           {formData.LegalContracts?.UploadFiles
                             ? formData.LegalContracts.UploadFile.name
                             : "No file uploaded"}
-                        </p>
+                        </p> */}
                       </div>
 
                       <div className="flex flex-col gap-2">
                         <TypesComponent text="NFT Name" className="font-bold" />
-                        <TypesComponent
+                        {/* <TypesComponent
                           className="text-[#8A8A8A]"
                           text={`${formData.LegalContracts?.NFTName || "N/A"}`}
-                        />
+                        /> */}
                       </div>
 
                       <div className="flex flex-col gap-2">
@@ -224,22 +221,22 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                           className="font-bold"
                           text="Collection"
                         />
-                        <TypesComponent
+                        {/* <TypesComponent
                           className="text-[#8A8A8A]"
                           text={`${
                             formData.LegalContracts?.Collection || "N/A"
                           }`}
-                        />
+                        /> */}
                       </div>
 
                       <div className="flex flex-col gap-2">
                         <TypesComponent text="Types of Protection" />
-                        <TypesComponent
+                        {/* <TypesComponent
                           className="text-[#8A8A8A]"
                           text={
                             formData.LegalContracts.TypesOfProtection || "N/A"
                           }
-                        />
+                        /> */}
                       </div>
 
                       <div className="flex flex-col gap-[8px]">
@@ -248,10 +245,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                           text="Description"
                         />
 
-                        <TypesComponent
+                        {/* <TypesComponent
                           className="text-[#8A8A8A]"
                           text={formData.LegalContracts?.Description || "N/A"}
-                        />
+                        /> */}
                       </div>
                     </div>
 
@@ -276,16 +273,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 Back
               </button>
 
-              <button
-                className="bg-[#D0DFE4] w-[160px] rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
-                onClick={onSubmit}
-              >
-                Confirm
-              </button>
+              <ChainSelector/>
+              {chain==="softlaw" && <button>MINT WITH SOFTLAW</button>}
+              
+              {chain ==="unique" && <MintNftUnique />}
+             
             </div>
           </div>
-
-          <Footer width="w-full" className="mt-[120px]" />
+          
+          {/* <Footer width="w-full" className="mt-[120px]" /> */}
         </div>
       </div>
     </>

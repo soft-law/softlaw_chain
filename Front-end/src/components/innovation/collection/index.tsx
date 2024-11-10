@@ -6,34 +6,37 @@ import ReusableHeading from "../../textComponent";
 import TypesComponent from "../../TypesProps";
 import VariousTypesButton from "../../VariousTypesButton";
 import MaxWidthWrapper from "../../MaxWidhWrapper";
-import ButtonMintCollection from "./mintButton";
 import { useInnovationContext } from "@/context/innovation";
+import uploadFilePinata from "@/utils/pinataPin";
+import Loading from "@/components/Loading";
+import MintUniqueCollection from "./mintUnique";
+import { ChainSelector } from "./chainSelector";
 
-interface CollectionData {
+interface CollectionType {
   name: string;
   description: string;
   prefix: string;
   image: string;
 }
-
-const COLLECTION_TYPES = {
-  PATENT: {
+const COLLECTION_TYPES = [
+  {
     name: "patent",
     description:
       "A collection to create Patents property proofs, giving exclusive right over the use.",
     prefix: "pt",
     image:
       "https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/QmY6zjfSQoS6txxrFPprrPG1rmuh4akkeAPDCspyDiR41j",
-  } ,
-  TRADEMARK: {
-    name: "trademark",
+  },
+  {
+    type: "trademark",
+    name: "trademark legal protection",
     description:
-      "A collection to create TradeMarks property proofs, giving exclusive rights over the use.",
+      "A collection to create and Manage TradeMarks property proofs, giving exclusive rights to the owner over the use.",
     prefix: "TM",
     image:
       "https://copper-ready-guanaco-464.mypinata.cloud/ipfs/QmTv2MpubcyxaRguzNMCvQ9pQaqfxgbcxgqLLkCfsE7wcF",
   },
-  COPYRIGHT: {
+  {
     name: "copyright",
     description:
       "A collection to create Copyright property proofs, giving exclusive rights over the use.",
@@ -41,29 +44,42 @@ const COLLECTION_TYPES = {
     image:
       "https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/QmUAFzr4JvuvZH6dbVHGDCcVdVd3ka9C5Aiv3axJc34tfy",
   },
-} as const;
+];
 
 export default function CollectionPage() {
-  // const [collection, setCollection] = useState<CollectionData>({
-  //   name: "",
-  //   description: "",
-  //   prefix: "",
-  //   image: "",
-  // });
-
-
-  const {collection, setCollection} = useInnovationContext()
   const [activeButton, setActiveButton] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const { selectedTabInnovation, setSelectedTabInnovation } =
-  useInnovationContext(); 
+  const {
+    selectedTabInnovation,
+    setSelectedTabInnovation,
+    collection,
+    setCollection,
+    nft,
+    setNft,
+    nftMetadata,
+    setNftMetadata,
+    collectionMetadata,
+    setCollectionMetadata,
+    metadataHash,
+    setMetadataHash,
+    ipfsHashes,
+    setIpfsHashes,
+    imageHash,
+    setImageHash,
+    imagesLinks,
+    setImagesLinks,
+    loading, setLoading
+  } = useInnovationContext();
 
   const { toast } = useToast();
 
-  const handleCollectionSelect = (type: keyof typeof COLLECTION_TYPES) => {
+  const handleCollectionSelect = (
+    e: React.MouseEvent<HTMLDivElement>,
+    value: CollectionType
+  ) => {
+    e.preventDefault();
     try {
-      setCollection(COLLECTION_TYPES[type]);
-      setActiveButton(type);
+      setCollection(value);
+      setLoading(true);
       toast({
         title: "Collection Selected",
         description: "Collection Selected",
@@ -76,6 +92,35 @@ export default function CollectionPage() {
         description: "Select a Collection Type",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  const handleUploadMetadata = async () => {
+    try {
+      // Convertir metadata a Blob
+      const metadataBlob = new Blob([JSON.stringify(nftMetadata)], {
+        type: "application/json",
+      });
+
+      // Convertir Blob a File
+      const metadataFile = new File([metadataBlob], "metadata.json", {
+        type: "application/json",
+      });
+
+      const metadataCid = await uploadFilePinata(metadataFile);
+      const metadataUrl = `https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/${metadataCid}`;
+      console.log(
+        "CID del JSON con todos los enlaces de imágenes:",
+        metadataUrl
+      );
+      setCollectionMetadata(metadataCid);
+
+      return metadataCid;
+    } catch (error) {
+      console.error("Error uploading metadata:", error);
+      return [];
     }
   };
 
@@ -90,6 +135,7 @@ export default function CollectionPage() {
 
   return (
     <div className="flex-1 overflow-y-auto  pb-24 bg-[#1C1A11]">
+        {loading && <Loading />}
       <MaxWidthWrapper className="min-h-screen flex flex-col ">
         <main className="px-4 py-24">
           <div className="max-w-7xl mx-auto space-y-16">
@@ -112,17 +158,13 @@ export default function CollectionPage() {
                     width="full"
                     text={value.name}
                     detail={value.description}
-                    onClick={() =>
-                      handleCollectionSelect(
-                        key as keyof typeof COLLECTION_TYPES
-                      )
-                    }
+                    onClick={(e) => handleCollectionSelect(e, value)} // Updated this line
                   />
                 ))}
               </div>
             </section>
 
-            {collection?.name && (
+            {collection && (
               <section className="bg-[#252525] p-6 rounded-lg mt-8">
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   Selected Collection
@@ -157,11 +199,8 @@ export default function CollectionPage() {
               >
                 Cancel
               </Link>
-              <ButtonMintCollection
-                loading={loading}
-                setLoading={setLoading}
-                // collection={collection}
-              />
+            
+              <ChainSelector/>
             </div>
           </div>
         </main>
