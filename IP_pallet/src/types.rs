@@ -64,13 +64,6 @@ where
 }
 
 
-#[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
-pub enum RevokeReason {
-    PaymentFailure,
-    TermsViolation,
-    Other,
-}
-
 #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 #[scale_info(skip_type_params(T))]
 pub struct NFT<T: Config> {
