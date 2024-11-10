@@ -290,7 +290,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000)]
-        #[pallet::call_index(2)]
+        #[pallet::call_index(1)]
         pub fn offer_license(
             origin: OriginFor<T>,
             nft_id: T::NFTId,
@@ -340,7 +340,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000)]
-        #[pallet::call_index(3)]
+        #[pallet::call_index(2)]
         pub fn offer_purchase(
             origin: OriginFor<T>,
             nft_id: T::NFTId,
@@ -374,7 +374,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000)]
-        #[pallet::call_index(4)]
+        #[pallet::call_index(3)]
         pub fn accept_license(origin: OriginFor<T>, offer_id: T::OfferId) -> DispatchResult {
             let licensee = ensure_signed(origin)?;
 
@@ -390,8 +390,7 @@ pub mod pallet {
             // Handle payment
             match &active_license.payment_type {
                 PaymentType::OneTime(amount) => {
-                    Self::process_payment(&licensee, &active_license.licensor, amount.clone())
-                        .map_err(|_| Error::<T>::InsufficientBalance)?;
+                    Self::process_payment(&licensee, &active_license.licensor, amount.clone())?;
                 }
                 PaymentType::Periodic {
                     amount_per_payment, ..
@@ -400,8 +399,7 @@ pub mod pallet {
                         &licensee,
                         &active_license.licensor,
                         amount_per_payment.clone(),
-                    )
-                    .map_err(|_| Error::<T>::InsufficientBalance)?;
+                    )?;
                     active_license
                         .payment_schedule
                         .as_mut()
@@ -435,7 +433,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000)]
-        #[pallet::call_index(5)]
+        #[pallet::call_index(4)]
         pub fn accept_purchase(origin: OriginFor<T>, offer_id: T::OfferId) -> DispatchResult {
             let buyer = ensure_signed(origin)?;
 
@@ -456,8 +454,7 @@ pub mod pallet {
             match purchase_offer.payment_type {
                 PaymentType::OneTime(amount) => {
                     // Process full payment
-                    Self::process_payment(&buyer, &purchase_offer.seller, amount.clone())
-                        .map_err(|_| Error::<T>::InsufficientBalance)?;
+                    Self::process_payment(&buyer, &purchase_offer.seller, amount.clone())?;
 
                     // Transfer NFT ownership
                     Nftss::<T>::mutate(purchase_offer.nft_id, |maybe_nft| {
@@ -531,7 +528,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000)]
-        #[pallet::call_index(7)]
+        #[pallet::call_index(5)]
         pub fn make_periodic_payment(
             origin: OriginFor<T>,
             contract_id: T::ContractId,
@@ -639,7 +636,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000)]
-        #[pallet::call_index(8)]
+        #[pallet::call_index(6)]
         pub fn expire_license(origin: OriginFor<T>, contract_id: T::ContractId) -> DispatchResult {
             let _ = ensure_signed(origin)?;
 
@@ -681,7 +678,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000)]
-        #[pallet::call_index(9)]
+        #[pallet::call_index(7)]
         pub fn complete_purchase(
             origin: OriginFor<T>,
             contract_id: T::ContractId,
@@ -787,7 +784,8 @@ pub mod pallet {
                 payee,
                 amount,
                 ExistenceRequirement::KeepAlive, // Prevent account deletion
-            )?;
+            )
+            .map_err(|_| Error::<T>::InsufficientBalance)?;
 
             // Emit payment event
             Self::deposit_event(Event::PaymentMade {
