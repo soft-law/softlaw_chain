@@ -1,34 +1,13 @@
 use crate::{
     mock::*,
     pallet::{Error, Event},
-    types::{Offer, PaymentType},
+    types::Offer,
+    tests::util::*
 };
 use frame_support::{assert_noop, assert_ok};
 
-// Helper functions
-fn create_nft(owner: u64) -> u32 {
-    let origin = RuntimeOrigin::signed(owner);
-    assert_ok!(IPPallet::mint_nft(
-        origin,
-        "Test NFT".into(),
-        "Test Description".into(),
-        "2023-05-01".into(),
-        "Test Jurisdiction".into()
-    ));
-    IPPallet::next_nft_id() - 1
-}
 
-fn create_periodic_payment_type() -> PaymentType<Test> {
-    PaymentType::Periodic {
-        amount_per_payment: 100u32.into(),
-        total_payments: 10u32,
-        frequency: 10u32.into(),
-    }
-}
 
-fn create_one_time_payment_type() -> PaymentType<Test> {
-    PaymentType::OneTime(1000u32.into())
-}
 
 // Add to existing helper functions
 fn create_and_accept_periodic_purchase(owner: u64, buyer: u64, nft_id: u32) {

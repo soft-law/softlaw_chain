@@ -9,8 +9,6 @@ pub mod pallet {
     use frame_support::traits::ExistenceRequirement;
     use frame_support::{pallet_prelude::*, traits::Currency, traits::Hooks};
     use frame_system::pallet_prelude::*;
-    use scale_info::prelude::format;
-    use scale_info::prelude::string::String;
     use sp_std::prelude::*;
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -221,6 +219,7 @@ pub mod pallet {
         PaymentNotDue,
         PaymentNotCompleted,
         NotPeriodicPayment,
+        InsufficientBalance,
     }
 
     #[pallet::call]
@@ -384,20 +383,20 @@ pub mod pallet {
             // Handle payment
             match &license_offer.payment_type {
                 PaymentType::OneTime(amount) => {
-                    Self::handle_initial_payment(
+                    Self::process_payment(
                         &licensee,
                         &license_offer.licensor,
                         amount.clone(),
-                    )?;
+                    ).map_err(|_| Error::<T>::InsufficientBalance)?;
                 }
                 PaymentType::Periodic {
                     amount_per_payment, ..
                 } => {
-                    Self::handle_initial_payment(
+                    Self::process_payment(
                         &licensee,
                         &license_offer.licensor,
                         amount_per_payment.clone(),
-                    )?;
+                    ).map_err(|_| Error::<T>::InsufficientBalance)?;
                 }
             }
 
@@ -441,7 +440,8 @@ pub mod pallet {
             match purchase_offer.payment_type {
                 PaymentType::OneTime(amount) => {
                     // Process full payment
-                    Self::handle_initial_payment(&buyer, &purchase_offer.seller, amount.clone())?;
+                    Self::process_payment(&buyer, &purchase_offer.seller, amount.clone())
+                        .map_err(|_| Error::<T>::InsufficientBalance)?;
 
                     // Transfer NFT ownership
                     Nfts::<T>::mutate(purchase_offer.nft_id, |maybe_nft| {
@@ -472,7 +472,7 @@ pub mod pallet {
                     amount_per_payment, ..
                 } => {
                     // Process first payment
-                    Self::handle_initial_payment(
+                    Self::process_payment(
                         &buyer,
                         &purchase_offer.seller,
                         amount_per_payment.clone(),
@@ -783,15 +783,6 @@ pub mod pallet {
             Ok(())
         }
 
-        // Handles initial payment and emits payment event
-        fn handle_initial_payment(
-            payer: &T::AccountId,
-            payee: &T::AccountId,
-            amount: BalanceOf<T>,
-        ) -> DispatchResult {
-            Self::process_payment(payer, payee, amount)?;
-            Ok(())
-        }
 
         // Handles NFT escrow process and emits event
         fn escrow_nft(nft_id: T::NFTId, owner: &T::AccountId) {
