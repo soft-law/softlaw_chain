@@ -9,9 +9,9 @@ pub mod pallet {
     use frame_support::traits::ExistenceRequirement;
     use frame_support::{pallet_prelude::*, traits::Currency, traits::Hooks};
     use frame_system::pallet_prelude::*;
-    use sp_std::prelude::*;
     use scale_info::prelude::format;
     use scale_info::prelude::string::String;
+    use sp_std::prelude::*;
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
@@ -543,25 +543,20 @@ pub mod pallet {
                 Contracts::<T>::get(contract_id).ok_or(Error::<T>::ContractNotFound)?;
 
             // Get common fields based on contract type
-            let (status, payment_type, payment_schedule, nft_id, payee) = match &mut contract {
+            let (payment_type, payment_schedule, nft_id, payee) = match &mut contract {
                 Contract::License(license) => (
-                    license.status == LicenseStatus::Active,
                     &license.payment_type,
                     &mut license.payment_schedule,
                     license.nft_id,
                     license.licensor.clone(),
                 ),
                 Contract::Purchase(purchase) => (
-                    purchase.status == PurchaseStatus::InProgress,
                     &purchase.payment_type,
                     &mut purchase.payment_schedule,
                     purchase.nft_id,
                     purchase.seller.clone(),
                 ),
             };
-
-            // Ensure contract is active
-            ensure!(status, Error::<T>::LicenseNotActive);
 
             // Get payment schedule
             let schedule = payment_schedule
@@ -655,11 +650,6 @@ pub mod pallet {
                 Contract::Purchase(_) => return Err(Error::<T>::NotALicenseContract.into()),
             };
 
-            // Check if license is active and expired
-            ensure!(
-                license.status == LicenseStatus::Active,
-                Error::<T>::LicenseNotActive
-            );
             let current_block = frame_system::Pallet::<T>::block_number();
             ensure!(
                 current_block >= license.start_block + license.duration,
@@ -852,18 +842,16 @@ pub mod pallet {
             &T::AccountId,
         )> {
             match contract {
-                Contract::License(license) if license.status == LicenseStatus::Active => {
-                    license.payment_schedule.as_ref().map(|schedule| {
-                        (
-                            schedule,
-                            &license.payment_type,
-                            license.nft_id,
-                            &license.licensee,
-                            &license.licensor,
-                        )
-                    })
-                }
-                Contract::Purchase(purchase) if purchase.status == PurchaseStatus::InProgress => {
+                Contract::License(license) => license.payment_schedule.as_ref().map(|schedule| {
+                    (
+                        schedule,
+                        &license.payment_type,
+                        license.nft_id,
+                        &license.licensee,
+                        &license.licensor,
+                    )
+                }),
+                Contract::Purchase(purchase) => {
                     purchase.payment_schedule.as_ref().map(|schedule| {
                         (
                             schedule,
@@ -874,7 +862,6 @@ pub mod pallet {
                         )
                     })
                 }
-                _ => None,
             }
         }
 

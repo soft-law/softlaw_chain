@@ -2,7 +2,7 @@ use crate::{
     mock::*,
     pallet::{Error, Event},
     tests::util::*,
-    types::{Contract, PurchaseStatus, PaymentType, ContractType},
+    types::{Contract, PaymentType, ContractType},
 };
 use frame_support::{assert_noop, assert_ok};
 
@@ -212,7 +212,6 @@ fn success_accept_periodic_purchase() {
             assert_eq!(purchase.buyer, buyer);
             assert_eq!(purchase.seller, owner);
             assert_eq!(purchase.nft_id, nft_id);
-            assert_eq!(purchase.status, PurchaseStatus::InProgress);
             
             let schedule = purchase.payment_schedule.unwrap();
             assert_eq!(schedule.payments_made, 1u32);

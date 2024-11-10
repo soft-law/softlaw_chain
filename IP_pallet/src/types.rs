@@ -63,19 +63,6 @@ where
     }
 }
 
-#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
-pub enum LicenseStatus {
-    Active,
-    Completed,
-    Revoked,
-}
-
-#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
-pub enum PurchaseStatus {
-    InProgress,
-    Completed,
-    Cancelled,
-}
 
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
 pub enum RevokeReason {
@@ -124,7 +111,6 @@ pub struct License<T: Config> {
     pub payment_type: PaymentType<T>,
     pub payment_schedule: Option<PaymentSchedule<T>>,
     pub is_exclusive: bool,
-    pub status: LicenseStatus,
 }
 
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen, Debug)]
@@ -135,7 +121,6 @@ pub struct PurchaseContract<T: Config> {
     pub buyer: T::AccountId,
     pub payment_type: PaymentType<T>,
     pub payment_schedule: Option<PaymentSchedule<T>>,
-    pub status: PurchaseStatus,
 }
 
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
@@ -208,7 +193,6 @@ impl<T: Config> LicenseOffer<T> {
             payment_type: self.payment_type,
             payment_schedule,
             is_exclusive: self.is_exclusive,
-            status: LicenseStatus::Active,
         }
     }
 }
@@ -240,7 +224,6 @@ impl<T: Config> PurchaseOffer<T> {
             buyer,
             payment_type: self.payment_type,
             payment_schedule,
-            status: PurchaseStatus::InProgress,
         }
     }
 

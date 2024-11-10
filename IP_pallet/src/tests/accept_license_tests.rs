@@ -2,7 +2,7 @@ use crate::{
     mock::*,
     pallet::{Error, Event},
     tests::util::*,
-    types::{Contract, ContractType, LicenseStatus, PaymentType},
+    types::{Contract, ContractType, PaymentType},
 };
 use frame_support::{assert_noop, assert_ok};
 
@@ -143,7 +143,6 @@ fn success_accept_onetime_license() {
             assert_eq!(license.licensee, licensee);
             assert_eq!(license.licensor, owner);
             assert_eq!(license.nft_id, nft_id);
-            assert_eq!(license.status, LicenseStatus::Active);
             assert!(license.payment_schedule.is_none());
         } else {
             panic!("Contract not found or wrong type");
