@@ -1,34 +1,12 @@
 use crate::{
     mock::*,
     pallet::{Error, Event},
-    types::{Contract, License, LicenseStatus, NFT, Offer, PaymentType},
+    tests::util::*,
+    types::{Contract, LicenseStatus, PaymentType},
 };
 use frame_support::{assert_noop, assert_ok};
+use frame_support::traits::Currency;
 
-// Helper functions
-fn create_nft(owner: u64) -> u32 {
-    let origin = RuntimeOrigin::signed(owner);
-    assert_ok!(IPPallet::mint_nft(
-        origin,
-        "Test NFT".into(),
-        "Test Description".into(),
-        "2023-05-01".into(),
-        "Test Jurisdiction".into()
-    ));
-    IPPallet::next_nft_id() - 1
-}
-
-fn create_periodic_payment_type() -> PaymentType<Test> {
-    PaymentType::Periodic {
-        amount_per_payment: 100u32.into(),
-        total_payments: 10u32,
-        frequency: 10u32.into(),
-    }
-}
-
-fn create_one_time_payment_type() -> PaymentType<Test> {
-    PaymentType::OneTime(1000u32.into())
-}
 
 // Failure Tests
 #[test]
@@ -61,6 +39,60 @@ fn fail_accept_wrong_offer_type() {
         assert_noop!(
             IPPallet::accept_license(RuntimeOrigin::signed(licensee), offer_id),
             Error::<Test>::NotALicenseOffer
+        );
+    });
+}
+
+#[test]
+fn fail_accept_license_insufficient_balance_onetime() {
+    new_test_ext().execute_with(|| {
+        let owner = 1u64;
+        let poor_licensee = 4u64; // Account with no balance
+        let nft_id = create_nft(owner);
+
+        // Create license offer with one-time payment
+        assert_ok!(IPPallet::offer_license(
+            RuntimeOrigin::signed(owner),
+            nft_id,
+            PaymentType::OneTime(50_000u128.into()), // Amount greater than any initial balance
+            false,
+            100u32.into()
+        ));
+        let offer_id = IPPallet::next_offer_id() - 1;
+
+        // Try to accept offer without sufficient balance
+        assert_noop!(
+            IPPallet::accept_license(RuntimeOrigin::signed(poor_licensee), offer_id),
+            Error::<Test>::InsufficientBalance
+        );
+    });
+}
+
+#[test]
+fn fail_accept_license_insufficient_balance_periodic() {
+    new_test_ext().execute_with(|| {
+        let owner = 1u64;
+        let poor_licensee = 4u64; // Account with no balance
+        let nft_id = create_nft(owner);
+
+        // Create license offer with periodic payment
+        assert_ok!(IPPallet::offer_license(
+            RuntimeOrigin::signed(owner),
+            nft_id,
+            PaymentType::Periodic {
+                amount_per_payment: 50_000u128.into(), // Amount greater than any initial balance
+                total_payments: 10u32,
+                frequency: 10u32.into(),
+            },
+            false,
+            100u32.into()
+        ));
+        let offer_id = IPPallet::next_offer_id() - 1;
+
+        // Try to accept offer without sufficient balance for first payment
+        assert_noop!(
+            IPPallet::accept_license(RuntimeOrigin::signed(poor_licensee), offer_id),
+            Error::<Test>::InsufficientBalance
         );
     });
 }
@@ -162,6 +194,110 @@ fn success_accept_periodic_license() {
         System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
             offer_id,
             licensee,
+        }));
+    });
+}
+
+#[test]
+fn success_accept_license_with_payment_onetime() {
+    new_test_ext().execute_with(|| {
+        let owner = 1u64;
+        let licensee = 2u64;
+        let nft_id = create_nft(owner);
+        let payment_amount = 1_000u128;
+
+        let owner_initial_balance = Balances::free_balance(owner);
+        let licensee_initial_balance = Balances::free_balance(licensee);
+
+        // Create license offer
+        assert_ok!(IPPallet::offer_license(
+            RuntimeOrigin::signed(owner),
+            nft_id,
+            PaymentType::OneTime(payment_amount.into()),
+            false,
+            100u32.into()
+        ));
+        let offer_id = IPPallet::next_offer_id() - 1;
+
+        // Accept offer
+        assert_ok!(IPPallet::accept_license(
+            RuntimeOrigin::signed(licensee),
+            offer_id
+        ));
+
+        // Verify balances
+        assert_eq!(
+            Balances::free_balance(owner),
+            owner_initial_balance + payment_amount
+        );
+        assert_eq!(
+            Balances::free_balance(licensee),
+            licensee_initial_balance - payment_amount
+        );
+
+        // Verify events
+        System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
+            offer_id,
+            licensee,
+        }));
+        System::assert_has_event(RuntimeEvent::IPPallet(Event::PaymentMade {
+            payer: licensee,
+            payee: owner,
+            amount: payment_amount.into(),
+        }));
+    });
+}
+
+#[test]
+fn success_accept_license_with_payment_periodic() {
+    new_test_ext().execute_with(|| {
+        let owner = 1u64;
+        let licensee = 2u64;
+        let nft_id = create_nft(owner);
+        let payment_amount = 1_000u128;
+
+        let owner_initial_balance = Balances::free_balance(owner);
+        let licensee_initial_balance = Balances::free_balance(licensee);
+
+        // Create periodic license offer
+        assert_ok!(IPPallet::offer_license(
+            RuntimeOrigin::signed(owner),
+            nft_id,
+            PaymentType::Periodic {
+                amount_per_payment: payment_amount.into(),
+                total_payments: 10u32,
+                frequency: 10u32.into(),
+            },
+            false,
+            100u32.into()
+        ));
+        let offer_id = IPPallet::next_offer_id() - 1;
+
+        // Accept offer
+        assert_ok!(IPPallet::accept_license(
+            RuntimeOrigin::signed(licensee),
+            offer_id
+        ));
+
+        // Verify first payment balances
+        assert_eq!(
+            Balances::free_balance(owner),
+            owner_initial_balance + payment_amount
+        );
+        assert_eq!(
+            Balances::free_balance(licensee),
+            licensee_initial_balance - payment_amount
+        );
+
+        // Verify events
+        System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
+            offer_id,
+            licensee,
+        }));
+        System::assert_has_event(RuntimeEvent::IPPallet(Event::PaymentMade {
+            payer: licensee,
+            payee: owner,
+            amount: payment_amount.into(),
         }));
     });
 }
