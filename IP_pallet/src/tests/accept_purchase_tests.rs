@@ -33,7 +33,7 @@ fn fail_accept_wrong_offer_type() {
             false,
             100u32.into()
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Try to accept as purchase
         assert_noop!(
@@ -57,14 +57,14 @@ fn fail_accept_nft_already_escrowed() {
             nft_id,
             create_periodic_payment_type(),
         ));
-        let offer_id1 = get_last_event_offer_id();
+        let offer_id1 = get_last_offer_id();
 
         assert_ok!(IPPallet::offer_purchase(
             RuntimeOrigin::signed(owner),
             nft_id,
             create_one_time_payment_type(),
         ));
-        let offer_id2 = get_last_event_offer_id();
+        let offer_id2 = get_last_offer_id();
 
         // Accept first offer, putting NFT in escrow
         assert_ok!(IPPallet::accept_purchase(RuntimeOrigin::signed(buyer1), offer_id1));
@@ -90,7 +90,7 @@ fn fail_accept_purchase_insufficient_balance_onetime() {
             nft_id,
             PaymentType::OneTime(50_000u128.into()), // Amount greater than any initial balance
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Try to accept offer without sufficient balance
         assert_noop!(
@@ -118,7 +118,7 @@ fn success_accept_onetime_purchase() {
             nft_id,
             PaymentType::OneTime(payment_amount.into()),
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Accept purchase
         assert_ok!(IPPallet::accept_purchase(RuntimeOrigin::signed(buyer), offer_id));
@@ -183,7 +183,7 @@ fn success_accept_periodic_purchase() {
                 frequency: 10u32.into(),
             },
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Accept purchase
         assert_ok!(IPPallet::accept_purchase(RuntimeOrigin::signed(buyer), offer_id));
@@ -231,11 +231,12 @@ fn success_accept_periodic_purchase() {
             payee: owner,
             amount: payment_amount.into(),
         }));
-        System::assert_has_event(RuntimeEvent::IPPallet(Event::PeriodicPurchaseStarted {
-            offer_id,
+        System::assert_has_event(RuntimeEvent::IPPallet(Event::ContractCreated {
+            contract_id: contract_id,
+            contract_type: ContractType::Purchase,
             nft_id,
-            buyer,
-            seller: owner,
+            offered_by: owner,
+            accepted_by: buyer,
         }));
         System::assert_has_event(RuntimeEvent::IPPallet(Event::NftEscrowed {
             nft_id,

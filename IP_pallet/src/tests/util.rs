@@ -1,3 +1,5 @@
+use frame_support::assert_ok;
+
 use crate::pallet::Event;
 use crate::types::*;
 use crate::{mock::*, pallet::Config};
@@ -27,10 +29,40 @@ pub fn create_one_time_payment_type() -> PaymentType<Test> {
     PaymentType::OneTime(1000u32.into())
 }
 
-pub fn get_last_event_offer_id() -> <Test as Config>::OfferId {
+pub fn get_last_offer_id() -> <Test as Config>::OfferId {
     match System::events().last().unwrap().event {
         RuntimeEvent::IPPallet(Event::PurchaseOffered { offer_id, .. })
         | RuntimeEvent::IPPallet(Event::LicenseOffered { offer_id, .. }) => offer_id,
         _ => panic!("Expected Offer event"),
     }
+}
+
+pub fn get_last_contract_id() -> <Test as Config>::ContractId {
+    match System::events().last().unwrap().event {
+        RuntimeEvent::IPPallet(Event::ContractCreated { contract_id, .. }) => contract_id,
+        _ => panic!("Expected ContractCreated event"),
+    }
+}
+
+pub fn create_and_accept_periodic_purchase(
+    owner: <Test as frame_system::Config>::AccountId,
+    buyer: <Test as frame_system::Config>::AccountId,
+    nft_id: <Test as Config>::NFTId,
+) -> <Test as Config>::ContractId {
+    // Create purchase offer
+    assert_ok!(IPPallet::offer_purchase(
+        RuntimeOrigin::signed(owner),
+        nft_id,
+        create_periodic_payment_type(),
+    ));
+    let offer_id = get_last_offer_id();
+
+    // Accept purchase
+    assert_ok!(IPPallet::accept_purchase(
+        RuntimeOrigin::signed(buyer),
+        offer_id
+    ));
+
+    // Return contract ID
+    IPPallet::nft_contracts(nft_id)[0]
 }

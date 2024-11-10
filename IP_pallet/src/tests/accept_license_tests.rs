@@ -2,7 +2,7 @@ use crate::{
     mock::*,
     pallet::{Error, Event},
     tests::util::*,
-    types::{Contract, LicenseStatus, PaymentType},
+    types::{Contract, ContractType, LicenseStatus, PaymentType},
 };
 use frame_support::{assert_noop, assert_ok};
 
@@ -32,7 +32,7 @@ fn fail_accept_wrong_offer_type() {
             nft_id,
             create_one_time_payment_type(),
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Try to accept as license
         assert_noop!(
@@ -57,7 +57,7 @@ fn fail_accept_license_insufficient_balance_onetime() {
             false,
             100u32.into()
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Try to accept offer without sufficient balance
         assert_noop!(
@@ -86,7 +86,7 @@ fn fail_accept_license_insufficient_balance_periodic() {
             false,
             100u32.into()
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Try to accept offer without sufficient balance for first payment
         assert_noop!(
@@ -116,7 +116,7 @@ fn success_accept_onetime_license() {
             false,
             100u32.into()
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Accept offer
         assert_ok!(IPPallet::accept_license(
@@ -150,9 +150,12 @@ fn success_accept_onetime_license() {
         }
 
         // Verify events
-        System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
-            offer_id,
-            licensee,
+        System::assert_has_event(RuntimeEvent::IPPallet(Event::ContractCreated {
+            contract_id: contract_id,
+            contract_type: ContractType::License,
+            nft_id,
+            offered_by: owner,
+            accepted_by: licensee,
         }));
         System::assert_has_event(RuntimeEvent::IPPallet(Event::PaymentMade {
             payer: licensee,
@@ -185,7 +188,7 @@ fn success_accept_periodic_license() {
             false,
             100u32.into()
         ));
-        let offer_id = get_last_event_offer_id();
+        let offer_id = get_last_offer_id();
 
         // Accept offer
         assert_ok!(IPPallet::accept_license(
@@ -219,9 +222,12 @@ fn success_accept_periodic_license() {
         }
 
         // Verify events
-        System::assert_has_event(RuntimeEvent::IPPallet(Event::LicenseAccepted {
-            offer_id,
-            licensee,
+        System::assert_has_event(RuntimeEvent::IPPallet(Event::ContractCreated {
+            contract_id: contract_id,
+            contract_type: ContractType::License,
+            nft_id,
+            offered_by: owner,
+            accepted_by: licensee,
         }));
         System::assert_has_event(RuntimeEvent::IPPallet(Event::PaymentMade {
             payer: licensee,
