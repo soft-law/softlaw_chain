@@ -139,7 +139,6 @@ pub struct PurchaseContract<T: Config> {
 }
 
 #[derive(Clone, Encode, Decode, PartialEq, TypeInfo, MaxEncodedLen)]
-#[cfg_attr(feature = "std", derive(Debug))]
 #[scale_info(skip_type_params(T))]
 pub struct PaymentSchedule<T: Config> {
     pub start_block: BlockNumberFor<T>,
@@ -157,6 +156,25 @@ impl<T: Config> PaymentSchedule<T> {
         self.next_payment_block = self.next_payment_block + self.frequency;
         self.payments_made = self.payments_made + 1u32.into();
         self.payments_due = self.payments_due - 1u32.into();
+    }
+}
+
+impl<T: Config> core::fmt::Debug for PaymentSchedule<T>
+where
+    T::Index: core::fmt::Debug,
+    BlockNumberFor<T>: core::fmt::Debug,
+    BalanceOf<T>: core::fmt::Debug,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("PaymentSchedule")
+            .field("start_block", &self.start_block)
+            .field("next_payment_block", &self.next_payment_block)
+            .field("payments_made", &self.payments_made)
+            .field("payments_due", &self.payments_due)
+            .field("missed_payments", &self.missed_payments)
+            .field("penalty_amount", &self.penalty_amount)
+            .field("frequency", &self.frequency)
+            .finish()
     }
 }
 

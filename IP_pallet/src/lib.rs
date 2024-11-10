@@ -10,6 +10,8 @@ pub mod pallet {
     use frame_support::{pallet_prelude::*, traits::Currency, traits::Hooks};
     use frame_system::pallet_prelude::*;
     use sp_std::prelude::*;
+    use scale_info::prelude::format;
+    use scale_info::prelude::string::String;
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
@@ -67,7 +69,7 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn nfts)]
-    pub type Nfts<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, NFT<T>>;
+    pub type Nftss<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, NFT<T>>;
 
     #[pallet::storage]
     #[pallet::getter(fn next_nft_id)]
@@ -277,7 +279,7 @@ pub mod pallet {
                 jurisdiction: bounded_jurisdiction,
             };
 
-            Nfts::<T>::insert(id, nft);
+            Nftss::<T>::insert(id, nft);
 
             Self::deposit_event(Event::NftMinted {
                 owner: who,
@@ -458,7 +460,7 @@ pub mod pallet {
                         .map_err(|_| Error::<T>::InsufficientBalance)?;
 
                     // Transfer NFT ownership
-                    Nfts::<T>::mutate(purchase_offer.nft_id, |maybe_nft| {
+                    Nftss::<T>::mutate(purchase_offer.nft_id, |maybe_nft| {
                         if let Some(nft) = maybe_nft {
                             nft.owner = buyer.clone();
                         }
@@ -723,7 +725,7 @@ pub mod pallet {
             });
 
             // Transfer NFT ownership
-            Nfts::<T>::mutate(purchase.nft_id, |maybe_nft| {
+            Nftss::<T>::mutate(purchase.nft_id, |maybe_nft| {
                 if let Some(nft) = maybe_nft {
                     nft.owner = purchase.buyer.clone();
                 }
@@ -759,7 +761,7 @@ pub mod pallet {
             owner: &T::AccountId,
         ) -> Result<(), DispatchError> {
             // Ensure caller owns the NFT
-            let nft = Nfts::<T>::get(nft_id).ok_or(Error::<T>::NftNotFound)?;
+            let nft = Nftss::<T>::get(nft_id).ok_or(Error::<T>::NftNotFound)?;
             ensure!(nft.owner == *owner, Error::<T>::NotNftOwner);
             // Ensure NFT not in escrow
             ensure!(
