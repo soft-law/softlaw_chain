@@ -1,6 +1,47 @@
+//! # Intellectual Property (IP) Pallet
+//!
+//! A blockchain-based intellectual property management system supporting NFT minting,
+//! licensing, and purchase contracts with flexible payment options.
+//!
+//! ## Overview
+//! Enables IP rights management through NFTs with support for:
+//! - License and purchase contracts
+//! - One-time and periodic payments
+//! - Automatic payment tracking and penalties
+//! - NFT escrow system
+//!
+//! ## Extrinsics
+//!
+//! * [`mint_nft`](pallet::Pallet::mint_nft) - Create a new NFT
+//! * [`offer_license`](pallet::Pallet::offer_license) - Offer an NFT for licensing
+//! * [`offer_purchase`](pallet::Pallet::offer_purchase) - Offer an NFT for sale
+//! * [`accept_license`](pallet::Pallet::accept_license) - Accept a license offer
+//! * [`accept_purchase`](pallet::Pallet::accept_purchase) - Accept a purchase offer
+//! * [`make_periodic_payment`](pallet::Pallet::make_periodic_payment) - Make a scheduled payment
+//!
+//! ## Storage
+//! * [`Nfts`](palletNfts) - Storage for all NFTs in the system
+//! * [`NextNftId`](pallet::NextNftId) - Counter for generating unique NFT IDs
+//! * [`Offers`](pallet::Offers) - Storage for all active offers
+//! * [`Contracts`](pallet::Contracts) - Storage for all active contracts
+//! * [`NFTContracts`](pallet::NFTContracts) - Maps NFTs to their active contracts
+//! * [`EscrowedNfts`](pallet::EscrowedNfts) - Tracks NFTs currently in escrow
+//!
+//! ## Events
+//!
+//! See [`Event`](pallet::Event) for all events emitted by this pallet.
+//!
+//! ## Errors
+//!
+//! See [`Error`](pallet::Error) for all errors emitted by this pallet.
+//! See [`types`] module for detailed type definitions.
+//!
+//!
+//!
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
-mod types;
+pub mod types;
 
 #[frame_support::pallet(dev_mode)]
 pub mod pallet {
@@ -67,33 +108,63 @@ pub mod pallet {
     #[pallet::pallet]
     pub struct Pallet<T>(_);
 
+    /// Storage for all NFTs in the system
+    ///
+    /// Maps NFT IDs to their corresponding [`crate::types::NFT`] struct containing ownership
+    /// and metadata information.
     #[pallet::storage]
     #[pallet::getter(fn nfts)]
-    pub type Nftss<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, NFT<T>>;
+    pub type Nfts<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, NFT<T>>;
 
+    /// Counter for generating unique NFT IDs
+    ///
+    /// Increments automatically when new NFTs are minted.
+    /// Used by [`mint_nft`](Pallet::mint_nft) to assign unique IDs.
     #[pallet::storage]
     #[pallet::getter(fn next_nft_id)]
     pub type NextNftId<T: Config> = StorageValue<_, T::NFTId, ValueQuery>;
 
+    /// Counter for generating unique offer IDs
+    ///
+    /// Increments automatically when new offers are created.
+    /// Used by both license and purchase offer creation.
     #[pallet::storage]
     #[pallet::getter(fn next_offer_id)]
     pub type NextOfferId<T: Config> = StorageValue<_, T::OfferId, ValueQuery>;
 
+    /// Storage for all active offers
+    ///
+    /// Maps offer IDs to their corresponding [`Offer`] enum containing either
+    /// a license or purchase offer. Offers are removed when accepted or cancelled.
     #[pallet::storage]
     #[pallet::getter(fn offers)]
     pub type Offers<T: Config> = StorageMap<_, Blake2_128Concat, T::OfferId, Offer<T>>;
 
+    /// Storage for all active contracts
+    ///
+    /// Maps contract IDs to their corresponding [`Contract`] enum containing either
+    /// a license or purchase agreement. Contracts are created when offers are accepted
+    /// and removed when completed or expired.
     #[pallet::storage]
     #[pallet::getter(fn contracts)]
     pub type Contracts<T: Config> = StorageMap<_, Blake2_128Concat, T::ContractId, Contract<T>>;
 
-    // This maps NFT -> Vec<LicenseId>
-    // Helps us quickly check what active contracts exist for an NFT
+    /// Maps NFTs to their active contracts
+    ///
+    /// Provides quick lookup of all contracts (licenses/purchases) associated with an NFT.
+    /// Used to enforce exclusivity rules and track contract status.
+    ///
+    /// # Note
+    /// - Returns empty Vec if no active contracts
+    /// - Updated whenever contracts are created or completed
     #[pallet::storage]
     #[pallet::getter(fn nft_contracts)]
     pub type NFTContracts<T: Config> =
         StorageMap<_, Blake2_128Concat, T::NFTId, Vec<T::ContractId>, ValueQuery>;
 
+    /// Tracks NFTs currently in escrow
+    ///
+    /// Maps NFT IDs to the account that placed them in escrow.
     #[pallet::storage]
     #[pallet::getter(fn escrowed_nfts)]
     pub type EscrowedNfts<T: Config> = StorageMap<_, Blake2_128Concat, T::NFTId, T::AccountId>;
@@ -101,32 +172,56 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        // NFT Events
+        /// An NFT was successfully minted
+        ///
+        /// # Related Functions
+        /// - [`Pallet::mint_nft`]
         NftMinted {
             owner: T::AccountId,
             nft_id: T::NFTId,
         },
+
+        /// An NFT was placed in escrow during a purchase
+        /// # Related Functions
+        /// - [`Pallet::accept_purchase`]
+        /// - [`Pallet::escrow_nft`]
         NftEscrowed {
             nft_id: T::NFTId,
             owner: T::AccountId,
         },
+
+        /// An NFT was removed from escrow
+        ///
+        /// Emitted when a purchase is completed or cancelled.
         NftRemovedFromEscrow {
             nft_id: T::NFTId,
             owner: T::AccountId,
         },
 
-        // Offer Events
+        /// A new license offer was created
+        ///
+        /// # Related Functions
+        /// - [`Pallet::offer_license`]
         LicenseOffered {
             nft_id: T::NFTId,
             offer_id: T::OfferId,
             is_exclusive: bool,
         },
+
+        /// A new purchase offer was created
+        ///
+        /// # Related Functions
+        /// - [`Pallet::offer_purchase`]
         PurchaseOffered {
             nft_id: T::NFTId,
             offer_id: T::OfferId,
         },
 
-        // Contract Events
+        /// A new contract was created from an accepted offer
+        ///
+        /// # Related Functions
+        /// - [`Pallet::accept_license`]
+        /// - [`Pallet::accept_purchase`]
         ContractCreated {
             contract_id: T::ContractId,
             contract_type: ContractType,
@@ -134,6 +229,18 @@ pub mod pallet {
             offered_by: T::AccountId,
             accepted_by: T::AccountId,
         },
+
+        /// A contract was successfully completed
+        ///
+        /// Emitted when all payments are made and contract terms are fulfilled.
+        ///
+        /// # Parameters
+        /// - `contract_id`: ID of the completed contract
+        /// - `contract_type`: Type of contract completed
+        /// - `nft_id`: ID of the NFT involved
+        /// - `offered_by`: Original offer creator
+        /// - `accepted_by`: Contract acceptor
+        /// - `total_paid`: Total amount paid over contract lifetime
         ContractCompleted {
             contract_id: T::ContractId,
             contract_type: ContractType,
@@ -142,6 +249,19 @@ pub mod pallet {
             accepted_by: T::AccountId,
             total_paid: BalanceOf<T>,
         },
+
+        /// A contract expired without completion
+        ///
+        /// Emitted when a license duration ends before all payments are made.
+        ///
+        /// # Parameters
+        /// - `contract_id`: ID of the expired contract
+        /// - `contract_type`: Type of expired contract
+        /// - `nft_id`: ID of the NFT involved
+        /// - `offered_by`: Original offer creator
+        /// - `accepted_by`: Contract acceptor
+        /// - `payments_made`: Number of payments completed
+        /// - `total_paid`: Total amount paid before expiration
         ContractExpired {
             contract_id: T::ContractId,
             contract_type: ContractType,
@@ -151,6 +271,19 @@ pub mod pallet {
             payments_made: T::Index,
             total_paid: BalanceOf<T>,
         },
+
+        /// A contract was terminated due to missed payments
+        ///
+        /// Emitted when two consecutive payments are missed.
+        ///
+        /// # Parameters
+        /// - `contract_id`: ID of the terminated contract
+        /// - `contract_type`: Type of terminated contract
+        /// - `nft_id`: ID of the NFT involved
+        /// - `offered_by`: Original offer creator
+        /// - `accepted_by`: Contract acceptor
+        /// - `payments_made`: Number of payments completed before termination
+        /// - `total_paid`: Total amount paid before termination
         ContractTerminated {
             contract_id: T::ContractId,
             contract_type: ContractType,
@@ -160,6 +293,16 @@ pub mod pallet {
             payments_made: T::Index,
             total_paid: BalanceOf<T>,
         },
+
+        /// A penalty was applied to a contract
+        ///
+        /// Emitted when a payment is missed and a 20% penalty is added.
+        ///
+        /// # Parameters
+        /// - `contract_id`: ID of the penalized contract
+        /// - `nft_id`: ID of the NFT involved
+        /// - `payer`: Account that missed the payment
+        /// - `penalty_amount`: Amount of penalty added (20% of payment)
         ContractPenalized {
             contract_id: T::ContractId,
             nft_id: T::NFTId,
@@ -180,11 +323,24 @@ pub mod pallet {
             payee: T::AccountId,
             amount: BalanceOf<T>,
         },
+
+        /// A periodic payment was missed
+        ///
+        /// # Parameters
+        /// - `contract_id`: ID of the contract with missed payment
+        /// - `nft_id`: ID of the NFT involved
+        /// - `licensee`: Account that missed the payment
         PeriodicPaymentFailed {
             contract_id: T::ContractId,
             nft_id: T::NFTId,
             licensee: T::AccountId,
         },
+
+        /// All payments for a contract have been completed
+        ///
+        /// # Parameters
+        /// - `contract_id`: ID of the contract
+        /// - `nft_id`: ID of the NFT involved
         PaymentsCompleted {
             contract_id: T::ContractId,
             nft_id: T::NFTId,
@@ -193,40 +349,140 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
-        // NFT Validation Errors
+        /// Input name exceeds [`Config::MaxNameLength`]
+        ///
+        /// Emitted by [`Pallet::mint_nft`] when the NFT name is too long.
         NameTooLong,
+
+        /// Input description exceeds [`Config::MaxDescriptionLength`]
+        ///
+        /// Emitted by [`Pallet::mint_nft`] when the NFT description is too long.
         DescriptionTooLong,
+
+        /// Input filing date exceeds [`Config::MaxNameLength`]
+        ///
+        /// Emitted by [`Pallet::mint_nft`] when the filing date string is too long.
         FilingDateTooLong,
+
+        /// Input jurisdiction exceeds [`Config::MaxNameLength`]
+        ///
+        /// Emitted by [`Pallet::mint_nft`] when the jurisdiction string is too long.
         JurisdictionTooLong,
 
-        // NFT State Errors
+        /// The requested NFT does not exist in storage
+        ///
+        /// See [`Nfts`] storage.
         NftNotFound,
+
+        /// Account is not the owner of this NFT
+        ///
+        /// Emitted when trying to create offers or modify an NFT without ownership.
+        /// See [`NFT::owner`](crate::types::NFT::owner).
         NotNftOwner,
+
+        /// NFT is currently held in escrow
+        ///
+        /// Emitted when trying to create new offers for an NFT that's locked in a purchase contract.
+        /// See [`EscrowedNfts`] storage.
         NftInEscrow,
 
-        // Contract/Offer Errors
+        /// The requested offer does not exist in storage
+        ///
+        /// See [`Offers`] storage.
         OfferNotFound,
+
+        /// The requested contract does not exist in storage
+        ///
+        /// See [`Contracts`] storage.
         ContractNotFound,
+
+        /// Expected a license offer but found a different type
+        ///
+        /// Emitted by [`Pallet::accept_license`] when the offer is not a [`crate::types::Offer::License`].
         NotALicenseOffer,
+
+        /// Expected a purchase offer but found a different type
+        ///
+        /// Emitted by [`Pallet::accept_purchase`] when the offer is not a [`crate::types::Offer::Purchase`].
         NotAPurchaseOffer,
+
+        /// Expected a license contract but found a different type
+        ///
+        /// Emitted when trying to perform license-specific operations on a purchase contract.
         NotALicenseContract,
+
+        /// Expected a purchase contract but found a different type
+        ///
+        /// Emitted when trying to perform purchase-specific operations on a license contract.
         NotAPurchaseContract,
 
-        // License Errors
+        /// NFT already has active license contracts
+        ///
+        /// Emitted when trying to create a purchase offer while licenses are active.
+        /// See [`NFTContracts`] storage.
         ActiveLicensesExist,
+
+        /// NFT already has an exclusive license contract
+        ///
+        /// Emitted when trying to create a new license offer while an exclusive license exists.
+        /// See [`crate::types::License::is_exclusive`].
         ExclusiveLicenseExists,
+
+        /// License contract has not yet expired
+        ///
+        /// Emitted by [`Pallet::expire_license`] when trying to expire a license before its duration ends.
+        /// See [`crate::types::License::duration`].
         LicenseNotExpired,
 
-        // Payment Errors
+        /// Attempted to make a zero-value payment
+        ///
+        /// Emitted by payment functions when amount is 0.
         ZeroPayment,
+
+        /// Payer account has insufficient balance
+        ///
+        /// Emitted when trying to process a payment that exceeds available funds.
+        /// See [`Config::Currency`].
         InsufficientBalance,
+
+        /// No payment is currently due for this contract
+        ///
+        /// Emitted by [`Pallet::make_periodic_payment`] when called before the next payment is due.
+        /// See [`crate::types::PaymentSchedule::next_payment_block`].
         PaymentNotDue,
+
+        /// Contract payments are not yet completed
+        ///
+        /// Emitted when trying to finalize a contract before all payments are made.
+        /// See [`crate::types::PaymentSchedule::payments_due`].
         PaymentNotCompleted,
+
+        /// Contract does not use periodic payments
+        ///
+        /// Emitted when trying to make periodic payments on a one-time payment contract.
+        /// See [`crate::types::PaymentType`].
         NotPeriodicPayment,
     }
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
+        /// Creates a new NFT representing intellectual property
+        ///
+        /// # Arguments
+        /// * `origin` - The account creating the NFT
+        /// * `name` - Name of the intellectual property (max length: [`Config::MaxNameLength`])
+        /// * `description` - Detailed description (max length: [`Config::MaxDescriptionLength`])
+        /// * `filing_date` - When the IP was filed (max length: [`Config::MaxNameLength`])
+        /// * `jurisdiction` - Where the IP is registered (max length: [`Config::MaxNameLength`])
+        ///
+        /// # Events
+        /// * [`Event::NftMinted`] - When NFT is successfully created
+        ///
+        /// # Errors
+        /// * [`Error::NameTooLong`] - If name exceeds maximum length
+        /// * [`Error::DescriptionTooLong`] - If description exceeds maximum length
+        /// * [`Error::FilingDateTooLong`] - If filing date exceeds maximum length
+        /// * [`Error::JurisdictionTooLong`] - If jurisdiction exceeds maximum length
         #[pallet::weight(10_000)]
         #[pallet::call_index(0)]
         pub fn mint_nft(
@@ -276,7 +532,7 @@ pub mod pallet {
                 jurisdiction: bounded_jurisdiction,
             };
 
-            Nftss::<T>::insert(id, nft);
+            Nfts::<T>::insert(id, nft);
 
             Self::deposit_event(Event::NftMinted {
                 owner: who,
@@ -285,7 +541,25 @@ pub mod pallet {
 
             Ok(())
         }
-
+        /// Creates a license offer for an NFT
+        ///
+        /// Allows other accounts to license the NFT under specified terms.
+        ///
+        /// # Arguments
+        /// * `origin` - Must be signed by the NFT owner
+        /// * `nft_id` - ID of the NFT to license
+        /// * `payment_type` - Payment terms (see [`PaymentType`](crate::types::PaymentType))
+        /// * `is_exclusive` - Whether this is an exclusive license
+        /// * `duration` - How long the license lasts (in blocks)
+        ///
+        /// # Events
+        /// * [`Event::LicenseOffered`] - When offer is created
+        ///
+        /// # Errors
+        /// * [`Error::NftNotFound`] - If NFT doesn't exist
+        /// * [`Error::NotNftOwner`] - If caller doesn't own the NFT
+        /// * [`Error::NftInEscrow`] - If NFT is in escrow
+        /// * [`Error::ExclusiveLicenseExists`] - If trying to create offer while exclusive license exists
         #[pallet::weight(10_000)]
         #[pallet::call_index(1)]
         pub fn offer_license(
@@ -336,6 +610,23 @@ pub mod pallet {
             Ok(())
         }
 
+        /// Creates a purchase offer for an NFT
+        ///
+        /// Allows other accounts to purchase the NFT.
+        ///
+        /// # Arguments
+        /// * `origin` - Must be signed by the NFT owner
+        /// * `nft_id` - ID of the NFT to purchase
+        /// * `payment_type` - Payment terms (see [`PaymentType`](crate::types::PaymentType))
+        ///
+        /// # Events
+        /// * [`Event::PurchaseOffered`] - When offer is created
+        ///
+        /// # Errors
+        /// * [`Error::NftNotFound`] - If NFT doesn't exist
+        /// * [`Error::NotNftOwner`] - If caller doesn't own the NFT
+        /// * [`Error::NftInEscrow`] - If NFT is in escrow
+
         #[pallet::weight(10_000)]
         #[pallet::call_index(2)]
         pub fn offer_purchase(
@@ -369,6 +660,21 @@ pub mod pallet {
 
             Ok(())
         }
+
+        /// Accepts a license offer
+        ///
+        /// Allows the licensee to accept the offer and create a license contract.
+        ///
+        /// # Arguments
+        /// * `origin` - Must be signed by the licensee
+        /// * `offer_id` - ID of the offer to accept
+        ///
+        /// # Events
+        /// * [`Event::ContractCreated`] - When contract is created
+        ///
+        /// # Errors
+        /// * [`Error::OfferNotFound`] - If offer doesn't exist
+        /// * [`Error::NotALicenseOffer`] - If offer is not a license offer
 
         #[pallet::weight(10_000)]
         #[pallet::call_index(3)]
@@ -429,6 +735,20 @@ pub mod pallet {
             Ok(())
         }
 
+        /// Accepts a purchase offer
+        ///
+        /// Allows the buyer to accept the offer and create a purchase contract.
+        ///
+        /// # Arguments
+        /// * `origin` - Must be signed by the buyer
+        /// * `offer_id` - ID of the offer to accept
+        ///
+        /// # Events
+        /// * [`Event::ContractCreated`] - When contract is created
+        ///
+        /// # Errors
+        /// * [`Error::OfferNotFound`] - If offer doesn't exist
+        /// * [`Error::NotAPurchaseOffer`] - If offer is not a purchase offer
         #[pallet::weight(10_000)]
         #[pallet::call_index(4)]
         pub fn accept_purchase(origin: OriginFor<T>, offer_id: T::OfferId) -> DispatchResult {
@@ -454,7 +774,7 @@ pub mod pallet {
                     Self::process_payment(&buyer, &purchase_offer.seller, amount.clone())?;
 
                     // Transfer NFT ownership
-                    Nftss::<T>::mutate(purchase_offer.nft_id, |maybe_nft| {
+                    Nfts::<T>::mutate(purchase_offer.nft_id, |maybe_nft| {
                         if let Some(nft) = maybe_nft {
                             nft.owner = buyer.clone();
                         }
@@ -524,6 +844,26 @@ pub mod pallet {
             Ok(())
         }
 
+        /// Makes a periodic payment for a contract
+        ///
+        /// Processes the next scheduled payment for a periodic payment contract. Handles payment calculation
+        /// including any penalties from missed payments.
+        ///
+        /// # Arguments
+        /// * `origin` - Must be signed by the payer (licensee/buyer)
+        /// * `contract_id` - ID of the contract to make a payment for
+        ///
+        /// # Events
+        /// * [`Event::PeriodicPaymentMade`] - When payment is successfully processed
+        /// * [`Event::PaymentsCompleted`] - When this was the final payment due
+        /// * [`Event::PaymentMade`] - For the actual currency transfer
+        ///
+        /// # Errors
+        /// * [`Error::ContractNotFound`] - If contract doesn't exist
+        /// * [`Error::NotPeriodicPayment`] - If contract uses one-time payment instead of periodic
+        /// * [`Error::PaymentNotDue`] - If current block is before next_payment_block or no payments are due
+        /// * [`Error::InsufficientBalance`] - If payer doesn't have enough funds
+        /// * [`Error::ZeroPayment`] - If calculated payment amount is zero
         #[pallet::weight(10_000)]
         #[pallet::call_index(5)]
         pub fn make_periodic_payment(
@@ -600,29 +940,10 @@ pub mod pallet {
 
             // Handle completion if all payments are made
             if schedule.payments_due.is_zero() {
-                let total_paid = match payment_type {
-                    PaymentType::Periodic {
-                        amount_per_payment, ..
-                    } => *amount_per_payment * schedule.payments_made.into(),
-                    PaymentType::OneTime(amount) => *amount,
-                };
-
                 // Emit completion events
                 Self::deposit_event(Event::PaymentsCompleted {
                     contract_id,
                     nft_id,
-                });
-
-                Self::deposit_event(Event::ContractCompleted {
-                    contract_id,
-                    contract_type: match contract {
-                        Contract::License(_) => ContractType::License,
-                        Contract::Purchase(_) => ContractType::Purchase,
-                    },
-                    nft_id,
-                    offered_by: payee,
-                    accepted_by: payer,
-                    total_paid,
                 });
             }
 
@@ -631,6 +952,27 @@ pub mod pallet {
 
             Ok(())
         }
+
+        /// Expires a license contract after its duration has ended
+        /// 
+        /// Allows any party to expire a license contract once its duration has passed.
+        /// Cleans up contract storage and updates NFT contract mappings.
+        /// 
+        /// # Arguments
+        /// * `origin` - Any signed party
+        /// * `contract_id` - ID of the license contract to expire
+        /// 
+        /// # Events
+        /// * [`Event::ContractExpired`] - When license is successfully expired
+        /// 
+        /// # Errors
+        /// * [`Error::ContractNotFound`] - If contract doesn't exist
+        /// * [`Error::NotALicenseContract`] - If contract is a purchase contract
+        /// * [`Error::LicenseNotExpired`] - If license duration hasn't ended yet
+        /// 
+        /// # State Changes
+        /// - Removes contract from [`Contracts`] storage
+        /// - Updates [`NFTContracts`] mapping to remove expired license
 
         #[pallet::weight(10_000)]
         #[pallet::call_index(6)]
@@ -674,6 +1016,30 @@ pub mod pallet {
             Ok(())
         }
 
+        /// Completes a purchase contract after all payments are made
+        /// 
+        /// Finalizes NFT ownership transfer and cleans up contract storage.
+        /// Can only be called when all payments have been completed.
+        /// 
+        /// # Arguments
+        /// * `origin` - Any signed party
+        /// * `contract_id` - ID of the purchase contract to complete
+        /// 
+        /// # Events
+        /// * [`Event::ContractCompleted`] - When purchase is successfully completed
+        /// * [`Event::NftRemovedFromEscrow`] - When NFT is released from escrow
+        /// 
+        /// # Errors
+        /// * [`Error::ContractNotFound`] - If contract doesn't exist
+        /// * [`Error::NotAPurchaseContract`] - If contract is a license contract
+        /// * [`Error::NotPeriodicPayment`] - If contract is not a periodic payment contract
+        /// * [`Error::PaymentNotCompleted`] - If any payments are still due
+        /// 
+        /// # State Changes
+        /// - Removes contract from [`Contracts`] storage
+        /// - Updates [`NFTContracts`] mapping to remove contract
+        /// - Updates [`Nfts`] storage to reflect new owner
+        /// - Removes NFT from [`EscrowedNfts`] storage
         #[pallet::weight(10_000)]
         #[pallet::call_index(7)]
         pub fn complete_purchase(
@@ -709,7 +1075,7 @@ pub mod pallet {
             });
 
             // Transfer NFT ownership
-            Nftss::<T>::mutate(purchase.nft_id, |maybe_nft| {
+            Nfts::<T>::mutate(purchase.nft_id, |maybe_nft| {
                 if let Some(nft) = maybe_nft {
                     nft.owner = purchase.buyer.clone();
                 }
@@ -745,7 +1111,7 @@ pub mod pallet {
             owner: &T::AccountId,
         ) -> Result<(), DispatchError> {
             // Ensure caller owns the NFT
-            let nft = Nftss::<T>::get(nft_id).ok_or(Error::<T>::NftNotFound)?;
+            let nft = Nfts::<T>::get(nft_id).ok_or(Error::<T>::NftNotFound)?;
             ensure!(nft.owner == *owner, Error::<T>::NotNftOwner);
             // Ensure NFT not in escrow
             ensure!(
