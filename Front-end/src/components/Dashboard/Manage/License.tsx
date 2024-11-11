@@ -5,6 +5,7 @@ import { LicenseCreationFlow } from "./LicenseCreation/LicenseFlowCreation";
 import type { LicenseFormData } from "./LicenseCreation/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import TypesComponent from "@/components/TypesProps";
 
 interface ManageProps {
   onDataChange?: (data: any) => void;
@@ -33,13 +34,13 @@ export default function Licensing({ onDataChange }: ManageProps) {
         royaltyRate: "10%",
         lifetimeEarnings: "$2.45",
         recentPayment: "Oct. 24",
-        amount: "+$252",
+        amount:'unknown',
       } as License,
     ]);
     setShowLicenseCreation(false);
   };
   return (
-    <div className="bg-[#1C1A11] w-full justify-center self-stretch items-center min-[2000px]:min-h-screen min-[2000px]:w-[3000px] gap-[40px] pt-[40px] pb-[120px] mx-auto p-6 scrollable">
+    <div className="bg-[#1C1A11] w-full justify-center self-stretch items-center min-[2000px]:min-h-screen min-[2000px]:w-[3000px] gap-[40px] py-[120px] mx-auto p-6 scrollable">
       {showLicenseCreation ? (
           <LicenseCreationFlow
             onComplete={handleLicenseCreation}
@@ -67,23 +68,29 @@ export default function Licensing({ onDataChange }: ManageProps) {
                   className="p-4 bg-[#1C1A11] border-[#373737]"
                 >
                   <div className="grid grid-cols-6 gap-4 items-center">
-                    <div className="col-span-2">
-                      <h3 className="font-bold">{license.nftId}</h3>
-                      <p className="text-sm text-gray-400">
-                        Royalty Rate: {license.royaltyRate}
-                      </p>
+                    <div className=" col-span-2">
+                      <TypesComponent className="font-bold text-[#fff] "
+                      text={`NFT ID: ${license.nftId}`}
+                      />
+                      <TypesComponent 
+                      className="text-[#fff]"
+                      text={`License Type: ${license.licenseType}`}
+                      />
                     </div>
-                    <div className="text-center">
-                      <span className="px-2 py-1 bg-green-500 rounded text-sm">
-                        {license.status}
+                    <div className="flex flex-col text-center">
+                      <span className="px-2 py-1 text-[#fff] rounded text-sm">
+                        {license.price.amount}
+                      </span>
+                      <span className="px-2 py-1 text-[#fff] rounded text-sm">
+                        {license.price.currency}
                       </span>
                     </div>
-                    <div className="text-center text-green-500">
-                      {license.lifetimeEarnings}
+                    <div className="text-center text-[#fff]">
+                      {license.durationType}
                     </div>
-                    <div className="text-center">{license.recentPayment}</div>
-                    <div className="text-right text-green-500">
-                      {license.amount}
+                    {/* <div className="text-center text-[#fff]">{license.customDuration}</div> */}
+                    <div className="text-right text-[#fff] ">
+                      {license.paymentType}
                     </div>
                   </div>
                 </Card>

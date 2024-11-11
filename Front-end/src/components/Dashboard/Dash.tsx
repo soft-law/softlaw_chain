@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import DashboardProvider, { useDashboardContext } from "@/context/dashboard";
 import MyProducts from "./MyProducts/MyProducts";
 import Manage from "./Manage/Manage";
 import Activity from "./Activity/Activity";
@@ -43,11 +42,11 @@ function DashboardContent() {
     <Tabs
       value={selectedTabDashboard}
       onValueChange={setSelectedTabDashboard}
-      className="bg-[#1C1A11] pt-[120px] scrollable"
+      className="bg-[#1C1A11] pt-[120px] w-full gap-[8px] mx-auto min-[2000px]:w-[3000px] flex items-center justify-center "
     >
       <MaxWidthWrapper >
 
-      <TabsList className="w-full flex items-center justify-between min-[2000px]:w-[3000px] bg-[#1C1A11]">
+      <TabsList className="w-full flex items-center self-stretch justify-between bg-[#1C1A11] ">
         <div className="flex items-center">
         <div className="flex items-center space-x-2">
           <TabsTrigger
@@ -59,7 +58,7 @@ function DashboardContent() {
             }`}
           >
             <h1
-              className={` py-[8px] px-[16px] rounded-md ${
+              className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
                 selectedTabDashboard === "MyProducts"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
@@ -81,7 +80,7 @@ function DashboardContent() {
             }`}
           >
             <h1
-              className={` py-[8px] px-[16px] rounded-md ${
+              className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
                 selectedTabDashboard === "Manage"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
@@ -103,7 +102,7 @@ function DashboardContent() {
             }`}
           >
             <h1
-              className={` py-[8px] px-[16px] rounded-md ${
+              className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
                 selectedTabDashboard === "Activity"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
@@ -127,7 +126,7 @@ function DashboardContent() {
             }`}
           >
             <h1
-              className={` py-[8px] px-[16px] rounded-md ${
+              className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
                 selectedTabDashboard === "IPSearch"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
@@ -135,7 +134,7 @@ function DashboardContent() {
                  hover:border-[#F6E18B] hover:bg-[#373737] uppercase`}
             >
               <span className="flex items-center gap-2">
-                <MagnifyingGlassIcon className="h-5 w-5 text-[#B0B0B1]" />
+                <MagnifyingGlassIcon className="min-[2000px]:h-10 min-[2000px]:w-10 h-5 w-5 text-[#B0B0B1]" />
               IPSearch
               </span>
               

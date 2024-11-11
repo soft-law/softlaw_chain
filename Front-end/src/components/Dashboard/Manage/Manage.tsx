@@ -11,6 +11,7 @@ import TypesComponent from "@/components/TypesProps";
 
 interface ManageProps {
   onDataChange: (data: any) => void;
+  formData: LicenseFormData;
 }
 
 interface License extends LicenseFormData {
@@ -21,7 +22,7 @@ interface License extends LicenseFormData {
   amount: string;
 }
 
-export default function Manage({ onDataChange }: ManageProps) {
+export default function Manage({ onDataChange, formData }: ManageProps) {
   
   const [showLicenseCreation, setShowLicenseCreation] = useState(false);
   const [licenses, setLicenses] = React.useState<License[]>([]);
@@ -47,7 +48,7 @@ export default function Manage({ onDataChange }: ManageProps) {
     setSelectedTabDashboard } =
     useDashboardContext();
 
-  const { formData, updateFormData } = useContext(FormDataContext);
+  const { updateFormData } = useContext(FormDataContext);
 
   return (
     <div className="bg-[#1C1A11] flex flex-col w-full justify-center self-stretch items-center min-[2000px]:min-h-screen min-[2000px]:w-[3000px] gap-[40px] pt-[40px] pb-[120px]">
@@ -69,8 +70,47 @@ export default function Manage({ onDataChange }: ManageProps) {
                   alt="Link"
                   />
                   <div className="flex flex-col gap-[8px]">
-                  <h1 className="text-[16px] font-normal leading-[145%] tracking-[0.32px] text-[#ffff]">The license for <span className="font-bold text-[#43C705]">'Method and Formulation For Gluten-Free Bakery Products'</span>  Patent expires in 15 days. Renew now to avoid disruptions.</h1>
-                    {/* <h1 className="text-[16px] font-normal leading-[145%] tracking-[0.32px] text-[#ffff]">The license for NFT ID: {license.nftId} has been created successfully.</h1> */}
+                  {/* <h1 className="text-[16px] font-normal leading-[145%] tracking-[0.32px] text-[#ffff]">The license for <span className="font-bold text-[#43C705]">'Method and Formulation For Gluten-Free Bakery Products'</span>  Patent expires in 15 days. Renew now to avoid disruptions.</h1> */}
+                    <TypesComponent className="text-[16px] min-[2000px]:text-2xl font-normal leading-[145%] tracking-[0.32px] text-[#ffff]"
+                    text={`The license for NFT ID: ${license.nftId} has been created successfully.`}
+                    />
+                    <div className="flex items-center justify-end gap-[40px]">
+                      <div className="flex items-start flex-end ">
+                      <h1 className="flex items-start flex-end  text-[#8A8A8A]">10 minutes ago (time)</h1>
+                      </div>
+                    
+                    <div className="flex justify-end items-end">
+                    <Button className="py-[8px] px-[16px] flex bg-transparent">Cancel</Button>
+                    <Button className="py-[8px] px-[16px] flex rounded-[8px] bg-[#373737]">Accept</Button>
+                    </div>
+                      
+                    </div>
+                    
+
+                  </div>
+                 
+               
+              </div>
+              ))}
+            </div>
+          )}
+          {licenses.length > 0 && (
+            <div className="flex flex-col p-[16px] items-start gap-[16px] border-b-[#8A8A8A] min-[2000px]:w-[3000px] w-full">
+              {licenses.map((license) => (
+                <div key={license.nftId} className="bg-[#373737] p-4 gap-[16px] flex justify-between items-start">
+                  <Image 
+                  src={"/images/Link.svg"}
+                  width={64}
+                  height={64}
+                  alt="Link"
+                  />
+                  <div className="flex flex-col gap-[8px]">
+                  <h1 className="text-[16px] font-normal leading-[145%] tracking-[0.32px] text-[#ffff]">The license for
+                    {license.licenseType}
+                     <span className="font-bold text-[#43C705]">  'Method and Formulation For Gluten-Free Bakery Products'</span>  Patent expires in 15 days. Renew now to avoid disruptions.</h1>
+                    {/* <TypesComponent className="text-[16px] min-[2000px]:text-2xl font-normal leading-[145%] tracking-[0.32px] text-[#ffff]"
+                    text={`The license for NFT ID: ${license.nftId} has been created successfully.`}
+                    /> */}
                     <div className="flex items-center justify-end gap-[40px]">
                       <div className="flex items-start flex-end ">
                       <h1 className="flex items-start flex-end  text-[#8A8A8A]">10 minutes ago (time)</h1>

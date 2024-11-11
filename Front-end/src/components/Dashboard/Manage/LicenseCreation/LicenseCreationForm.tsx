@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import type { LicenseFormData } from "./types";
 import TypesComponent from "@/components/TypesProps";
 

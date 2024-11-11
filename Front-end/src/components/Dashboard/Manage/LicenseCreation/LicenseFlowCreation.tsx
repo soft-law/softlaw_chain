@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { LicenseCreationForm } from './LicenseCreationForm';
 import { LicenseSampleForm } from './LicenseSampleForm';
 import type { LicenseFormData } from './types';
+import NavBar from '@/components/NavBar';
 
 interface LicenseCreationFlowProps {
   onComplete: (data: LicenseFormData) => void;
@@ -15,16 +16,12 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
     nftId: '',
     price: {
       amount: 0,
-      currency: 'SLAW'
+      currency: ''
     },
     licenseType: 'exclusive',
     durationType: 'permanent',
     paymentType: 'oneTime'
   });
-
-  // const handleFormUpdate = (updates: Partial<LicenseFormData>) => {
-  //   setFormData(prev => ({ ...prev, ...updates }));
-  // };
 
   const handleFormChange = (newData: LicenseFormData) => {
     setFormData(newData);
@@ -55,13 +52,15 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
 
 
   return (
+    <div className=''>
+    <NavBar/>
     <div className="w-full">
+
       {step === 1 && (
         <LicenseCreationForm
           formData={formData}
           onChange={handleFormChange}
           onSubmit={() =>  handleNext()}
-            // handleFormUpdate(data);
           onBack={handleBack}
         />
       )}
@@ -74,6 +73,7 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
         onChange={handleFormChange}
         />
       )}
+    </div>
     </div>
   );
 }
