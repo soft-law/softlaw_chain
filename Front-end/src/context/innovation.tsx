@@ -32,11 +32,11 @@ interface nftMetadataType {
   useDate: string;
   registryNumber: string;
   collectionId: number;
+  image: string[];
 }
 
 // Chain Type
 type ChainType = "unique" | "softlaw";
-
 
 ///GENERAL INTERFACES////
 interface InnovationContextType {
@@ -68,6 +68,8 @@ interface InnovationContextType {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   chain: ChainType;
   setChain: React.Dispatch<React.SetStateAction<ChainType>>;
+  nftMetadataUrl: string | null;
+  setNftMetadataUrl: React.Dispatch<React.SetStateAction<string|null>>;
 }
 
 /// DEFAULT VALUES////
@@ -86,8 +88,12 @@ const defaultContextValue: InnovationContextType = {
     useDate: "",
     registryNumber: "",
     collectionId: 0,
+    image: [],
   },
   setNftMetadata: () => {},
+  nftMetadataUrl: null,
+  setNftMetadataUrl: () => {},
+
   collectionMetadata: {
     name: "",
     description: "",
@@ -106,10 +112,10 @@ const defaultContextValue: InnovationContextType = {
   setImagesLinks: () => {},
   // Unique Network
   uniqueCollectionAddress: "",
-  setUniqueCollectionAddress: ()=>{},
+  setUniqueCollectionAddress: () => {},
   //loading
   loading: false,
-  setLoading: ()=>{},
+  setLoading: () => {},
   //chain select
   chain: "softlaw",
   setChain: () => {},
@@ -142,7 +148,6 @@ export default function InnovationProvider({
   /// COLLECTION STATES
   const [collection, setCollection] = useState<CollectionType | null>(null);
 
-
   /// NFT STATES
   const [nft, setNft] = useState<NftType | null>({
     name: "",
@@ -169,20 +174,24 @@ export default function InnovationProvider({
     useDate: "",
     registryNumber: "",
     collectionId: 0,
+    image: [],
   });
   const [ipfsHashes, setIpfsHashes] = useState<string | null>(null);
   const [imageHash, setImageHash] = useState<string | null>(null);
   const [imagesLinks, setImagesLinks] = useState<string[]>([]);
 
-  //// UNIQUE NETWORK STATES 
-  const [uniqueCollectionAddress, setUniqueCollectionAddress ] = useState<string>("")
+  //// UNIQUE NETWORK STATES
+  const [uniqueCollectionAddress, setUniqueCollectionAddress] =
+    useState<string>("");
 
   //// loading
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
 
-
-     //// Chain State
+  //// Chain State
   const [chain, setChain] = useState<ChainType>("softlaw");
+
+  /// ipfs nft final before mint
+  const [nftMetadataUrl, setNftMetadataUrl] = useState<string|null>(null);
 
   const value: InnovationContextType = {
     selectedTabInnovation,
@@ -203,9 +212,13 @@ export default function InnovationProvider({
     setImageHash,
     imagesLinks,
     setImagesLinks,
-    uniqueCollectionAddress, setUniqueCollectionAddress,
-    loading, setLoading,
-    chain, setChain
+    uniqueCollectionAddress,
+    setUniqueCollectionAddress,
+    loading,
+    setLoading,
+    chain,
+    setChain,
+    nftMetadataUrl, setNftMetadataUrl
   };
 
   return (

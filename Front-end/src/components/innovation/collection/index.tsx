@@ -9,7 +9,6 @@ import MaxWidthWrapper from "../../MaxWidhWrapper";
 import { useInnovationContext } from "@/context/innovation";
 import uploadFilePinata from "@/utils/pinataPin";
 import Loading from "@/components/Loading";
-import MintUniqueCollection from "./mintUnique";
 import { ChainSelector } from "./chainSelector";
 
 interface CollectionType {
@@ -67,7 +66,8 @@ export default function CollectionPage() {
     setImageHash,
     imagesLinks,
     setImagesLinks,
-    loading, setLoading
+    loading,
+    setLoading,
   } = useInnovationContext();
 
   const { toast } = useToast();
@@ -93,7 +93,7 @@ export default function CollectionPage() {
         variant: "destructive",
       });
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -135,7 +135,7 @@ export default function CollectionPage() {
 
   return (
     <div className="flex-1 overflow-y-auto  pb-24 bg-[#1C1A11]">
-        {loading && <Loading />}
+      {loading && <Loading />}
       <MaxWidthWrapper className="min-h-screen flex flex-col ">
         <main className="px-4 py-24">
           <div className="max-w-7xl mx-auto space-y-16">
@@ -199,8 +199,8 @@ export default function CollectionPage() {
               >
                 Cancel
               </Link>
-            
-              <ChainSelector/>
+
+              <ChainSelector />
             </div>
           </div>
         </main>

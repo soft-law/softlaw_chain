@@ -1,5 +1,6 @@
 import { useInnovationContext } from "@/context/innovation";
 import MintUniqueCollection from "./mintUnique";
+import MintSoftlawCollection from "./mintSoftlaw";
 
 
 export const ChainSelector = () => {
@@ -28,12 +29,7 @@ export const ChainSelector = () => {
   
         <div className="mt-4">
           {chain === "softlaw" && (
-            <button 
-              className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
-              onClick={() => {/* tu lógica para mint con softlaw */}}
-            >
-              MINT WITH SOFTLAW
-            </button>
+            <MintSoftlawCollection/>
           )}
           {chain === "unique" && <MintUniqueCollection/>}
         </div>

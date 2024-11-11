@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import ReusableHeading from "../../textComponent";
 import TypesComponent from "../../TypesProps";
 import MintNftUnique from "./mintUnique";
@@ -27,6 +27,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     onEditPage(page); // Open the page to edit
     onClose(); // Close the modal
   };
+
 
   return (
     <>
