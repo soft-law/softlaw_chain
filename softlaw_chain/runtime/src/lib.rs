@@ -335,7 +335,7 @@ mod runtime {
     #[runtime::pallet_index(42)]
     pub type Assets = pallet_assets::Pallet<Runtime, Instance1>;
     #[runtime::pallet_index(43)] 
-    pub type IPPallet = pallet_ip_pallet::Pallet<Runtime>;
+    pub type IPPallet = pallet_ip_pallet::pallet::Pallet<Runtime>;
 }
 
 cumulus_pallet_parachain_system::register_validate_block! {
