@@ -22,8 +22,18 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
     paymentType: 'oneTime'
   });
 
-  const handleFormUpdate = (updates: Partial<LicenseFormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
+  // const handleFormUpdate = (updates: Partial<LicenseFormData>) => {
+  //   setFormData(prev => ({ ...prev, ...updates }));
+  // };
+
+  const handleFormChange = (newData: LicenseFormData) => {
+    setFormData(newData);
+  };
+
+  const handleFormSubmit = (data: LicenseFormData) => {
+    // Handle form submission
+    console.log('Form submitted:', data);
+    // Navigate to next page or process form
   };
 
   const handleNext = () => {
@@ -38,8 +48,6 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
     }
   };
 
-
-
   const handleComplete = () => {
     onComplete(formData);
   };
@@ -51,10 +59,9 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
       {step === 1 && (
         <LicenseCreationForm
           formData={formData}
-          onSubmit={(data) => {
-            handleFormUpdate(data);
-            handleNext();
-          }}
+          onChange={handleFormChange}
+          onSubmit={() =>  handleNext()}
+            // handleFormUpdate(data);
           onBack={handleBack}
         />
       )}
@@ -64,6 +71,7 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
         formData={formData}
         onSubmit={handleComplete}
         onBack={handleBack}
+        onChange={handleFormChange}
         />
       )}
     </div>

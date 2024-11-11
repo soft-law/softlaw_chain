@@ -10,7 +10,7 @@ export interface LicenseFormData {
   durationType: 'permanent' | 'custom';
   customDuration?: {
     value: number;
-    unit: 'days' | 'months' | 'years';
+    unit?: 'days' | 'months' | 'years';
     expirationDate?: string;
   };
   paymentType: 'oneTime' | 'recurring';

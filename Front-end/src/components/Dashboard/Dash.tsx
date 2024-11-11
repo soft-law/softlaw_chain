@@ -5,7 +5,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MyProducts from "./MyProducts/MyProducts";
 import Manage from "./Manage/Manage";
 import Activity from "./Activity/Activity";
+import IpSearch from "./IPSearch";
 import DashboardProvider, { useDashboardContext } from "@/context/dashboard";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import MaxWidthWrapper from "../MaxWidhWrapper";
+
+
 
 function DashboardContent() {
   
@@ -22,7 +27,7 @@ function DashboardContent() {
     Activity: {
       Activity: "",
     },
-    IpSearch: {
+    IPSearch: {
       SearchInput: "",
     },
   });
@@ -40,7 +45,10 @@ function DashboardContent() {
       onValueChange={setSelectedTabDashboard}
       className="bg-[#1C1A11] pt-[120px] scrollable"
     >
-      <TabsList className="flex items-center min-[2000px]:w-[3000px] bg-[#1C1A11]">
+      <MaxWidthWrapper >
+
+      <TabsList className="w-full flex items-center justify-between min-[2000px]:w-[3000px] bg-[#1C1A11]">
+        <div className="flex items-center">
         <div className="flex items-center space-x-2">
           <TabsTrigger
             value="MyProducts"
@@ -106,8 +114,34 @@ function DashboardContent() {
             </h1>
           </TabsTrigger>
         </div>
-
-        {/* ADD IPSEARCH TABTRIGGER */}
+        
+        </div>
+       
+        <div className="flex items-center space-x-2">
+          <TabsTrigger
+            value="IPSearch"
+            className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
+              selectedTabDashboard === "IPSearch"
+                ? "bg-yellow-500 text-black"
+                : "text-black"
+            }`}
+          >
+            <h1
+              className={` py-[8px] px-[16px] rounded-md ${
+                selectedTabDashboard === "IPSearch"
+                  ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
+                  : "border-[#8A8A8A] text-[#fff]"
+              } hover:text-[#F6E18B]
+                 hover:border-[#F6E18B] hover:bg-[#373737] uppercase`}
+            >
+              <span className="flex items-center gap-2">
+                <MagnifyingGlassIcon className="h-5 w-5 text-[#B0B0B1]" />
+              IPSearch
+              </span>
+              
+            </h1>
+          </TabsTrigger>
+        </div>
       </TabsList>
 
       <div className="flex h-screen min-[2000px]:w-[2560px]">
@@ -130,7 +164,17 @@ function DashboardContent() {
             />
         </TabsContent>
 
+        <TabsContent value="IPSearch">
+            <IpSearch
+            onDataChange={(data) =>
+              setFormData({ ...formData, IPSearch:data})
+              }
+            />
+        </TabsContent>
+
       </div>
+      </MaxWidthWrapper>
+      
 
 
     </Tabs>

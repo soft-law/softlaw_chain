@@ -10,13 +10,14 @@ import Team from "@/components/landing/Team/Team";
 import Footer from "@/components/Footer";
 import dynamic from "next/dynamic";
 import AccountsProvider from "@/context/account";
+import NavBar from "@/components/NavBar";
 import InnovationProvider from "@/context/innovation";
-const NavBar = dynamic(
-  () => import("@/components/NavBar"),
-  {
-    ssr: false,
-  }
-);
+// const NavBar = dynamic(
+//   () => import("@/components/NavBar"),
+//   {
+//     ssr: false,
+//   }
+// );
 
 export default function Home() {
   return (

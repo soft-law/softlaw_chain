@@ -1,81 +1,106 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import MaxWidthWrapper from "@/components/MaxWidhWrapper";
-import { useContext } from "react";
-import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
-import { useDashboardTapContext } from "@/context/dashboard";
-import Footer from "../../Footer";
-import ReusableHeading from "../../ProofOfInnovation/textComponent";
-import Image from "next/image";
-import Link from "next/link";
-import TypesComponent from "@/components/ProofOfInnovation/TypesProps";
-import Searchfilter from "../Searchfilter";
+import React, { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { LicenseCreationFlow } from "./LicenseCreation/LicenseFlowCreation";
+import type { LicenseFormData } from "./LicenseCreation/types";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-interface LicenseProps {
-  onDataChange: (data: any) => void;
+interface ManageProps {
+  onDataChange?: (data: any) => void;
+}
+interface License extends LicenseFormData {
+  status: string;
+  royaltyRate: string;
+  lifetimeEarnings: string;
+  recentPayment: string;
+  amount: string;
 }
 
-export default function License({ onDataChange }: LicenseProps) {
-  const { selectedTabDashboard, setSelectedTabDashboard } =
-    useDashboardTapContext();
-
-  const { formData, updateFormData } = useContext(FormDataContext);
-
+export default function Licensing({ onDataChange }: ManageProps) {
+  // Get URL parameters
+  const searchParams = useSearchParams();
+  const [showLicenseCreation, setShowLicenseCreation] = useState(true);
+  const [licenses, setLicenses] = React.useState<License[]>([]);
+  const handleLicenseCreation = (data: LicenseFormData) => {
+    // Adds the new license to the list
+    setLicenses((prev) => [
+      ...prev,
+      {
+        id: Date.now(), // temporary ID for demo
+        ...data,
+        status: "Active",
+        royaltyRate: "10%",
+        lifetimeEarnings: "$2.45",
+        recentPayment: "Oct. 24",
+        amount: "+$252",
+      } as License,
+    ]);
+    setShowLicenseCreation(false);
+  };
   return (
-    <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
-      <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-screen pt-[120px] justify-center items-center">
-        <div className="flex flex-col w-full gap-[40px] self-stretch items-center p-[16px] border border-[#8A8A8A] rounded-md">
-          <div className="flex items-start self-stretch mb-[60px]">
-            <ReusableHeading
-              text={`Important Updates`}
-              detail="-keep Track of all your IP Activity"
-            />
-          </div>
-
-          {/* my products section */}
-          <div className="flex flex-col items-start">
-            <div className="flex items-start gap-[16px] self-stretch">
-                <Image
-                src={"/images/AddIP"}
-                width={40}
-                height={40}
-                alt="IPImage"
-                />
-
+    <div className="bg-[#1C1A11] w-full justify-center self-stretch items-center min-[2000px]:min-h-screen min-[2000px]:w-[3000px] gap-[40px] pt-[40px] pb-[120px] mx-auto p-6 scrollable">
+      {showLicenseCreation ? (
+          <LicenseCreationFlow
+            onComplete={handleLicenseCreation}
+            onCancel={() => setShowLicenseCreation(false)}
+          />
+      ) : (
+        <div className="space-y-6">
+          {licenses.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-center text-gray-400">
+                No licenses created yet.
+              </p>
+              <Button
+                onClick={() => setShowLicenseCreation(true)}
+                className="bg-[#373737] text-white hover:bg-[#FACC15] hover:text-[#1C1A11] px-4 py-2 rounded"
+              >
+                Create New License
+              </Button>
             </div>
-          </div>
-        </div>
-
-        {/* second column */}
-        <div className="flex flex-col w-full gap-[40px] self-stretch items-center p-[16px] border border-[#8A8A8A] rounded-md">
-          <div className="flex items-start self-stretch mb-[60px]">
-            <ReusableHeading text="License Payment" />
-            <Link
-              className="rounded-[8px] bg-[#373737] justify-center items-center py-[8px] px-[16px] text-[#EFF4F6] text-[16px] font-normal leading-[145%] tracking-[0.32px]"
-              href={"/License"}
-            >
-              Create License
-            </Link>
-          </div>
-
-          {/* my products section */}
-          <div className="w-full flex flex-col">
-            <div className="flex gap-[50px] w-full justify-between font-bold text-white min-[2000px]:w-[2560px] border-b border-[#8A8A8A] pb-[16px]">
-              <TypesComponent text="Trademark Overview" />
-              <TypesComponent text="Owner" className="" />
-              <TypesComponent text="Serial Number" />
-              <TypesComponent text="Status" />
-              <TypesComponent text="Price" />
+          ) : (
+            <div className="space-y-4">
+              {licenses.map((license: License) => (
+                <Card
+                  key={license.nftId}
+                  className="p-4 bg-[#1C1A11] border-[#373737]"
+                >
+                  <div className="grid grid-cols-6 gap-4 items-center">
+                    <div className="col-span-2">
+                      <h3 className="font-bold">{license.nftId}</h3>
+                      <p className="text-sm text-gray-400">
+                        Royalty Rate: {license.royaltyRate}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <span className="px-2 py-1 bg-green-500 rounded text-sm">
+                        {license.status}
+                      </span>
+                    </div>
+                    <div className="text-center text-green-500">
+                      {license.lifetimeEarnings}
+                    </div>
+                    <div className="text-center">{license.recentPayment}</div>
+                    <div className="text-right text-green-500">
+                      {license.amount}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+              <div className="text-center mt-6">
+                <Button
+                onClick={() => setShowLicenseCreation(true)}
+                  className="bg-[#373737] text-white hover:bg-[#FACC15] hover:text-[#1C1A11] px-4 py-2 rounded"
+                >
+                Create Another License
+                </Button>
+              </div>
+              
             </div>
-            <Searchfilter />
-            <Searchfilter />
-          </div>
+          )}
         </div>
-      </MaxWidthWrapper>
-      <Footer
-        width="py-[60px] max-h-[400px]"
-        className="border-t-[1px] border-[#8A8A8A] w-full"
-      />
+      )}
     </div>
   );
 }
