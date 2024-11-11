@@ -2,7 +2,7 @@ use crate::{
     mock::*,
     pallet::{Error, Event},
     tests::util::*,
-    types::{Contract, PaymentType},
+    types::Contract,
 };
 use frame_support::{assert_noop, assert_ok};
 
@@ -147,7 +147,6 @@ fn success_payment_with_penalty() {
         let owner = 1u64;
         let buyer = 2u64;
         let nft_id = create_nft(owner);
-        let payment_amount = 100u128;
 
         // Create and accept periodic purchase
         let contract_id = create_and_accept_periodic_purchase(owner, buyer, nft_id);

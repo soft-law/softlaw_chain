@@ -175,7 +175,6 @@ pub mod pallet {
             contract_id: T::ContractId,
             nft_id: T::NFTId,
             licensee: T::AccountId,
-            amount: BalanceOf<T>,
         },
         PaymentsCompleted {
             contract_id: T::ContractId,
@@ -189,6 +188,25 @@ pub mod pallet {
             nft_id: T::NFTId,
             offered_by: T::AccountId,
             accepted_by: T::AccountId,
+        },
+
+        /// Contract received a penalty for missed payment
+        ContractPenalized {
+            contract_id: T::ContractId,
+            nft_id: T::NFTId,
+            payer: T::AccountId,
+            penalty_amount: BalanceOf<T>,
+        },
+
+        /// Contract terminated due to missed payments
+        ContractTerminated {
+            contract_id: T::ContractId,
+            contract_type: ContractType,
+            nft_id: T::NFTId,
+            offered_by: T::AccountId,
+            accepted_by: T::AccountId,
+            payments_made: T::Index,
+            total_paid: BalanceOf<T>,
         },
     }
 
@@ -901,7 +919,7 @@ pub mod pallet {
                         if schedule.missed_payments.is_some() {
                             // Second miss - cancel contract
                             Self::cleanup_contract(contract_id, nft_id);
-                            Self::deposit_event(Event::ContractExpired {
+                            Self::deposit_event(Event::ContractTerminated {
                                 contract_id,
                                 contract_type: match contract {
                                     Contract::License(_) => ContractType::License,
@@ -931,6 +949,12 @@ pub mod pallet {
                                         license.payment_schedule.as_ref().unwrap(),
                                         amount_per_payment,
                                     );
+                                    Self::deposit_event(Event::ContractPenalized {
+                                        contract_id,
+                                        nft_id,
+                                        payer: payer.clone(),
+                                        penalty_amount: new_schedule.penalty_amount.unwrap(),
+                                    });
                                     Contract::License(License {
                                         payment_schedule: Some(new_schedule),
                                         ..license.clone()
@@ -941,6 +965,12 @@ pub mod pallet {
                                         purchase.payment_schedule.as_ref().unwrap(),
                                         amount_per_payment,
                                     );
+                                    Self::deposit_event(Event::ContractPenalized {
+                                        contract_id,
+                                        nft_id,
+                                        payer: payer.clone(),
+                                        penalty_amount: new_schedule.penalty_amount.unwrap(),
+                                    });
                                     Contract::Purchase(PurchaseContract {
                                         payment_schedule: Some(new_schedule),
                                         ..purchase.clone()
@@ -953,7 +983,6 @@ pub mod pallet {
                                 contract_id,
                                 nft_id,
                                 licensee: payer.clone(),
-                                amount: Self::calculate_amount_due(*amount_per_payment, schedule),
                             });
                         }
                         weight = weight.saturating_add(T::DbWeight::get().reads_writes(1, 1));

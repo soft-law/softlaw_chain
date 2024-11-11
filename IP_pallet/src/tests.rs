@@ -7,3 +7,4 @@ mod accept_purchase_tests;
 mod expire_license_tests;
 mod complete_purchase_tests;
 mod periodic_payment_tests;
+mod on_initialize_tests;
