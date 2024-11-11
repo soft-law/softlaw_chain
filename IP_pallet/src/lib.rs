@@ -101,7 +101,7 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        // NFT Creation & Ownership Events
+        // NFT Events
         NftMinted {
             owner: T::AccountId,
             nft_id: T::NFTId,
@@ -115,7 +115,7 @@ pub mod pallet {
             owner: T::AccountId,
         },
 
-        // Offer Creation Events
+        // Offer Events
         LicenseOffered {
             nft_id: T::NFTId,
             offer_id: T::OfferId,
@@ -126,18 +126,13 @@ pub mod pallet {
             offer_id: T::OfferId,
         },
 
-        // License Events
-        LicenseAccepted {
-            offer_id: T::OfferId,
-            licensee: T::AccountId,
-        },
-
-        // Purchase Events
-        PeriodicPurchaseStarted {
-            offer_id: T::OfferId,
+        // Contract Events
+        ContractCreated {
+            contract_id: T::ContractId,
+            contract_type: ContractType,
             nft_id: T::NFTId,
-            buyer: T::AccountId,
-            seller: T::AccountId,
+            offered_by: T::AccountId,
+            accepted_by: T::AccountId,
         },
         ContractCompleted {
             contract_id: T::ContractId,
@@ -147,7 +142,6 @@ pub mod pallet {
             accepted_by: T::AccountId,
             total_paid: BalanceOf<T>,
         },
-
         ContractExpired {
             contract_id: T::ContractId,
             contract_type: ContractType,
@@ -156,6 +150,21 @@ pub mod pallet {
             accepted_by: T::AccountId,
             payments_made: T::Index,
             total_paid: BalanceOf<T>,
+        },
+        ContractTerminated {
+            contract_id: T::ContractId,
+            contract_type: ContractType,
+            nft_id: T::NFTId,
+            offered_by: T::AccountId,
+            accepted_by: T::AccountId,
+            payments_made: T::Index,
+            total_paid: BalanceOf<T>,
+        },
+        ContractPenalized {
+            contract_id: T::ContractId,
+            nft_id: T::NFTId,
+            payer: T::AccountId,
+            penalty_amount: BalanceOf<T>,
         },
 
         // Payment Events
@@ -180,50 +189,22 @@ pub mod pallet {
             contract_id: T::ContractId,
             nft_id: T::NFTId,
         },
-
-        // Add this new event
-        ContractCreated {
-            contract_id: T::ContractId,
-            contract_type: ContractType,
-            nft_id: T::NFTId,
-            offered_by: T::AccountId,
-            accepted_by: T::AccountId,
-        },
-
-        /// Contract received a penalty for missed payment
-        ContractPenalized {
-            contract_id: T::ContractId,
-            nft_id: T::NFTId,
-            payer: T::AccountId,
-            penalty_amount: BalanceOf<T>,
-        },
-
-        /// Contract terminated due to missed payments
-        ContractTerminated {
-            contract_id: T::ContractId,
-            contract_type: ContractType,
-            nft_id: T::NFTId,
-            offered_by: T::AccountId,
-            accepted_by: T::AccountId,
-            payments_made: T::Index,
-            total_paid: BalanceOf<T>,
-        },
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        // NFT validation errors
+        // NFT Validation Errors
         NameTooLong,
         DescriptionTooLong,
         FilingDateTooLong,
         JurisdictionTooLong,
 
-        // NFT state errors
+        // NFT State Errors
         NftNotFound,
         NotNftOwner,
         NftInEscrow,
 
-        // Contract/offer errors
+        // Contract/Offer Errors
         OfferNotFound,
         ContractNotFound,
         NotALicenseOffer,
@@ -231,19 +212,17 @@ pub mod pallet {
         NotALicenseContract,
         NotAPurchaseContract,
 
-        // License-specific errors
-        LicenseNotActive,
-        LicenseNotExpired,
+        // License Errors
         ActiveLicensesExist,
         ExclusiveLicenseExists,
+        LicenseNotExpired,
 
-        // Payment errors
+        // Payment Errors
         ZeroPayment,
-        PaymentFailed,
+        InsufficientBalance,
         PaymentNotDue,
         PaymentNotCompleted,
         NotPeriodicPayment,
-        InsufficientBalance,
     }
 
     #[pallet::call]
