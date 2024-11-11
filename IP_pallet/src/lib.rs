@@ -897,12 +897,8 @@ pub mod pallet {
                 .as_mut()
                 .ok_or(Error::<T>::NotPeriodicPayment)?;
 
-            // Ensure payment is due
-            let current_block = frame_system::Pallet::<T>::block_number();
-            ensure!(
-                current_block >= schedule.next_payment_block && schedule.payments_due > 0u32.into(),
-                Error::<T>::PaymentNotDue
-            );
+            // Ensure there are payments due
+            ensure!(!schedule.payments_due.is_zero(), Error::<T>::PaymentNotDue);
 
             let amount_per_payment = match payment_type {
                 PaymentType::Periodic {
@@ -922,12 +918,13 @@ pub mod pallet {
             schedule.payments_due = schedule.payments_due.saturating_sub(1u32.into());
             schedule.missed_payments = None; // Reset missed payments
             schedule.penalty_amount = None; // Reset penalty
-            if !schedule.payments_due.is_zero() {
-                schedule.next_payment_block += match payment_type {
+                                            // Update next payment block based on current block
+            let current_block = frame_system::Pallet::<T>::block_number();
+            schedule.next_payment_block = current_block
+                + match payment_type {
                     PaymentType::Periodic { frequency, .. } => *frequency,
                     _ => Zero::zero(),
                 };
-            }
 
             // Emit periodic payment event first
             Self::deposit_event(Event::PeriodicPaymentMade {
@@ -954,22 +951,22 @@ pub mod pallet {
         }
 
         /// Expires a license contract after its duration has ended
-        /// 
+        ///
         /// Allows any party to expire a license contract once its duration has passed.
         /// Cleans up contract storage and updates NFT contract mappings.
-        /// 
+        ///
         /// # Arguments
         /// * `origin` - Any signed party
         /// * `contract_id` - ID of the license contract to expire
-        /// 
+        ///
         /// # Events
         /// * [`Event::ContractExpired`] - When license is successfully expired
-        /// 
+        ///
         /// # Errors
         /// * [`Error::ContractNotFound`] - If contract doesn't exist
         /// * [`Error::NotALicenseContract`] - If contract is a purchase contract
         /// * [`Error::LicenseNotExpired`] - If license duration hasn't ended yet
-        /// 
+        ///
         /// # State Changes
         /// - Removes contract from [`Contracts`] storage
         /// - Updates [`NFTContracts`] mapping to remove expired license
@@ -1017,24 +1014,24 @@ pub mod pallet {
         }
 
         /// Completes a purchase contract after all payments are made
-        /// 
+        ///
         /// Finalizes NFT ownership transfer and cleans up contract storage.
         /// Can only be called when all payments have been completed.
-        /// 
+        ///
         /// # Arguments
         /// * `origin` - Any signed party
         /// * `contract_id` - ID of the purchase contract to complete
-        /// 
+        ///
         /// # Events
         /// * [`Event::ContractCompleted`] - When purchase is successfully completed
         /// * [`Event::NftRemovedFromEscrow`] - When NFT is released from escrow
-        /// 
+        ///
         /// # Errors
         /// * [`Error::ContractNotFound`] - If contract doesn't exist
         /// * [`Error::NotAPurchaseContract`] - If contract is a license contract
         /// * [`Error::NotPeriodicPayment`] - If contract is not a periodic payment contract
         /// * [`Error::PaymentNotCompleted`] - If any payments are still due
-        /// 
+        ///
         /// # State Changes
         /// - Removes contract from [`Contracts`] storage
         /// - Updates [`NFTContracts`] mapping to remove contract
