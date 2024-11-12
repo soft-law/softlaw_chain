@@ -1,14 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
-<<<<<<<< HEAD:Front-end/src/components/search/IPSearch.tsx
-// import { WalletConnectButton } from "../WalletConnect";
-// import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import TypesComponent from "../TypesProps";
-========
-import TypesComponent from "../ProofOfInnovation/TypesProps";
->>>>>>>> Makzy-main:Front-end/src/components/Dashboard/IPSearch.tsx
 import Footer from "../Footer";
+import { useDashboardContext } from "@/context/dashboard";
+import { useContext } from "react";
 import Link from "next/link";
+import { FormDataContext } from "@/components/FormDataContext";
 
 interface SearchResult {
   trademark: string;
@@ -17,9 +14,18 @@ interface SearchResult {
   status: string;
   price: string;
 }
+interface ManageProps {
+  onDataChange: (data: any) => void;
+}
 
-export default function IpSearch() {
+export default function IpSearch({onDataChange} : ManageProps) {
   const [activeButton, setActiveButton] = useState<string | null>(null);
+
+  const { selectedTabDashboard,
+    setSelectedTabDashboard } =
+    useDashboardContext();
+
+  const { formData, updateFormData } = useContext(FormDataContext);
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);

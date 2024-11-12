@@ -69,7 +69,10 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
         const validImageHashes = imageHashes.filter((hash): hash is string => hash !== undefined);
 
         // Create url for images
-        const imageUrls = validImageHashes.map(hash => `https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/${hash}`);
+        // const imageUrls = validImageHashes.map(hash => `https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/${hash}`);
+        const imageUrls = validImageHashes.map(hash => `${process.env.NEXT_PUBLIC_GATEWAY} ${hash}`);
+        
+        // https://salmon-urgent-sawfish-507.mypinata.cloud/ipfs/QmQXLqaZQQML2tdqsx236n1mEszz7kjApPqckS62dBexQD
 
         // Json with all the urls
         const imagesMetadata = { imageUrls };
@@ -82,7 +85,7 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
 
         // get hash from json
         const metadataCid = ipfsMetadata.IpfsHash;
-        const metadataUrl = `https://harlequin-quiet-smelt-978.mypinata.cloud/ipfs/${metadataCid}`;
+        const metadataUrl = (`${process.env.NEXT_PUBLIC_GATEWAY} ${metadataCid}`)
         console.log("CID del JSON con todos los enlaces de imágenes:", metadataUrl);
 
         // save json of hash

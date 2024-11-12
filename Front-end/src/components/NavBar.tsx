@@ -11,7 +11,7 @@ export default function NavBar() {
   const licensing = "Licensing".split("");
 
   return (
-    <header className="sticky top-0 z-[100] w-full self-stretch border-b border-[#E5E7EB] bg-[#1C1A11] py-4 text-white backdrop-filter min-[2000px]:w-[3000px] min-[2000px]:px-[320px]">
+    <header className="sticky top-0 z-[100] w-full px-[10px] self-stretch border-b border-[#E5E7EB] bg-[#1C1A11] py-4 text-white backdrop-filter md:px-[120px] min-[2000px]:w-[3000px] min-[2000px]:px-[320px]">
       <div className="flex w-full justify-between items-start py-[16px] min-[2000px]:py-[25px]">
         <Link href="/" className="flex items-center">
           <img

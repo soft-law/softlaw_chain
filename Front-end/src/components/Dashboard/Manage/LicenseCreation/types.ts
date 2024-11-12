@@ -1,20 +1,21 @@
 export interface LicenseFormData {
   name?: string;
   description?: string;
-    nftId: string;
+  nftId: string;
+  royaltyrate: number;
   price: {
     amount: number;
     currency: string;
   };
-  licenseType: 'exclusive' | 'nonExclusive';
-  durationType: 'permanent' | 'custom';
+  licenseType: "Exclusive" | "Non-Exclusive";
+  durationType: "Permanent" | "Custom";
   customDuration?: {
     value: number;
-    unit: 'days' | 'months' | 'years';
+    unit?: "days" | "months" | "years";
     expirationDate?: string;
   };
-  paymentType: 'oneTime' | 'recurring';
+  paymentType: "OneTime" | "Recurring";
   recurringPayment?: {
-    interval: 'monthly' | 'quarterly' | 'annually';
+    interval: "Monthly" | "Quarterly" | "Annually";
   };
 }

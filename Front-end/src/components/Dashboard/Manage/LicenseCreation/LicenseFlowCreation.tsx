@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { LicenseCreationForm } from './LicenseCreationForm';
 import { LicenseSampleForm } from './LicenseSampleForm';
 import type { LicenseFormData } from './types';
+import NavBar from '@/components/NavBar';
 
 interface LicenseCreationFlowProps {
   onComplete: (data: LicenseFormData) => void;
@@ -13,17 +14,24 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
   
   const [formData, setFormData] = useState<LicenseFormData>({
     nftId: '',
+    royaltyrate: 0,
     price: {
       amount: 0,
-      currency: 'SLAW'
+      currency: ''
     },
-    licenseType: 'exclusive',
-    durationType: 'permanent',
-    paymentType: 'oneTime'
+    licenseType: 'Exclusive',
+    durationType: 'Permanent',
+    paymentType: 'OneTime'
   });
 
-  const handleFormUpdate = (updates: Partial<LicenseFormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
+  const handleFormChange = (newData: LicenseFormData) => {
+    setFormData(newData);
+  };
+
+  const handleFormSubmit = (data: LicenseFormData) => {
+    // Handle form submission
+    console.log('Form submitted:', data);
+    // Navigate to next page or process form
   };
 
   const handleNext = () => {
@@ -38,8 +46,6 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
     }
   };
 
-
-
   const handleComplete = () => {
     onComplete(formData);
   };
@@ -47,14 +53,15 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
 
 
   return (
+    <div className=''>
+    {/* <NavBar/> */}
     <div className="w-full">
+
       {step === 1 && (
         <LicenseCreationForm
           formData={formData}
-          onSubmit={(data) => {
-            handleFormUpdate(data);
-            handleNext();
-          }}
+          onChange={handleFormChange}
+          onSubmit={() =>  handleNext()}
           onBack={handleBack}
         />
       )}
@@ -64,8 +71,10 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
         formData={formData}
         onSubmit={handleComplete}
         onBack={handleBack}
+        onChange={handleFormChange}
         />
       )}
+    </div>
     </div>
   );
 }

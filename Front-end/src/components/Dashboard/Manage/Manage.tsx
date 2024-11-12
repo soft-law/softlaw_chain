@@ -1,148 +1,118 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import { useContext } from "react";
-// import { FormDataContext } from "../../ProofOfInnovation/FormDataContext";
-// import { useDashboardTapContext } from "@/context/dashboard";
-import Footer from "../../Footer";
-// import ReusableHeading from "../../ProofOfInnovation/textComponent";
 import Image from "next/image";
 import Link from "next/link";
-// import TypesComponent from "@/components/ProofOfInnovation/TypesProps";
 import { Button } from "@/components/ui/button";
-// import { LicenseCreationFlow } from "@/components/Dashboard/Manage/LicenseCreation/LicenseFlowCreation";
-import type { LicenseFormData } from "./LicenseCreation/types";
-import { Card } from "@/components/ui/card";
+import type { LicenseFormData } from '@/components/Dashboard/Manage/LicenseCreation/types';
 import { FormDataContext } from "@/components/FormDataContext";
 import { useDashboardContext } from "@/context/dashboard";
-import ReusableHeading from "@/components/textComponent";
 import TypesComponent from "@/components/TypesProps";
-import { LicenseCreationFlow } from "./LicenseCreation/LicenseFlowCreation";
+
 
 interface ManageProps {
   onDataChange: (data: any) => void;
+  formData: LicenseFormData;
 }
 
 
-interface License extends LicenseFormData {
-  status: string;
-  royaltyRate: string;
-  lifetimeEarnings: string;
-  recentPayment: string;
-  amount: string;
-}
+export default function Manage({ onDataChange, formData }: ManageProps) {
 
-export default function Manage({ onDataChange }: ManageProps) {
+
   const [showLicenseCreation, setShowLicenseCreation] = useState(false);
-  const [licenses, setLicenses] = React.useState<License[]>([]);
-
-
-
-  const handleLicenseCreation = (data: LicenseFormData) => {
-    // Adds the new license to the list
-    setLicenses((prev) => [
-      ...prev,
-      {
-        id: Date.now(), // temporary ID for demo
-        ...data,
-        status: "Active",
-        royaltyRate: "10%",
-        lifetimeEarnings: "$2.45",
-        recentPayment: "Oct. 24",
-        amount: "+$252",
-      } as License,
-    ]);
-    setShowLicenseCreation(false);
-  };
+  const [licenses, setLicenses] = React.useState<LicenseFormData[]>([]);
 
   const { selectedTabDashboard,
     setSelectedTabDashboard } =
     useDashboardContext();
 
-  const { formData, updateFormData } = useContext(FormDataContext);
+  const { updateFormData } = useContext(FormDataContext);
 
   return (
-    <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
-      <MaxWidthWrapper className="flex flex-col self-stretch min-[2000px]:min-h-screen pt-[120px] justify-center items-center">
+    <div className="bg-[#1C1A11] flex flex-col w-full justify-center self-stretch items-center min-[2000px]:min-h-screen min-[2000px]:w-[3000px] gap-[40px] pt-[40px] pb-[120px]">
         {/* Important Updates Section */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-[#F6E18B]">
-            Important Updates
-          </h2>
+        <div className="space-y-4 bg-[#27251C] rounded-[16px] flex flex-col gap-[40px] self-stretch p-[16px] w-full mx-auto md:max-w-screen-xl min-[2000px]:w-[3000px]">
+          <TypesComponent 
+          className="text-[#fff]"
+          text = "Important Updates "
+          detail=" - Keep Track of all Your IP Activity"
+          />
           {licenses.length > 0 && (
-            <div className="space-y-2">
+            <div className="flex flex-col p-[16px] items-start gap-[16px] border-b-[#8A8A8A] min-[2000px]:w-[3000px] w-full">
               {licenses.map((license) => (
-                <div key={license.nftId} className="bg-[#373737] p-4 rounded-lg flex justify-between items-center">
-                <span>The license for NFT ID: {license.nftId} has been created successfully.</span>
-                <div className="space-x-2">
-                  <button className="px-3 py-1 bg-red-500 text-white rounded">Cancel</button>
-                  <button className="px-3 py-1 bg-green-500 text-white rounded">Accept</button>
-                </div>
+                <div key={license.nftId} className="bg-[#373737] p-4 gap-[16px] flex justify-between items-start">
+                  <Image 
+                  src={"/images/Link.svg"}
+                  width={64}
+                  height={64}
+                  alt="Link"
+                  />
+                  <div className="flex flex-col gap-[8px]">
+                  {/* <h1 className="text-[16px] font-normal leading-[145%] tracking-[0.32px] text-[#ffff]">The license for <span className="font-bold text-[#43C705]">'Method and Formulation For Gluten-Free Bakery Products'</span>  Patent expires in 15 days. Renew now to avoid disruptions.</h1> */}
+                    <TypesComponent className="text-[16px] min-[2000px]:text-2xl font-normal leading-[145%] tracking-[0.32px] text-[#ffff]"
+                    text={`The license for NFT ID: ${license.nftId} has been created successfully.`}
+                    />
+                    <div className="flex items-center justify-end gap-[40px]">
+                      <div className="flex items-start flex-end ">
+                      <h1 className="flex items-start flex-end  text-[#8A8A8A]">10 minutes ago (time)</h1>
+                      </div>
+                    
+                    <div className="flex justify-end items-end">
+                    <Button className="py-[8px] px-[16px] flex bg-transparent">Cancel</Button>
+                    <Button className="py-[8px] px-[16px] flex rounded-[8px] bg-[#373737]">Accept</Button>
+                    </div>
+                    </div>
+                  </div>
+              </div>
+              ))}
+            </div>
+          )}
+          {licenses.length > 0 && (
+            <div className="flex flex-col p-[16px] items-start gap-[16px] border-b-[#8A8A8A] min-[2000px]:w-[3000px] w-full">
+              {licenses.map((license) => (
+                <div key={license.nftId} className="bg-[#373737] p-4 gap-[16px] flex justify-between items-start">
+                  <Image 
+                  src={"/images/Link.svg"}
+                  width={64}
+                  height={64}
+                  alt="Link"
+                  />
+                  <div className="flex flex-col gap-[8px]">
+                  <h1 className="text-[16px] font-normal leading-[145%] tracking-[0.32px] text-[#ffff]">The license for
+                    {license.licenseType}
+                     <span className="font-bold text-[#43C705]">  'Method and Formulation For Gluten-Free Bakery Products'</span>  Patent expires in 15 days. Renew now to avoid disruptions.</h1>
+                    <div className="flex items-center justify-end gap-[40px]">
+                      <div className="flex items-start flex-end ">
+                      <h1 className="flex items-start flex-end  text-[#8A8A8A]">10 minutes ago (time)</h1>
+                      </div>
+                    <div className="flex justify-end items-end">
+                    <Button className="py-[8px] px-[16px] flex bg-transparent">Cancel</Button>
+                    <Button className="py-[8px] px-[16px] flex rounded-[8px] bg-[#373737]">Accept</Button>
+                    </div>
+                    </div>
+                  </div>
               </div>
               ))}
             </div>
           )}
         </div>
-
-        <div className="flex flex-col w-full gap-[40px] self-stretch items-center p-[16px] border border-[#8A8A8A] rounded-md">
+        <div className="flex flex-col w-full md:w-[1000px] gap-[40px] self-stretch items-center p-[16px]  border border-[#8A8A8A] rounded-[16px]">
           <div className="flex justify-between items-start self-stretch mb-[60px]">
-            <ReusableHeading text="All IPs" />
-            <Button
+            <TypesComponent 
+            className="text-[#EFF4F6]"
+            text="Licence payment" />
+            <Link
+            href={"/licensing"}
+            >
+              <Button
               onClick={() => setShowLicenseCreation(true)}
-              className="bg-[#F6E18B] text-black hover:bg-[#dcc87d]"
+              className="bg-[#373737] text-[#fff] hover:bg-[#FACC15]  hover:text-[#1C1A11]"
             >
               Create License
             </Button>
+            </Link>
           </div>
-
-          {showLicenseCreation ? (
-            <LicenseCreationFlow
-              onComplete={handleLicenseCreation}
-              onCancel={() => setShowLicenseCreation(false)}
-            />
-          ) : (
-            <div className="space-y-6">
-              {licenses.length === 0 ? (
-                <p className="text-center text-gray-400">
-                  No licenses created yet.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {licenses.map((license: License) => (
-                   <Card key={license.nftId} className="p-4 bg-[#1C1A11] border-[#373737]">
-                   <div className="grid grid-cols-6 gap-4 items-center">
-                     <div className="col-span-2">
-                       <h3 className="font-bold">{license.nftId}</h3>
-                       <p className="text-sm text-gray-400">Royalty Rate: {license.royaltyRate}</p>
-                     </div>
-                     <div className="text-center">
-                       <span className="px-2 py-1 bg-green-500 rounded text-sm">
-                         {license.status}
-                       </span>
-                     </div>
-                     <div className="text-center text-green-500">
-                       {license.lifetimeEarnings}
-                     </div>
-                     <div className="text-center">
-                       {license.recentPayment}
-                     </div>
-                     <div className="text-right text-green-500">
-                       {license.amount}
-                     </div>
-                   </div>
-                 </Card>
-                    
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
         </div>
-      </MaxWidthWrapper>
-      <Footer
-        width="py-[60px] max-h-[400px]"
-        className="border-t-[1px] border-[#8A8A8A] w-full"
-      />
     </div>
   );
 }

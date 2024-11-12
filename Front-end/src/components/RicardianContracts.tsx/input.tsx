@@ -43,29 +43,26 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         >
           {label}
         </label>
-        <input
-          type={type}
-          ref={ref}
-          {...props}
-          className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] ${className}`}
-          onBlur={handleBlur}
-          onChange={handleChange}
-        />
-        {children}
-
-        {error && (
-          <div className="absolute inset-y-4 right-0 min-[2000px]:text-2xl flex items-end justify-center pr-3 pointer-events-none">
-            <span className="text-red-500">{error}</span>
-          </div>
-        )}
-
+        <input 
+        type={type}
+        // ref={ref}
+        // {...props}
+        className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] ${className}`} onBlur={handleBlur}
+           onChange={handleChange}
+        /> 
+        {/* {children} */}
+              
+       {error && (
+        <div className="absolute inset-y-4 right-0 min-[2000px]:text-2xl flex items-end justify-center pr-3 pointer-events-none">
+        <span className="text-red-500">{error}</span>
+        </div>
+       )}
+        
         {/* Dropdown Icon conditionally rendered */}
         {hasDropdown && (
-          <div className="absolute inset-y-4 right-0 flex items-end justify-center pr-3 pointer-events-none">
-            <ChevronDownIcon
-              className="h-5 w-5 min-[2000px]:w-8 min-[2000px]:h-8 text-gray-500"
-              aria-hidden="true"
-            />
+            <div className="absolute inset-y-4 right-0 flex items-end justify-center pr-3 pointer-events-none">
+            <ChevronDownIcon 
+            className="h-5 w-5 min-[2000px]:w-8 min-[2000px]:h-8 text-gray-500" aria-hidden="true" />
           </div>
         )}
       </div>

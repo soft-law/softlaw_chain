@@ -94,7 +94,7 @@ export default function WalletConnect() {
 
   return (
     <button
-      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+      className={`min-[2000px]:text-2xl rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
         isConnecting
           ? "bg-gray-500 cursor-not-allowed text-white"
           : selectedAccount
