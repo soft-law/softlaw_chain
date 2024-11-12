@@ -10,7 +10,6 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import MaxWidthWrapper from "../MaxWidhWrapper";
 
 
-
 function DashboardContent() {
   
   const { selectedTabDashboard, setSelectedTabDashboard } =
@@ -50,16 +49,16 @@ function DashboardContent() {
         <div className="flex items-center">
         <div className="flex items-center space-x-2">
           <TabsTrigger
-            value="MyProducts"
+            value="1"
             className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
-              selectedTabDashboard === "MyProducts"
+              selectedTabDashboard === "1"
                 ? "bg-yellow-500 text-black"
                 : "text-black"
             }`}
           >
             <h1
               className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
-                selectedTabDashboard === "MyProducts"
+                selectedTabDashboard === "1"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
               } hover:text-[#F6E18B]
@@ -72,16 +71,16 @@ function DashboardContent() {
 
         <div className="flex items-center space-x-2">
           <TabsTrigger
-            value="Manage"
+            value="2"
             className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
-              selectedTabDashboard === "Manage"
+              selectedTabDashboard === "2"
                 ? "bg-yellow-500 text-black"
                 : "text-black"
             }`}
           >
             <h1
               className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
-                selectedTabDashboard === "Manage"
+                selectedTabDashboard === "2"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
               } hover:text-[#F6E18B]
@@ -94,16 +93,16 @@ function DashboardContent() {
 
         <div className="flex items-center space-x-2">
           <TabsTrigger
-            value="Activity"
+            value="3"
             className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
-              selectedTabDashboard === "Activity"
+              selectedTabDashboard === "3"
                 ? "bg-yellow-500 text-black"
                 : "text-black"
             }`}
           >
             <h1
               className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
-                selectedTabDashboard === "Activity"
+                selectedTabDashboard === "3"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
               } hover:text-[#F6E18B]
@@ -118,16 +117,16 @@ function DashboardContent() {
        
         <div className="flex items-center space-x-2">
           <TabsTrigger
-            value="IPSearch"
+            value="4"
             className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
-              selectedTabDashboard === "IPSearch"
+              selectedTabDashboard === "4"
                 ? "bg-yellow-500 text-black"
                 : "text-black"
             }`}
           >
             <h1
               className={`min-[2000px]:text-3xl py-[8px] px-[16px] rounded-md ${
-                selectedTabDashboard === "IPSearch"
+                selectedTabDashboard === "4"
                   ? "text-[#F6E18B] border border-[#F6E18B]  bg-[#373737]"
                   : "border-[#8A8A8A] text-[#fff]"
               } hover:text-[#F6E18B]
@@ -144,18 +143,18 @@ function DashboardContent() {
       </TabsList>
 
       <div className="flex h-screen min-[2000px]:w-[2560px]">
-        <TabsContent value="MyProducts">
+        <TabsContent value="1">
             
               <MyProducts
-              onDataChange={(data) => handleFormDataChange("MyProducts", data)}
+              onDataChange={(data) => handleFormDataChange("1", data)}
               />
         </TabsContent>
-        <TabsContent value="Manage">
+        <TabsContent value="2">
               <Manage 
                onDataChange={(data) => setFormData({...formData, Manage:data })}
               />
         </TabsContent>
-        <TabsContent value="Activity">
+        <TabsContent value="3">
             <Activity
             onDataChange={(data) =>
               setFormData({ ...formData, Activity:data})
@@ -163,7 +162,7 @@ function DashboardContent() {
             />
         </TabsContent>
 
-        <TabsContent value="IPSearch">
+        <TabsContent value="4">
             <IpSearch
             onDataChange={(data) =>
               setFormData({ ...formData, IPSearch:data})
