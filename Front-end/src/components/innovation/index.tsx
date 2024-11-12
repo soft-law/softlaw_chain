@@ -179,9 +179,5 @@ function NFTContent() {
 
 // Main Dashboard component that provides the context
 export default function InnovationPage() {
-  return (
-    
-      <NFTContent />
-
-  );
+  return <NFTContent />;
 }
