@@ -9,40 +9,18 @@ import { FormDataContext } from "@/components/FormDataContext";
 import { useDashboardContext } from "@/context/dashboard";
 import TypesComponent from "@/components/TypesProps";
 
+
 interface ManageProps {
   onDataChange: (data: any) => void;
   formData: LicenseFormData;
 }
 
-interface License extends LicenseFormData {
-  status: string;
-  royaltyRate: string;
-  lifetimeEarnings: string;
-  recentPayment: string;
-  amount: string;
-}
 
 export default function Manage({ onDataChange, formData }: ManageProps) {
-  
-  const [showLicenseCreation, setShowLicenseCreation] = useState(false);
-  const [licenses, setLicenses] = React.useState<License[]>([]);
 
-  const handleLicenseCreation = (data: LicenseFormData) => {
-    // Adds the new license to the list
-    setLicenses((prev) => [
-      ...prev,
-      {
-        id: Date.now(), // temporary ID for demo
-        ...data,
-        status: "Active",
-        royaltyRate: "10%",
-        lifetimeEarnings: "$2.45",
-        recentPayment: "Oct. 24",
-        amount: "+$252",
-      } as License,
-    ]);
-    setShowLicenseCreation(false);
-  };
+
+  const [showLicenseCreation, setShowLicenseCreation] = useState(false);
+  const [licenses, setLicenses] = React.useState<LicenseFormData[]>([]);
 
   const { selectedTabDashboard,
     setSelectedTabDashboard } =
@@ -83,13 +61,8 @@ export default function Manage({ onDataChange, formData }: ManageProps) {
                     <Button className="py-[8px] px-[16px] flex bg-transparent">Cancel</Button>
                     <Button className="py-[8px] px-[16px] flex rounded-[8px] bg-[#373737]">Accept</Button>
                     </div>
-                      
                     </div>
-                    
-
                   </div>
-                 
-               
               </div>
               ))}
             </div>
@@ -108,25 +81,16 @@ export default function Manage({ onDataChange, formData }: ManageProps) {
                   <h1 className="text-[16px] font-normal leading-[145%] tracking-[0.32px] text-[#ffff]">The license for
                     {license.licenseType}
                      <span className="font-bold text-[#43C705]">  'Method and Formulation For Gluten-Free Bakery Products'</span>  Patent expires in 15 days. Renew now to avoid disruptions.</h1>
-                    {/* <TypesComponent className="text-[16px] min-[2000px]:text-2xl font-normal leading-[145%] tracking-[0.32px] text-[#ffff]"
-                    text={`The license for NFT ID: ${license.nftId} has been created successfully.`}
-                    /> */}
                     <div className="flex items-center justify-end gap-[40px]">
                       <div className="flex items-start flex-end ">
                       <h1 className="flex items-start flex-end  text-[#8A8A8A]">10 minutes ago (time)</h1>
                       </div>
-                    
                     <div className="flex justify-end items-end">
                     <Button className="py-[8px] px-[16px] flex bg-transparent">Cancel</Button>
                     <Button className="py-[8px] px-[16px] flex rounded-[8px] bg-[#373737]">Accept</Button>
                     </div>
-                      
                     </div>
-                    
-
                   </div>
-                 
-               
               </div>
               ))}
             </div>
@@ -148,7 +112,6 @@ export default function Manage({ onDataChange, formData }: ManageProps) {
             </Button>
             </Link>
           </div>
-         
         </div>
     </div>
   );

@@ -30,10 +30,6 @@ export function LicenseSampleForm({
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  // const handleCreate = () => {
-  //   setShowConfirmDialog(true);
-  // };
-
   const handleConfirm = () => {
     setShowConfirmDialog(false);
     onSubmit(formData);
@@ -54,6 +50,9 @@ export function LicenseSampleForm({
             <p>
               License Price: {formData.price.amount} {formData.price.currency}
             </p>
+            <p>
+              Royalty Rate: {formData.royaltyrate}%
+            </p>
           </div>
 
           {/* License Type Selection */}
@@ -62,12 +61,12 @@ export function LicenseSampleForm({
             <div className="grid grid-cols-2 gap-4">
               <div
                 className={`p-4 rounded-md cursor-pointer ${
-                  formData.licenseType === "exclusive"
+                  formData.licenseType === "Exclusive"
                     ? "border-[#F6E18B]"
                     : "border-[#373737]"
                 } border`}
                 onClick={() =>
-                  handleInputChange({ ...formData, licenseType: "exclusive" })
+                  handleInputChange({ ...formData, licenseType: "Exclusive" })
                 }
               >
                 <TypesComponent
@@ -83,14 +82,14 @@ export function LicenseSampleForm({
 
               <div
                 className={`p-4 rounded-md cursor-pointer space-y-[10px] ${
-                  formData.licenseType === "nonExclusive"
+                  formData.licenseType === "Non-Exclusive"
                     ? "border-[#F6E18B]"
                     : "border-[#373737]"
                 } border`}
                 onClick={() =>
                   handleInputChange({
                     ...formData,
-                    licenseType: "nonExclusive",
+                    licenseType: "Non-Exclusive",
                   })
                 }
               >
@@ -109,11 +108,11 @@ export function LicenseSampleForm({
           <div className="bg-[transparent]  rounded-md items-start text-[#fff] space-y-[10px]">
           
 
-            {formData.durationType === "permanent" && (
+            {formData.durationType === "Permanent" && (
               <p>License Duration: Permanent</p>
             )}
 
-            {formData.durationType === "custom" && (
+            {formData.durationType === "Custom" && (
               <div className="flex flex-col gap-[8px]">
                 <p>
                   License Duration (Custom) : {formData.customDuration?.value}{" "}
@@ -125,124 +124,17 @@ export function LicenseSampleForm({
               </div>
             )}
 
-            {formData.paymentType === "oneTime" && (
+            {formData.paymentType === "OneTime" && (
               <p>Payment Type: One-Time Payment</p>
             )}
-            {formData.paymentType === "recurring" && (
+            {formData.paymentType === "Recurring" && (
               <div className="flex flex-col gap-[8px]">
                 <p>Payment Type: Recurring </p>
                 <p>Payment Interval: {formData.recurringPayment?.interval}</p>
               </div>
             )}
           </div>
-          {/* Custom Duration fields only show when selected */}
-          {/* {formData.durationType === "custom" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  type="number"
-                  placeholder="Duration"
-                  value={formData.customDuration?.value || ""}
-                  onChange={(e) =>
-                    handleInputChange({
-                      customDuration: {
-                        ...formData.customDuration,
-                        value: Number(e.target.value),
-                      },
-                    })
-                  }
-                  className="bg-[#373737] border-none text-white"
-                />
-                <select
-                  value={formData.customDuration?.unit}
-                  onChange={(e) =>
-                    handleInputChange({
-                      ...formData,
-                      customDuration: {
-                        ...formData.customDuration,
-                        unit: e.target.value as "days" | "months" | "years",
-                      },
-                    })
-                  }
-                  className="bg-[#373737] border-none text-white rounded-md p-2"
-                >
-                  <option value="days">Days</option>
-                  <option value="months">Months</option>
-                  <option value="years">Years</option>
-                </select>
-              </div>
-              <Input
-                type="date"
-                value={formData.customDuration?.expirationDate || ""}
-                onChange={(e) =>
-                  handleInputChange({
-                    ...formData,
-                    customDuration: {
-                      ...formData.customDuration,
-                      expirationDate: e.target.value,
-                    },
-                  })
-                }
-                className="bg-[#373737] border-none text-white"
-              />
-            </div>
-          )} */}
-
-          {/* Recurring payment field will only show when selected */}
-
-          {/* {formData.paymentType === "recurring" && (
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  onClick={() =>
-                    handleInputChange({
-                     
-                      recurringPayment: { interval: "monthly" },
-                    })
-                  }
-                  className={`${
-                    formData.recurringPayment?.interval === "monthly"
-                      ? "bg-[#F6E18B] text-black"
-                      : "bg-[#373737] text-white"
-                  }`}
-                >
-                  Monthly
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() =>
-                    handleInputChange({
-                    
-                      recurringPayment: { interval: "quarterly" },
-                    })
-                  }
-                  className={`${
-                    formData.recurringPayment?.interval === "quarterly"
-                      ? "bg-[#F6E18B] text-black"
-                      : "bg-[#373737] text-white"
-                  }`}
-                >
-                  Quarterly
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() =>
-                    handleInputChange({
-                      recurringPayment: { interval: "annually" },
-                    })
-                  }
-                  className={`${
-                    formData.recurringPayment?.interval === "annually"
-                      ? "bg-[#F6E18B] text-black"
-                      : "bg-[#373737] text-white"
-                  }`}
-                >
-                  Annually
-                </Button>
-              </div>
-            </div>
-          )} */}
+         
 
           <div className="flex justify-between pt-4">
             <Button
@@ -262,6 +154,7 @@ export function LicenseSampleForm({
         </form>
       </div>
 
+
       <AlertDialog
         open={showConfirmDialog}
         onClose={() => setShowConfirmDialog(false)}
@@ -274,3 +167,5 @@ export function LicenseSampleForm({
     </div>
   );
 }
+
+

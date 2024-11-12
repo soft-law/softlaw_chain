@@ -14,13 +14,14 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
   
   const [formData, setFormData] = useState<LicenseFormData>({
     nftId: '',
+    royaltyrate: 0,
     price: {
       amount: 0,
       currency: ''
     },
-    licenseType: 'exclusive',
-    durationType: 'permanent',
-    paymentType: 'oneTime'
+    licenseType: 'Exclusive',
+    durationType: 'Permanent',
+    paymentType: 'OneTime'
   });
 
   const handleFormChange = (newData: LicenseFormData) => {
@@ -53,7 +54,7 @@ export function LicenseCreationFlow({ onComplete, onCancel }: LicenseCreationFlo
 
   return (
     <div className=''>
-    <NavBar/>
+    {/* <NavBar/> */}
     <div className="w-full">
 
       {step === 1 && (

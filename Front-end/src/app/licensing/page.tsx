@@ -2,12 +2,12 @@
 import Licensing from "@/components/Dashboard/Manage/License";
 
 
-export default function License() {
-    return(
-        <>
-         <Licensing />
-        </>
-       
-    );
 
-}
+const License = () => {
+  return (
+    
+      <Licensing />
+  );
+};
+
+export default License;

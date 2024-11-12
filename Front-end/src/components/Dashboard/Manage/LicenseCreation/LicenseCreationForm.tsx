@@ -47,6 +47,23 @@ export function LicenseCreationForm({
             />
           </div>
 
+          <div>
+            <label className="font-Montesarrat text-[16px] font-normal min-[2000px]:text-4xl leading-[145%] tracking-[0.32px] text-[#FFF] mb-1">
+              Royalty Rate
+            </label>
+            <Input
+              type="number"
+              placeholder="For example: 10%"
+              value={formData.royaltyrate}
+              onChange={(e) =>
+                handleInputChange({
+                  royaltyrate: Number(e.target.value),
+                })
+              }
+              className="md:w-2/4 text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff] p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15]"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="font-Montesarrat text-[16px] font-normal min-[2000px]:text-4xl leading-[145%] tracking-[0.32px] text-[#FFF] mb-1">
@@ -91,9 +108,9 @@ export function LicenseCreationForm({
             <div className="grid grid-cols-2 gap-4">
               <Button
                 type="button"
-                onClick={() => handleInputChange({ durationType: "permanent" })}
+                onClick={() => handleInputChange({ durationType: "Permanent" })}
                 className={`flex flex-col items-start hover:bg-[#F6E18B] hover:text-black bg-transparent rounded-[8px] border border-[#8A8A8A] p-4 h-[63px] ${
-                  formData.durationType === "permanent"
+                  formData.durationType === "Permanent"
                     ? "bg-[#F6E18B] text-black "
                     : " bg-[transparent] text-white"
                 }`}
@@ -112,9 +129,9 @@ export function LicenseCreationForm({
               <div className="flex flex-col gap-[16px]">
                 <Button
                   type="button"
-                  onClick={() => handleInputChange({ durationType: "custom" })}
+                  onClick={() => handleInputChange({ durationType: "Custom" })}
                   className={`flex flex-col items-start hover:bg-[#F6E18B] hover:text-black bg-transparent rounded-[8px] border border-[#8A8A8A] p-4 h-[63px] ${
-                    formData.durationType === "custom"
+                    formData.durationType === "Custom"
                       ? "bg-[#F6E18B] text-black"
                       : "bg-[transparent]  text-white"
                   }`}
@@ -131,7 +148,7 @@ export function LicenseCreationForm({
                   </div>
                 </Button>
                 {/* Custom Duration fields only show when selected */}
-                {formData.durationType === "custom" && (
+                {formData.durationType === "Custom" && (
                   <div className="space-y-2">
                     <div className="flex flex-col gap-[10px]">
                       <TypesComponent
@@ -213,9 +230,9 @@ export function LicenseCreationForm({
             <div className="grid grid-cols-2 gap-4">
               <Button
                 type="button"
-                onClick={() => handleInputChange({ paymentType: "oneTime" })}
+                onClick={() => handleInputChange({ paymentType: "OneTime" })}
                 className={`flex flex-col items-start hover:bg-[#F6E18B] hover:text-black bg-transparent rounded-[8px] border border-[#8A8A8A] p-4 h-[63px]  ${
-                  formData.paymentType === "oneTime"
+                  formData.paymentType === "OneTime"
                     ? "bg-[#F6E18B] text-black"
                     : "bg-[transparent] text-white"
                 }`}
@@ -235,10 +252,10 @@ export function LicenseCreationForm({
                 <Button
                   type="button"
                   onClick={() =>
-                    handleInputChange({ paymentType: "recurring" })
+                    handleInputChange({ paymentType: "Recurring" })
                   }
                   className={`flex flex-col items-start hover:bg-[#F6E18B] bg-transparent hover:text-black rounded-[8px] border border-[#8A8A8A] p-4 h-[63px]  ${
-                    formData.paymentType === "recurring"
+                    formData.paymentType === "Recurring"
                       ? "bg-[#F6E18B] text-black"
                       : "bg-[transparent]  text-white"
                   }`}
@@ -255,18 +272,18 @@ export function LicenseCreationForm({
                   </div>
                 </Button>
                 {/* Recurring payment field will only show when selected */}
-                {formData.paymentType === "recurring" && (
+                {formData.paymentType === "Recurring" && (
                   <div className="space-y-2">
                     <div className="flex gap-4">
                       <Button
                         type="button"
                         onClick={() =>
                           handleInputChange({
-                            recurringPayment: { interval: "monthly" },
+                            recurringPayment: { interval: "Monthly" },
                           })
                         }
                         className={`${
-                          formData.recurringPayment?.interval === "monthly"
+                          formData.recurringPayment?.interval === "Monthly"
                             ? "bg-[#F6E18B] text-black"
                             : "bg-[transparent] border border-[#8A8A8A] text-white hover:bg-[#F6E18B] hover:text-black"
                         }`}
@@ -277,11 +294,11 @@ export function LicenseCreationForm({
                         type="button"
                         onClick={() =>
                           handleInputChange({
-                            recurringPayment: { interval: "quarterly" },
+                            recurringPayment: { interval: "Quarterly" },
                           })
                         }
                         className={`${
-                          formData.recurringPayment?.interval === "quarterly"
+                          formData.recurringPayment?.interval === "Quarterly"
                             ? "bg-[#F6E18B] text-black"
                             : "bg-[transparent] border border-[#8A8A8A] text-white hover:bg-[#F6E18B] hover:text-black"
                         }`}
@@ -292,11 +309,11 @@ export function LicenseCreationForm({
                         type="button"
                         onClick={() =>
                           handleInputChange({
-                            recurringPayment: { interval: "annually" },
+                            recurringPayment: { interval: "Annually" },
                           })
                         }
                         className={`${
-                          formData.recurringPayment?.interval === "annually"
+                          formData.recurringPayment?.interval === "Annually"
                             ? "bg-[#F6E18B] text-black"
                             : "bg-[transparent] border border-[#8A8A8A] text-white hover:bg-[#F6E18B] hover:text-black"
                         }`}
@@ -327,6 +344,15 @@ export function LicenseCreationForm({
             Next
           </Button>
         </div>
+
+         {/* I am building a project that generates IP license with Next.Js, typescript and tailwind CSS. 
+
+Note: user is also referred to as he.
+
+From the first image (manage image), when the manage tab is clicked, an empty box is seen with: 'No License Created Yet'. When a user clicks on the button: 'Create License', he is taken to another page where the LicenseCreationForm (image attached) and License Sample Form (image attached) are filled. When the user fills the two forms (LicenseCreationForm and LicenseSampleForm) and clicks on the button: 'create', all inputs from the two forms are added and a license is created. This new license created, is then taken back to manage section and replaces where 'No License Created Yet' was. In addition, this manage tab on getting this new License also shows updates such as when any license will expire and also that a particular license with license type: example: Exclusive was just created. 
+
+I will attach three codes: one for the manage section, second code for the second form containing the create button and the last code would be how the new License should be arranged after being created (last image attached). 
+Please, guide me carefully on how I can make the new created License show on the manage section which is on a different page from License page. */} 
       </form>
     </div>
   );
