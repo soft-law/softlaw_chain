@@ -174,17 +174,17 @@ export function LicenseCreationForm({
                         />
                         <select
                           value={formData.customDuration?.unit}
-                          onChange={(e) =>
-                            handleInputChange({
-                              customDuration: {
-                                ...formData.customDuration,
-                                unit: e.target.value as
-                                  | "days"
-                                  | "months"
-                                  | "years",
-                              },
-                            })
-                          }
+                          // onChange={(e) =>
+                          //   handleInputChange({
+                          //     customDuration: {
+                          //       ...formData.customDuration,
+                          //       unit: e.target.value as
+                          //         | "days"
+                          //         | "months"
+                          //         | "years",
+                          //     },
+                          //   })
+                          // }
                           className="bg-[transparent] hover:bg-[#F6E18B]
                           hover:text-black
                           border border-[#8A8A8A] text-white rounded-md p-2"
@@ -208,14 +208,14 @@ export function LicenseCreationForm({
                       <Input
                         type="date"
                         value={formData.customDuration?.expirationDate || ""}
-                        onChange={(e) =>
-                          handleInputChange({
-                            customDuration: {
-                              ...formData.customDuration,
-                              expirationDate: e.target.value,
-                            },
-                          })
-                        }
+                        // onChange={(e) =>
+                        //   handleInputChange({
+                        //     customDuration: {
+                        //       ...formData.customDuration,
+                        //       expirationDate: e.target.value,
+                        //     },
+                        //   })
+                        // }
                         className="flex flex-col hover:bg-[#F6E18B] text-[#fff] hover:text-black bg-transparent rounded-[8px] items-start justify-center  border border-[#8A8A8A] p-4 h-[24px]"
                       />
                     </div>

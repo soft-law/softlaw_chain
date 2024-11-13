@@ -10,7 +10,7 @@ import { useContext, useState, useEffect } from "react";
 import CollectionTypes from "@/utils/collectionTypes.json";
 import { FormDataContext } from "../../FormDataContext";
 import ConfirmationModal from "../ConfirmationModal";
-import { useInnovationTapContext } from "@/context/innovation";
+import { useInnovationContext } from "@/context/innovation";
 
 
 interface LegalContractsProps {
@@ -55,7 +55,7 @@ export default function LegalContracts({ onDataChange }: LegalContractsProps) {
   const [activeTab, setActiveTab] = useState("collections");
 
   const { selectedTabInnovation, setSelectedTabInnovation } =
-    useInnovationTapContext();
+    useInnovationContext();
 
   const [collection, setCollection] = useState({
     name: "",

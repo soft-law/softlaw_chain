@@ -59,3 +59,7 @@ Track: Building a blockchain with Polkadot SDK.
 
 ## Bounty
 Bounty: Blockchain for Good - Leveraging blockchain technology to protect intellectual property and support innovators worldwide.
+
+
+## Docs
+rust docs: https://warm-dasik-d33c94.netlify.app/

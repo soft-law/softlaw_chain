@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { LicenseCreationFlow } from "./LicenseCreation/LicenseFlowCreation";
 import type { LicenseFormData } from "./LicenseCreation/types";
@@ -17,7 +17,14 @@ interface License extends LicenseFormData {
   amount: string;
 }
 
-export default function Licensing({ onDataChange }: ManageProps) {
+// Componente que maneja los parámetros de búsqueda
+function SearchParamsHandler({ children }: { children: React.ReactNode }) {
+  const searchParams = useSearchParams();
+  // Aquí puedes manejar la lógica relacionada con searchParams
+  return <>{children}</>;
+}
+
+function LicensingContent({ onDataChange }: ManageProps) {
   // Get URL parameters
   const searchParams = useSearchParams();
   const [showLicenseCreation, setShowLicenseCreation] = useState(true);
@@ -27,7 +34,7 @@ export default function Licensing({ onDataChange }: ManageProps) {
     setLicenses((prev) => [
       ...prev,
       {
-        id: Date.now(), // temporary ID for demo
+        id: Date.now(), 
         ...data,
         status: "Active",
         lifetimeEarnings: "$2.45",
@@ -164,5 +171,17 @@ export default function Licensing({ onDataChange }: ManageProps) {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Licensing(props: ManageProps) {
+  return (
+    <Suspense fallback={<div className="bg-[#1C1A11] w-full h-screen flex items-center justify-center">
+      <p className="text-white">Cargando...</p>
+    </div>}>
+      <SearchParamsHandler>
+        <LicensingContent {...props} />
+      </SearchParamsHandler>
+    </Suspense>
   );
 }

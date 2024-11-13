@@ -1,15 +1,12 @@
 "use client";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import UniqueProvider from "@/context/unique";
-
-import InnovationProvider, { useInnovationContext } from "@/context/innovation";
+import { useInnovationContext } from "@/context/innovation";
 import CollectionPage from "./collection";
 import NFT2 from "./nft/ipDetails";
-import ReusableHeading from "../textComponent";
 import NFT from "./nft";
 
-function NFTContent() {
+function InovationContent() {
   const { selectedTabInnovation, setSelectedTabInnovation } =
     useInnovationContext();
 
@@ -179,5 +176,5 @@ function NFTContent() {
 
 // Main Dashboard component that provides the context
 export default function InnovationPage() {
-  return <NFTContent />;
+  return <InovationContent />;
 }
