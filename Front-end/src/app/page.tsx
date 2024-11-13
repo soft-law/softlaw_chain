@@ -20,8 +20,7 @@ const NavBar = dynamic(
 
 export default function Home() {
   return (
-    <InnovationProvider>
-      <AccountsProvider>
+ 
         <div className="scrollable ">
           <NavBar />
           <Hero />
@@ -32,7 +31,6 @@ export default function Home() {
           <Team />
           <Footer />
         </div>
-      </AccountsProvider>
-    </InnovationProvider>
+
   );
 }

@@ -1,8 +1,8 @@
 "use client";
-import Footer from "@/components/Footer";
 import dynamic from "next/dynamic";
-import Dash from "../../../components/Dashboard/Dash";
-
+const IPSearch = dynamic(() => import("@/components/search/IPSearch"), {
+  ssr: false,
+});
 const NavBar = dynamic(() => import("@/components/NavBar"), {
   ssr: false,
 });
@@ -10,8 +10,7 @@ export default function Ipsearch() {
   return (
     <div className="scrollable">
       <NavBar />
-      <Dash />
-      <Footer />
+      <IPSearch />
     </div>
   );
 }

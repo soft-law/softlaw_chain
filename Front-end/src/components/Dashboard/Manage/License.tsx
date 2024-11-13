@@ -6,6 +6,10 @@ import type { LicenseFormData } from "./LicenseCreation/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TypesComponent from "@/components/TypesProps";
+import { getSoftlawApi } from "@/utils/softlaw/getApi";
+import OfferLicenseButton from "./ActionButtons/license/OfferLicenseButton";
+import InnovationProvider from "@/context/innovation";
+import AccountsProvider from "@/context/account";
 
 interface ManageProps {
   onDataChange?: (data: any) => void;
@@ -44,6 +48,16 @@ function LicensingContent({ onDataChange }: ManageProps) {
     ]);
     setShowLicenseCreation(false);
   };
+
+
+
+  const licenseOffer = async () => {
+    let api = await getSoftlawApi();
+
+    let tx = api.tx.ipPallet;
+
+    console.log(tx)
+  }
   return (
     <div className="bg-[#1C1A11] w-full justify-center self-stretch items-center min-[2000px]:min-h-screen min-[2000px]:w-[3000px] py-[120px] mx-auto scrollable">
       {showLicenseCreation ? (
@@ -163,6 +177,11 @@ function LicensingContent({ onDataChange }: ManageProps) {
                   >
                     Edit Royalty Rate
                   </Button>
+
+                  {/* <button onClick={licenseOffer}>
+                    Create License
+                  </button> */}
+                  <OfferLicenseButton/>
                 </div>
               </div>
               
@@ -176,12 +195,16 @@ function LicensingContent({ onDataChange }: ManageProps) {
 
 export default function Licensing(props: ManageProps) {
   return (
-    <Suspense fallback={<div className="bg-[#1C1A11] w-full h-screen flex items-center justify-center">
+  
+
+       <Suspense fallback={<div className="bg-[#1C1A11] w-full h-screen flex items-center justify-center">
       <p className="text-white">Cargando...</p>
     </div>}>
       <SearchParamsHandler>
         <LicensingContent {...props} />
       </SearchParamsHandler>
     </Suspense>
+
+   
   );
 }
