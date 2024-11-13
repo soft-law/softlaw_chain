@@ -5,7 +5,7 @@ export const getSoftlawApi = async () => {
   // const wsProvider = new WsProvider("ws://127.0.0.1:55465");
 
   //Api Asset Hub
-  const wsProvider = new WsProvider(process.env.NEXT_PUBLIC_CHAIN_WEB_SOCKET)
+  const wsProvider = new WsProvider("wss://testnet.soft.law/node")
 
   //Api Tanssi
   // const wsProvider = new WsProvider("wss://fraa-dancebox-3129-rpc.a.dancebox.tanssi.network");
