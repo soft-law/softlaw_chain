@@ -3,25 +3,22 @@ import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
 import { useToast } from "../../../hooks/use-toast";
 import Footer from "@/components/Footer";
-import ReusableHeading from "../textComponent";
-import TypesComponent from "../TypesProps";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
 // import InputField from "../input";
 import UploadFilesField from "../UploadFileField";
 import Link from "next/link";
 import { ethers } from "ethers";
-// import { Address } from "@unique-nft/utils";
-// import { getSdkContract } from "@/utils/getSDK";
-// import { Abi } from "@unique-nft/sdk/full";
 import { useUnique } from "@/context/unique";
 import abi from "../../../utils/abi_minter.json";
-import VariousTypesButton from "../VariousTypesButton";
+import VariousTypesButton from "../../VariousTypesButton";
 import { useContext } from 'react';
-import { FormDataContext } from "../FormDataContext";
+import { FormDataContext } from "../../FormDataContext";
 // import * as yup from 'yup';
 // import { useForm } from "react-hook-form";
 // import { yupResolver } from '@hookform/resolvers/yup';
-import Button from "../../ui/button"
-import { useInnovationTapContext } from "@/context/innovation";
+// import Button from "../../ui/button"
+import { useInnovationContext } from "@/context/innovation";
 
 interface AbiInput {
   name: string;
@@ -49,39 +46,7 @@ const supportedImages = ["doc", "pdf"];
 export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
 
   const {selectedTabInnovation,
-    setSelectedTabInnovation} = useInnovationTapContext()
-  // const schema = yup.object().shape({
-  //   Reference_number: yup.string().required("Number is required"),
-
-  //   Doc_Link: yup.string(),
-
-  //   ip_image: yup
-  //   .mixed()
-  //   .required("Document is required")
-  //   .test("fileSize", "File too large", (value) => {
-  //     return value && value.size <= 1024 * 1024 * 5;
-  //   })
-  //   .test("fileType", "Unsupported file format", (value) => {
-  //     return (
-  //       value &&
-  //       supportedImages.includes(value.name.split(".").pop().toLowerCase())
-  //     );
-  //   }),
-   
-  // });
-
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   setValue,
-  //   formState: { errors },
-  // } = useForm({ resolver: yupResolver(schema) });
-
-  // const onSubmit = async (values) => {
-  //   console.log(values);
-  //   console.log("All fields filled");
-  // //   setToCompleted();
-  // };
+    setSelectedTabInnovation} = useInnovationContext()
 
   const {formData, updateFormData} = useContext(FormDataContext);
 
@@ -163,7 +128,7 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
     });
   };
 
-  const abiTyped = abi as Abi;
+  // const abiTyped = abi as Abi;
 
   const handleMintCollection = async () => {
     console.log("uploadIpfS and Mint")
@@ -253,35 +218,14 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
                   handleButtonClick("Copyright");
                 }}
               />
-
-              {/* <VariousTypesSelect
-                  types={CollectionTypes}
-                  className="h-[auto]"
-                  onChange={(selectedValue) => {
-                    console.log("Selected property type:", selectedValue);
-                  }}
-                /> */}
             </div>
           </div>
           <form
             action=""
             className="flex flex-col"
-            // onSubmit={handleSubmit(onSubmit)}
           >
             <div className="flex flex-col items-start self-stretch mt-[60px] gap-[8px]">
-              {/* <InputField
-              id="Reference_number"
-              type="number"
-              label="Reference number"
-              className="w-full min-[2000px]:w-[1254px]"
-              {...register ("Reference_number")} error={errors.Reference_number?.message}
-              value={formData.IpRegistries.ReferenceNumber} //Display current state value
-              onChange={handleInputChange} //this captures the user's input and updates the global form state
-              /> */}
-              <TypesComponent
-                className="text-[#8A8A8A]"
-                text="Eg: Reference number from the USPTO or WIPO database. This number is used to track your application throughout the examination process and may differ from the final patent number. Example: 16/123,456."
-              />
+        
               <div className="flex flex-col items-center self-stretch gap-[8px]">
                 {collection.name && (
                   <div className="mt-4 text-[#8A8A8A] w-1/2">
@@ -314,60 +258,19 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
                   </div>
                 )}
               </div>
-
-              <div className="flex flex-col gap-[16px] w-full md:w-full mt-[60px] rounded-xl">
-              {/* <InputField
-                id="ip_image"
-                type="file"
-                style=""
-                fileType="File types: DOC, PDF"
-                label="Intellectual Property Documentation"
-                {...register ("ip_image")} 
-                error={errors.ip_image?.message}
-                onFileChange={(file) => setValue("ip_image", file)}
-              /> */}
-              
-
-{/* 
-                <InputField
-                  id="Doc_Link"
-                  label="or paste a link to the document"
-                  className="min-[2000px]:w-[1254px] mt-[16px]"
-                  {...register ("Doc_Link")} 
-                  error={errors.Doc_Link?.message}
-                  
-                  value={formData.IpRegistries.ReferenceLink} 
-  
-                  onChange={handleReferenceLink} //handle input of link
-                /> */}
-              </div>
             </div>
           </form>
 
           <div className="flex items-start justify-between w-full mt-[60px] ">
-            {/* <Link 
-            className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none" href="/Innovation">
-              Cancel
-            </Link> */}
+            
             <Link
                 href="/Dashboard"
-                className="bg-transparent rounded-[16px] px-[20px] py-[8px] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
+                className="bg-transparent rounded-[16px] px-[20px] py-[8px] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11]"
                 children="Cancel"
               />
 
-            <Button 
-           cta="Next"
-         purpose='submit'
-        //  onClick={handleNext}
-            />
-
-            {/* <button
-            onClick={handleBack}
-            >
-              Back
-            </button> */}
             <button
-            //  className={`bg-[#D0DFE4] rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#1C1A11] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none ${Style} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+             className={`bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]`}
             onClick={handleNext}>
               next
             </button>
@@ -376,10 +279,10 @@ export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
           </div>
         </div>
       </MaxWidthWrapper>
-      <Footer
+      {/* <Footer
         width="py-[60px] max-h-[400px]"
         className="border-t-[1px] border-[#8A8A8A] w-full"
-      />
+      /> */}
     </div>
   );
 }

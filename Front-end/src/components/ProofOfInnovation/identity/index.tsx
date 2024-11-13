@@ -1,109 +1,54 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidhWrapper";
-import ReusableHeading from "../textComponent";
-import TypesComponent from "../TypesProps";
+import ReusableHeading from "../../textComponent";
+import TypesComponent from "../../TypesProps";
 // import InputField from "../input";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import React, { useEffect, useState } from "react";
-import VariousTypesButton from "../VariousTypesButton";
+import VariousTypesButton from "../../VariousTypesButton";
 import { useContext } from 'react';
-import { FormDataContext } from "../FormDataContext";
+import { FormDataContext } from "../../FormDataContext";
 // import * as yup from 'yup';
 // import { useForm } from "react-hook-form";
 // import { yupResolver } from '@hookform/resolvers/yup';
-import Button from "../../ui/button"
-import { useInnovationTapContext } from "@/context/innovation";
-
+// import Button from "../../ui/button"
+import { useInnovationContext } from "@/context/innovation";
 
 interface IdentityProps {
   onDataChange?: (data: any) => void;
   value?: string;
 }
 
-export default function Identity({onDataChange, value}: IdentityProps) {
-  const {formData, updateFormData} = useContext(FormDataContext);
+export default function Identity({ onDataChange, value }: IdentityProps) {
+  const { formData, updateFormData } = useContext(FormDataContext);
 
-    const {selectedTabInnovation, setSelectedTabInnovation} = useInnovationTapContext()
+  const { selectedTabInnovation, setSelectedTabInnovation } =
+    useInnovationContext();
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
-    updateFormData("Identity", { TypeOfPatent: buttonName })
-  };
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateFormData('Identity', { PatentTitle: e.target.value });
-    
+    updateFormData("Identity", { TypeOfPatent: buttonName });
   };
 
-  const handlePatentNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateFormData('Identity', { PatentNumber: e.target.value });
-   
+  const handleBack = async () => {
+    try {
+      setSelectedTabInnovation("1");
+      console.log("test", selectedTabInnovation);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const handleFillingDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateValue = new Date(e.target.value);
-    updateFormData('Identity', { FillingDate: dateValue });
+  const handleNext = async () => {
+    try {
+      setSelectedTabInnovation("3");
+      console.log("test", selectedTabInnovation);
+    } catch (e) {
+      console.log(e);
+    }
   };
-
-  const callOnDataChange = () => {
-    onDataChange && onDataChange(formData);
-  };
-
-  // useEffect(() => {
-  //   callOnDataChange();
-  // }, [formData, onDataChange]);
-
-  // const schema = yup.object().shape({
-  //   PatentTitle: yup
-  //     .string()
-  //     .required("patent title is required"),
-
-  //   PatentNumber: yup
-  //   .string()
-  //   .required("Number is required"),
-
-  //   FillingDate: yup
-  //   .string()
-  //   .required("Date is required"),
-  // });
-
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   setValue,
-  //   formState: { errors },
-  // } = useForm({ resolver: yupResolver(schema) });
-
-  // const onSubmit = async (values) => {
-  //   console.log(values);
-  //   console.log("All fields filled");
-  // //   setToCompleted();
-  // };
-  
-const handleSubmitForm = async () => {
-  console.log("hola")
-}
-
-
-const handleBack = async () =>{
-  try {
-    setSelectedTabInnovation("1")
-    console.log("test", selectedTabInnovation)
-  } catch(e){
-    console.log(e)
-  }
-}
-
-const handleNext = async () =>{
-  try {
-    setSelectedTabInnovation("3")
-    console.log("test", selectedTabInnovation)
-  } catch(e){
-    console.log(e)
-  }
-}
 
   return (
     <>
@@ -184,97 +129,27 @@ const handleNext = async () =>{
               </div>
             </div>
 
-            <form action="" className="flex flex-col" onSubmit={handleSubmitForm}>
-              <div className="flex flex-col items-start self-stretch gap-[8px]">
-
-                {/* <InputField
-                optionText="Select a Patent Title"
-                id="PatentTitle"
-                label= "Patent Title"
-                value={formData.Identity.PatentTitle}
-                type="select"
-                icon={true}
-                className=" min-w-[280px]"
-                  onChange={handleInputChange}
-                options={[
-                  { value: "utility",
-                    label: "Utility Patent" },
-                  { value: "design",
-                    label: "Design Patent" },
-                  { value: "provisional",
-                    label: "Provisional Patent" },
-                  { value: "plant",
-                    label: "Plant Patent" },
-                ]}
-                {...register ("PatentTitle")}
-                error={errors.PatentTitle?.message}
-                /> */}
-              </div>
-
-              
-                <div className="flex items-start mt-[60px] gap-[60px]">
-                  <div className="flex flex-col items-start gap-[6px]">
-                   
-                    {/* <InputField
-                    id="PatentNumber"
-                    label= "Patent Number"
-                    type="number"
-                    {...register ("PatentNumber")}
-                    error={errors.PatentNumber?.message}
-                    value={formData.Identity.PatentNumber}
-                    onChange={handlePatentNumber}
-                    className=" min-w-[280px] w-full"
-                    /> */}
-
-                    <TypesComponent
-                      className="text-[#8A8A8A] "
-                      text={`A unique identifier issued once your patent is officially approved and published to track and reference your patent in legal. ${(
-                        <br />
-                      )} Example: US1234567B1.`}
-                    />
-                  </div>
-                    {/* <InputField
-                    id="FillingDate"
-                    label= "Filling Date"
-                    value={formData.Identity.FillingDate ? formData.Identity.FillingDate.toISOString().substring(0, 10) : ''}
-                    {...register ("FillingDate")}
-                    onChange={handleFillingDate}
-                    type="Date"
-                    className=" w-[280px]"
-                    />          */}
-                </div> 
-            </form>
-
             <div className="flex items-start justify-between w-full ">
-              <Link
-                href="/Innovation"
-                className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
-                children="Back"
-              />
-              {/* <Link
-                href="/LegalContracts"
-                className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
-                children="Next"
-              /> */}
-              
-            </div>
-            <button
-              onClick={handleBack}
+              <button
+                className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11]"
+                onClick={handleBack}
               >
                 Back
               </button>
-            <button
-              onClick={handleNext}
+              <button
+                className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
+                onClick={handleNext}
               >
                 Next
               </button>
+            </div>
           </div>
         </MaxWidthWrapper>
       </div>
-      <Footer
+      {/* <Footer
         width="py-[60px] min-[2000px]:py-[70px] max-h-[400px]"
         className="border-t-[1px] border-[#8A8A8A] w-full"
-      />
+      /> */}
     </>
   );
 }

@@ -1,11 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-// import { WalletConnectButton } from "../WalletConnect";
-// import Link from "next/link";
-import TypesComponent from "../ProofOfInnovation/TypesProps";
 import Footer from "../Footer";
 import Link from "next/link";
-// import InputField from "../ProofOfInnovation/input";
+import TypesComponent from "../TypesProps";
+
 
 interface SearchResult {
   trademark: string;
@@ -30,22 +28,6 @@ export default function IpSearch() {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // API call to fetch data
-    // useEffect(() => {
-    //   const fetchResults = async () => {
-    //     const response = await fetch('YOUR_API_URL', {
-    //       method: 'POST',
-    //       headers: { 'Content-Type': 'application/json' },
-    //       body: JSON.stringify({ query: setQuery }),
-    //     });
-    //     const data = await response.json();
-    //     setResults(data.results); // Assuming the API returns a 'results' field with the data
-    //   };
-
-    //   if (setQuery) fetchResults();
-    // }, [setQuery]);
-
     // Dummy data simulating search results
     const dummyResults: SearchResult[] = [
       {
@@ -80,16 +62,16 @@ export default function IpSearch() {
       <div className="bg-[#1C1A11] flex flex-col items-center justify-center scrollable min-[2000px]:w-[3000px]">
         <div className="flex flex-col w-full py-[120px] min-[2000px]:px-[320px] px-[200px] scrollable items-start gap-[40px] h-auto">
           <div className="flex justify-between items-center self-stretch">
-            <Link
+            {/* <Link
             href={"/Innovation"}
-            
+            className="text-white"
             >
-              Upload New Ip
-            </Link>
-            <TypesComponent
+              Upload New IP
+            </Link> */}
+            {/* <TypesComponent
               text="IP SEARCH"
               className="text-[#EFF4F6] font-bold leading-[110%] tracking-[-0.96px] text-[48px]"
-            />
+            /> */}
 
             <div className="flex items-end justify-between space-x-[16px]">
               <TypesComponent

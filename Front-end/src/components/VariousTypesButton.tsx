@@ -8,7 +8,7 @@ interface VariousTypesButtonProps {
   detail?: string;
   className?: string;
   altText?: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;  
   isActive: boolean;
 }
 

@@ -1,140 +1,115 @@
-"use client"
-import { useState } from "react";
-import  Button  from "./ui/button";
-// import { getSubstrateSigner } from "@/utils/substrateAccounts/wallet/getSigner";
-// import { getEvmSigner } from "@/utils/evmAccounts/wallet/getSigner";
-// import { getEvmSigners } from "@/utils/evmAccounts/wallet/getSigners";
-// import { getSubstrateSigners } from "@/utils/substrateAccounts/wallet/getSigners";
-// import { useSigner } from "@/context/UniqueContracts";
+"use client";
 
-export function WalletConnectButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [evmSigners, setEvmSigners] = useState([]);
-  const [substrateSigners, setSubstrateSigners] = useState([]);
-  // const [selectedSigner, setSelectedSigner] = useState(null);
-//   const { selectedAccount,setSelectedAccount } =useSigner();
+import React, { useState } from "react";
+import AccountsProvider, { useAccountsContext } from "@/context/account";
+import { useToast } from "@/hooks/use-toast";
+import {
+  web3Accounts,
+  web3Enable,
+  web3FromSource,
+} from "@polkadot/extension-dapp";
+import { getSoftlawApi } from "@/utils/softlaw/getApi";
 
-  const toggleModal = () => {
-    setIsOpen(!isOpen);
+export default function WalletConnect() {
+  const { selectedAccount, setSelectedAccount } =
+    useAccountsContext();
+  const { toast } = useToast();
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const walletConnect = async () => {
+    try {
+      setIsConnecting(true);
+      await web3Enable("Softlaw");
+      const accounts = await web3Accounts();
+      const account = accounts[0];
+      let api = await getSoftlawApi()
+      console.log("api AssetHub",api)
+
+      if (!account) {
+        throw new Error("No accounts found.");
+      }
+
+      if (!account?.meta?.source) {
+        toast({
+          title: "Invalid Account",
+          description: "Account does not have a source.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Wallet Connected",
+        description: `Connected to account: ${formatAddress(account.address)}`,
+        className: "bg-[#252525] text-white border-[#373737]",
+      });
+
+      console.log("Selected account:", account);
+
+      const address = account?.address;
+      setSelectedAccount(account);
+      console.log("address", address);
+      const injector = await web3FromSource(account.meta.source);
+      console.log("injector", injector);
+
+      if (!injector) {
+        toast({
+          title: "Wallet Connection Failed",
+          description: "Please make sure your wallet is installed and unlocked",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Wallet Connected",
+        description: `Connected to account: ${formatAddress(account.address)}`,
+        className: "bg-[#252525] text-white border-[#373737]",
+      });
+    } catch (error) {
+      console.error("Wallet connection error:", error);
+      toast({
+        title: "Connection Error",
+        description:
+          error instanceof Error ? error.message : "Failed to connect wallet",
+        variant: "destructive",
+      });
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
-  const handleWallets = async () => {
-    setIsOpen(!isOpen);
-    // const evmAccounts = await getEvmSigners();
-    // const substrateAccounts = await getSubstrateSigners();
-
-    // const filteredSubstrateSigners = substrateAccounts.filter(
-    //   (substrateWallet) =>
-    //     (substrateWallet as any).injector?.name === "talisman" ||
-    //     (substrateWallet as any).injector?.name === "subwallet-js"
-    // );
-
-    // verify the ownership (points), create nfts
-    // 3 ways of make different money of your creation.
-    // how to comercialize copyright.
-    
-
-    // setEvmSigners(evmAccounts);
-    // console.log(evmAccounts);
-
-    // setSubstrateSigners(filteredSubstrateSigners);
-    // console.log(filteredSubstrateSigners);
+  const disconnect = () => {
+    setSelectedAccount(null);
+    toast({
+      title: "Wallet Disconnected",
+      description: "Your wallet has been disconnected",
+      className: "bg-[#252525] text-white border-[#373737]",
+    });
   };
 
-  const handleWalletSelection = () => {
-
-    // setSelectedAccount(selectedAccount);
-    // const cutAddress = `${selectedAccount.address.slice(0, 3)}...${selectedAccount.address.slice(
-    //   -4
-    // )}`;
-    // setWalletAddress(cutAddress);
-    // setIsOpen(false); 
+  const formatAddress = (address: string): string => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
-
-  const handleDisconnectWallet = () => {
-    setWalletAddress(null);
-    // setSelectedAccount(null);
-  };
-
 
   return (
-    <>
-      {/* {walletAddress === null ? (
-        <Button
-          onClick={handleWallets}
-          className="bg-white text-black px-4 py-2 text-base"
-          cta="Connect"
-        >
-        </Button>
-      ) : (
-        <Button
-          onClick={handleDisconnectWallet}
-          className="bg-white text-black px-4 py-2 text-base"
-        >
-          {walletAddress} (Disconnect)
-        </Button>
-      )} */}
-
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-custom-black rounded-lg shadow-lg p-8 w-full max-w-md relative">
-            <h2 className="text-2xl font-bold mb-4">Select Wallet</h2>
-
-            {/* EVM Wallets */}
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2">EVM Wallets (MetaMask)</h3>
-              {/* {evmSigners.length === 0 ? (
-                <p>No MetaMask wallets found.</p>
-              ) : (
-                <ul>
-                  {evmSigners.map((wallet, index) => (
-                    <li key={index} className="mb-2">
-                    <input
-                      type="radio"
-                      name="wallet"
-                      value={wallet.address}
-                      onChange={() => handleWalletSelection(wallet)}
-                      checked={(selectedAccount as any).address === wallet.address} // Use selectedAccount from context
-                    />
-                    {`${wallet.address.slice(0, 3)}...${wallet.address.slice(-4)}`} - MetaMask
-                  </li>
-                  ))}
-                </ul>
-              )} */}
-            </div>
-
-            {/* Polkadot Wallets */}
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold mb-2">
-                Polkadot Wallets (Talisman/Subwallet)
-              </h3>
-              {/* {substrateSigners.length === 0 ? (
-                <p>No Polkadot wallets found.</p>
-              ) : (
-                <ul>
-                  {substrateSigners.map((wallet, index) => (
-                    <li key={index} className="mb-2">
-                      <input
-                        type="radio"
-                        name="wallet"
-                        value={wallet.address}
-                        onChange={() => handleWalletSelection(wallet)}
-                        checked={(selectedAccount as any).address === wallet.address}
-                      />
-                      {`${wallet.address.slice(0, 3)}...${wallet.address.slice(-4)}`} - {wallet.injector.name}
-                    </li>
-                  ))}
-                </ul>
-              )} */}
-            </div>
-
-            {/* <Button onClick={() => setIsOpen(false)} className="mt-4" cta="Close"> */}
-              
-            {/* </Button> */}
-          </div>
-        </div>
-      )}
-    </>
+    <button
+      className={`min-[2000px]:text-2xl rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+        isConnecting
+          ? "bg-gray-500 cursor-not-allowed text-white"
+          : selectedAccount
+          ? "bg-[#252525] text-white hover:bg-[#373737]"
+          : "bg-[#FACC15] text-[#1C1A11] hover:bg-[#fbd244]"
+      }`}
+      onClick={selectedAccount ? disconnect : walletConnect}
+      disabled={isConnecting}
+    >
+      {isConnecting
+        ? "Connecting..."
+        : selectedAccount
+        ? "Disconnect"
+        : "Connect Wallet"}
+    </button>
   );
 }
+

@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import TypesComponent from '../ProofOfInnovation/TypesProps'
+import TypesComponent from '../TypesProps'
 
 
 const Searchfilter = () => {
