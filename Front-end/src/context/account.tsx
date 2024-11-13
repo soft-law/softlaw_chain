@@ -1,13 +1,11 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-
 import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
-
 
 interface AccountsContextType {
   accounts: InjectedAccountWithMeta[] | null;
   setAccounts: (accounts: InjectedAccountWithMeta[] | null) => void;
   selectedAccount: InjectedAccountWithMeta | null;
-  setSelectedAccount: (account: InjectedAccountWithMeta| null) => void;
+  setSelectedAccount: (account: InjectedAccountWithMeta | null) => void;
 }
 
 const defaultContextValue: AccountsContextType = {
@@ -34,8 +32,8 @@ interface AccountsProviderProps {
 }
 
 export default function AccountsProvider({ children }: AccountsProviderProps) {
-  const [selectedAccount, setSelectedAccount] =
-    useState<InjectedAccountWithMeta | null>(null);
+  // Corregido el tipo inicial a null
+  const [selectedAccount, setSelectedAccount] = useState<InjectedAccountWithMeta | null>(null);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | null>(null);
 
   const value: AccountsContextType = {
