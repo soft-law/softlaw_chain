@@ -17,8 +17,8 @@ import { FormDataContext } from "../../FormDataContext";
 // import * as yup from 'yup';
 // import { useForm } from "react-hook-form";
 // import { yupResolver } from '@hookform/resolvers/yup';
-import Button from "../../ui/button"
-import { useInnovationTapContext } from "@/context/innovation";
+// import Button from "../../ui/button"
+import { useInnovationContext } from "@/context/innovation";
 
 interface AbiInput {
   name: string;
@@ -46,7 +46,7 @@ const supportedImages = ["doc", "pdf"];
 export default function IpRegistries ({onDataChange}: IpRegistriesProps) {
 
   const {selectedTabInnovation,
-    setSelectedTabInnovation} = useInnovationTapContext()
+    setSelectedTabInnovation} = useInnovationContext()
 
   const {formData, updateFormData} = useContext(FormDataContext);
 

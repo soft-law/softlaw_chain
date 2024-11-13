@@ -3,7 +3,12 @@
 import React from "react";
 import { TextSpan } from "@/components/TextSpan";
 import Link from "next/link";
-import WalletConnect from "./WalletConnect";
+import dynamic from "next/dynamic";
+
+const WalletConnect = dynamic(() => import("@/components/NavBar"), {
+  ssr: false,
+});
+
 
 export default function NavBar() {
   const dashboard = "Dashboard".split("");

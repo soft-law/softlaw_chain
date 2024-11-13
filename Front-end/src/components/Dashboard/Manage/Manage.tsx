@@ -16,7 +16,7 @@ interface ManageProps {
 }
 
 
-export default function Manage({ onDataChange, formData }: ManageProps) {
+export default function Manage() {
 
 
   const [showLicenseCreation, setShowLicenseCreation] = useState(false);

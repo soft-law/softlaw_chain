@@ -151,7 +151,8 @@ function DashboardContent() {
         </TabsContent>
         <TabsContent value="2">
               <Manage 
-               onDataChange={(data) => setFormData({...formData, Manage:data })}
+  
+              //  onDataChange={(data) => setFormData({...formData, Manage:data })}
               />
         </TabsContent>
         <TabsContent value="3">

@@ -26,7 +26,7 @@ export const createCollection = async (
       }
 
       // Set the signer
-      api.setSigner(injector.signer);
+      // api.setSigner(injector.signer);
 
       // Log available methods for debugging
       console.log("Available methods:", Object.keys(api.tx.nfts));
@@ -50,9 +50,8 @@ export const createCollection = async (
 
       // Sign and send
       const unsub = await api.tx.nfts.create( selectedAccount.address,
-        { signer: injector.signer })    .signAndSend(
+        { signer: injector.signer }).signAndSend(
           selectedAccount.address,
-          { signer: injector.signer },
           ({ status, events, dispatchError }) =>{
           console.log(`Transaction status: ${status.type}`);
 

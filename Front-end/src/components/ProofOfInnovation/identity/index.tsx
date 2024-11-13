@@ -12,8 +12,8 @@ import { FormDataContext } from "../../FormDataContext";
 // import * as yup from 'yup';
 // import { useForm } from "react-hook-form";
 // import { yupResolver } from '@hookform/resolvers/yup';
-import Button from "../../ui/button"
-import { useInnovationTapContext } from "@/context/innovation";
+// import Button from "../../ui/button"
+import { useInnovationContext } from "@/context/innovation";
 
 interface IdentityProps {
   onDataChange?: (data: any) => void;
@@ -24,7 +24,7 @@ export default function Identity({ onDataChange, value }: IdentityProps) {
   const { formData, updateFormData } = useContext(FormDataContext);
 
   const { selectedTabInnovation, setSelectedTabInnovation } =
-    useInnovationTapContext();
+    useInnovationContext();
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleButtonClick = (buttonName: string) => {

@@ -65,8 +65,8 @@ export default function MintSoftlawCollection() {
       });
 
       // Verificar el balance
-      const { data: balance } = await api.query.system.account(selectedAccount.address);
-      console.log("Account balance:", balance.toHuman());
+      // const { data: balance } = await api.query.system.account(selectedAccount.address);
+      // console.log("Account balance:", balance.toHuman());
 
       // Crear colección
       const result = await createCollection(api, selectedAccount);

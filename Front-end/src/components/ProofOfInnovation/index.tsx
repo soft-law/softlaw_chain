@@ -4,14 +4,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IpRegistries from "./registry";
 import Identity from "./identity";
 import UniqueProvider from "@/context/unique";
-import IpfsProvider from "@/context/ipfs";
+import IpfsProvider from "@/context/innovation";
 import LegalContracts from "./legalContracts";
 // import NavBar from "@/components/NavBar";
-import InnovationProvider, { useInnovationTapContext } from "@/context/innovation";
+import InnovationProvider, { useInnovationContext } from "@/context/innovation";
+import NavBar from "../NavBar";
+
 
 // Separate component for the dashboard content
-function DashboardContent() {
-  const { selectedTabInnovation, setSelectedTabInnovation } = useInnovationTapContext();
+function NFTContent() {
+  const { selectedTabInnovation, setSelectedTabInnovation } = useInnovationContext();
 
   const [formData, setFormData] = useState({
     // IpProofData: {
@@ -154,7 +156,7 @@ function DashboardContent() {
         </TabsContent> */}
         <TabsContent value="2">
           <Identity
-            onDataChange={(data) => setFormData({ ...formData, Identity: data })}
+            // onDataChange={(data) => setFormData({ ...formData, Identity: data })}
           />
         </TabsContent>
         <TabsContent value="3">
@@ -175,6 +177,7 @@ export default function Dashboard() {
     <InnovationProvider>
       <IpfsProvider>
         <NavBar />
+  
         <UniqueProvider>
           <NFTContent />
         </UniqueProvider>
