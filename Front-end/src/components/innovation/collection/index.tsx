@@ -10,6 +10,7 @@ import { useInnovationContext } from "@/context/innovation";
 import uploadFilePinata from "@/utils/pinataPin";
 import Loading from "@/components/Loading";
 import { ChainSelector } from "./chainSelector";
+import  Image  from 'next/image'
 
 interface CollectionType {
   name: string;
@@ -134,17 +135,17 @@ export default function CollectionPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto  pb-24 bg-[#1C1A11]">
+    <div className=" bg-[#1C1A11] flex flex-col w-full justify-center items-center text-white min-[2000px]:w-[3000px]  ">
       {loading && <Loading />}
       <MaxWidthWrapper className="min-h-screen flex flex-col ">
         <main className="px-4 py-24">
           <div className="max-w-7xl mx-auto space-y-16">
             <ReusableHeading text="Intellectual Property Collection Types Selection" />
             <section className="space-y-8">
-              <TypesComponent
-                className="text-[#8A8A8A]"
-                text="Select the type of intellectual property you want to protect. Each collection offers diferent ways to manage your proof of innovation."
-              />
+             
+               <h1 className="font-Montesarrat text-[16px] font-normal leading-[145%] tracking-[0.32px] min-[2000px]:text-3xl min-[2000px]:tracking-[1px] pt-3 text-[#8A8A8A]">
+               Select the type of intellectual property you want to protect. Each collection offers diferent ways to manage your proof of innovation.
+                  </h1>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {Object.entries(COLLECTION_TYPES).map(([key, value]) => (
                   <VariousTypesButton
@@ -166,26 +167,29 @@ export default function CollectionPage() {
 
             {collection && (
               <section className="bg-[#252525] p-6 rounded-lg mt-8">
-                <h3 className="text-xl font-semibold mb-4 text-white">
+                <h3 className="font-Montesarrat text-[16px] font-normal leading-[145%] tracking-[0.32px] min-[2000px]:text-3xl min-[2000px]:tracking-[1px] pt-3 text-[#fff]">
                   Selected Collection
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <p className="text-white">
+                    <p className=" font-Montesarrat text-[16px] font-normal leading-[145%] tracking-[0.32px] min-[2000px]:text-2xl min-[2000px]:tracking-[1px] pt-3 text-white">
                       <strong>Type:</strong> {collection.name}
                     </p>
-                    <p className="text-white">
+                    
+                    <p className="font-Montesarrat text-[16px] font-normal leading-[145%] tracking-[0.32px] min-[2000px]:text-2xl min-[2000px]:tracking-[1px] pt-3 text-white">
                       <strong>Description:</strong> {collection.description}
                     </p>
-                    <p className="text-white">
+                    <p className= " font-Montesarrat text-[16px] font-normal leading-[145%] tracking-[0.32px] min-[2000px]:text-2xl min-[2000px]:tracking-[1px] pt-3 text-white">
                       <strong>Prefix:</strong> {collection.prefix}
                     </p>
                   </div>
                   <div className="flex justify-center items-center">
-                    <img
+                    <Image
                       src={collection.image}
                       alt={`${collection.name} logo`}
-                      className="w-32 h-32 object-contain"
+                      className="min-[2000px]:text-2xl"
+                      width={32}
+                      height={32}
                     />
                   </div>
                 </div>
@@ -195,7 +199,7 @@ export default function CollectionPage() {
             <div className="flex justify-between items-center mt-16">
               <Link
                 href="/dashboard"
-                className="bg-transparent border border-[#D0DFE4] text-[#D0DFE4] px-6 py-2 rounded-lg hover:bg-[#FACC15] hover:text-[#1C1A11] hover:border-transparent transition-colors"
+                className="bg-transparent border border-[#D0DFE4] text-[#D0DFE4] px-6 py-2 rounded-lg hover:bg-[#FACC15] hover:text-[#1C1A11] eading-[145%] tracking-[0.32px] min-[2000px]:text-3xl min-[2000px]:tracking-[1px] hover:border-transparent transition-colors"
               >
                 Cancel
               </Link>

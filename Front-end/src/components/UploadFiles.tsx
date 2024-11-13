@@ -141,7 +141,7 @@ const UploadMultipleFilesToIPFS: React.FC<FileUploadResult> = ({className, IpfsH
       </label>
       {selectedFiles.length === 0 && (
         <div>
-          <p className="text-center min-[2000px]:text-3xl">No Files Selected</p>
+          <p className="text-center min-[2000px]:text-3xl pt-5">No Files Selected</p>
         </div>
       )}
       {selectedFiles.length > 0 && (

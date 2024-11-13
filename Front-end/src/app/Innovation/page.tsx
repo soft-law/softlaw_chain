@@ -16,7 +16,7 @@ export default function DashPage() {
     <AccountsProvider>
     <InnovationProvider>
      
-        <div className="scrollable">
+        <div className="scrollable bg-[#1C1A11]">
           <NavBar />
           <ProofOfInnovation />
           {/* <Footer /> */}

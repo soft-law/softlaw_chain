@@ -53,8 +53,8 @@ function NFTContent() {
         onValueChange={setSelectedTabInnovation}
         className="bg-[#1C1A11] pt-[90px]"
       >
-        <TabsList className="flex items-center min-[2000px]:w-[3000px] bg-[#1C1A11]">
-          <div className="flex items-center space-x-2">
+        <TabsList className="flex items-center mx-auto min-[2000px]:w-[3000px] bg-[#1C1A11]">
+          <div className="flex items-center space-x-2 ">
             <TabsTrigger
               value="1"
               className={`px-4 py-2 space-x-2 min-[2000px]:space-x-4 ring-0 ${
@@ -151,7 +151,7 @@ function NFTContent() {
           </div>
         </TabsList>
 
-        <div className="flex h-screen min-[2000px]:w-[2560px]">
+        <div className="flex h-screen justify-center min-[2000px]:w-[2560px]">
           <TabsContent value="1">
             {/* <IpData
             onDataChange={(data) => setFormData({ ...formData, IpProofData: data })}
