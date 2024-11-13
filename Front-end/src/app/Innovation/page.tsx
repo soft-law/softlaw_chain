@@ -4,10 +4,12 @@ import AccountsProvider from "@/context/account";
 import InnovationProvider from "@/context/innovation";
 import dynamic from "next/dynamic";
 
-const ProofOfInnovation = dynamic(() => import("@/components/innovation"), {
+
+const NavBar = dynamic(() => import("@/components/NavBar"), {
   ssr: false,
 });
-const NavBar = dynamic(() => import("@/components/NavBar"), {
+
+const InnovationPage = dynamic(() => import("@/components/innovation"), {
   ssr: false,
 });
 
@@ -18,7 +20,8 @@ export default function DashPage() {
      
         <div className="scrollable">
           <NavBar />
-          <ProofOfInnovation />
+          
+          <InnovationPage/>
           {/* <Footer /> */}
         </div>
 

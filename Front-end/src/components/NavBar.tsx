@@ -3,11 +3,7 @@
 import React from "react";
 import { TextSpan } from "@/components/TextSpan";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-
-const WalletConnect = dynamic(() => import("@/components/NavBar"), {
-  ssr: false,
-});
+import WalletConnect from "./WalletConnect";
 
 
 export default function NavBar() {
