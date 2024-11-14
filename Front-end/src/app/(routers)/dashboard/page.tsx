@@ -8,10 +8,10 @@ const NavBar = dynamic(() => import("@/components/NavBar"), {
 });
 export default function Ipsearch() {
   return (
-    <div className="scrollable">
+    <div className="scrollable bg-[#1C1A11] ">
       <NavBar />
       <Dash />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

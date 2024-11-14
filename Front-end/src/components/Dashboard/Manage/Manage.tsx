@@ -34,7 +34,7 @@ export default function Manage() {
         <div className="space-y-4 bg-[#27251C] rounded-[16px] flex flex-col gap-[40px] self-stretch p-[16px] w-full mx-auto md:max-w-screen-xl min-[2000px]:w-[3000px]">
           <TypesComponent 
           className="text-[#fff]"
-          text = "Important Updates "
+          text = "Important Updates"
           detail=" - Keep Track of all Your IP Activity"
           />
           {licenses.length > 0 && (
@@ -96,7 +96,7 @@ export default function Manage() {
             </div>
           )}
         </div>
-        <div className="flex flex-col w-full md:w-[1000px] gap-[40px] self-stretch items-center p-[16px]  border border-[#8A8A8A] rounded-[16px]">
+        <div className="flex flex-col w-full md:w-[1000px] gap-[40px] self-stretch items-center p-[16px] border border-[#8A8A8A] rounded-[16px]">
           <div className="flex justify-between items-start self-stretch mb-[60px]">
             <TypesComponent 
             className="text-[#EFF4F6]"
@@ -106,7 +106,7 @@ export default function Manage() {
             >
               <Button
               onClick={() => setShowLicenseCreation(true)}
-              className="bg-[#373737] text-[#fff] hover:bg-[#FACC15]  hover:text-[#1C1A11]"
+              className="bg-[#373737] min-[2000px]:text-2xl text-[#fff] hover:bg-[#FACC15]  hover:text-[#1C1A11]"
             >
               Create License
             </Button>

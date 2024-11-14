@@ -101,7 +101,7 @@ function InovationContent() {
                 } rounded-full px-3 py-1 w-10 h-10 text-center flex items-center justify-center text-[16px] 
     min-[2000px]:w-[54px] min-[2000px]:h-[54px] min-[2000px]:py-[20px] min-[2000px]:text-3xl font-karla font-normal leading-normal`}
               >
-                3
+                2
               </h1>
               <span
                 className={`font-Karla text-[16px] font-normal leading-normal min-[2000px]:text-3xl ${
@@ -116,7 +116,7 @@ function InovationContent() {
           </div>
         </TabsList>
 
-        <div className="flex h-screen min-[2000px]:w-[2560px]">
+        <div className="flex h-screen justify-center min-[2000px]:w-[2560px]">
           <TabsContent value="1">
 
             <NFT />

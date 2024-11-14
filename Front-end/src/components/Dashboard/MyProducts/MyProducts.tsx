@@ -32,7 +32,7 @@ export default function MyProducts({ onDataChange }: MyProductsProps) {
                 text="All IPs"
               />
             </div>
-            <div className="  border h-[1px] w-[1000px] border-[#8A8A8A]"/>
+            <div className="border h-[1px] w-[1000px] border-[#8A8A8A]"/>
             {/* my products section */}
             <div className="pt-[40px] flex  items-start content-start gap-[60px] self-stretch flex-wrap ">
               <Link
@@ -44,20 +44,17 @@ export default function MyProducts({ onDataChange }: MyProductsProps) {
                   height={40}
                   src={"/images/PlusSign.svg"}
                   alt="upload icon"
+                  className="min-[2000px]:w-[60px] min-[2000px]:h-[60px]"
                 />
-                <h1 className="text-[#EFF4F6] text-[20px] font-[400] leading-[145%] tracking-[0.4px]"
+                <h1 className="text-[#EFF4F6] min-[2000px]:text-2xl text-[20px] font-[400] leading-[145%] tracking-[0.4px]"
                 >
                   Upload <span className="block">New IP</span>
                 </h1>
               </Link>
             </div>
           </div>
-        
-      {/* <Footer
-        width="py-[60px] w-full max-h-[400px]"
-        className="border-t-[1px] border-[#8A8A8A] w-full"
-      /> */}
       </div>
+      <Footer className="w-full"/>
     </>
   );
 }

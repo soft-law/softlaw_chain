@@ -16,7 +16,7 @@ const InnovationPage = dynamic(() => import("@/components/innovationV1"), {
 
 export default function DashPage() {
   return (
-    <div className="scrollable">
+    <div className="scrollable bg-[#1C1A11]">
       <NavBar />
       <InnovationPage />
       {/* <Footer /> */}
