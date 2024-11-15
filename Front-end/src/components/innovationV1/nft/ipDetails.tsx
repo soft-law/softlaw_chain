@@ -170,7 +170,6 @@ export default function IpDetails() {
     }
   };
 
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     setSelectedFiles(files);
@@ -242,57 +241,23 @@ export default function IpDetails() {
       return [];
     } finally {
       setIsModalOpen(true);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
-
   ///use efect to upload images automatily with the select files button
 
-  useEffect(()=>{
-    if(selectedFiles){
+  useEffect(() => {
+    if (selectedFiles) {
       uploadImagesToIPFS(selectedFiles);
     }
-  },[selectedFiles])
+  }, [selectedFiles]);
 
   return (
     <>
       <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
         {loading && <Loading />}
         <MaxWidthWrapper className="flex flex-col self-stretch pt-[120px] justify-center items-center">
-          <div>
-            <input
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              id="file-upload-input"
-            />
-            <label
-              htmlFor="file-upload-input"
-              className="mt-4 rounded-3xl flex flex-row items-center text-center justify-center py-[16px] text-[16px] px-[16px] border-[1px] border-solid border-darkslategray cursor-pointer min-[2000px]:text-3xl min-[2000px]:tracking-[1px]"
-            >
-              Select Files
-            </label>
-            {selectedFiles.length === 0 && (
-              <div>
-                <p className="text-center min-[2000px]:text-3xl">
-                  No Files Selected
-                </p>
-              </div>
-            )}
-            {selectedFiles.length > 0 && (
-              <div>
-                <p className="text-center min-[2000px]:text-3xl">
-                  {selectedFiles.length} Files Selected
-                </p>
-              </div>
-            )}
-
-            {imagesLinks?.map((value) => (
-              <img src={value} />
-            ))}
-          </div>
           <div className="flex flex-col w-full justify-items-center pb-[120px] gap-[60px]">
             <div className="">
               <ReusableHeading
@@ -302,15 +267,48 @@ export default function IpDetails() {
               />
             </div>
 
-            <div className="flex flex-col mt-[60px] gap-[60px]">
+            <div>
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+                id="file-upload-input"
+              />
+              <label
+                htmlFor="file-upload-input"
+                className="mt-4 rounded-3xl flex flex-row items-center text-center justify-center py-[16px] text-[16px] px-[16px] border-[1px] border-solid border-darkslategray cursor-pointer min-[2000px]:text-3xl min-[2000px]:tracking-[1px]"
+              >
+                Select Files
+              </label>
+              {selectedFiles.length === 0 && (
+                <div>
+                  <p className="text-center pt-3 min-[2000px]:text-3xl">
+                    No Files Selected
+                  </p>
+                </div>
+              )}
+              {selectedFiles.length > 0 && (
+                <div>
+                  <p className="text-center min-[2000px]:text-3xl">
+                    {selectedFiles.length} Files Selected
+                  </p>
+                </div>
+              )}
+
+              {imagesLinks?.map((value) => (
+                <img src={value} />
+              ))}
             </div>
+
+            {/*           
 
             <div className="flex flex-col gap-[16px] pt-[60px]">
               <TypesComponent
                 text="Types of protection"
                 className="text-[#fff]"
               />
-            </div>
+            </div> */}
 
             <div className="flex items-start justify-between w-full ">
               <button

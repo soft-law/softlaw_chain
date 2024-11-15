@@ -116,7 +116,7 @@ function InovationContent() {
           </div>
         </TabsList>
 
-        <div className="flex h-screen min-[2000px]:w-[2560px]">
+        <div className="flex h-screen justify-center min-[2000px]:w-[2560px]">
           <TabsContent value="1">
 
             <NFT />

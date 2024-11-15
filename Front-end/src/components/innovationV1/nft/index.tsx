@@ -7,6 +7,7 @@ import VariousTypesButton from "../../VariousTypesButton";
 import { useInnovationContext } from "@/context/innovation";
 import { useToast } from "@/hooks/use-toast";
 import { useAccountsContext } from "@/context/account";
+import { Input } from '@/components/ui/input';
 
 export default function IpData() {
   const {
@@ -16,7 +17,7 @@ export default function IpData() {
     setNftMetadata,
     setLoading,
   } = useInnovationContext();
-  const {selectedAccount}= useAccountsContext();
+  const { selectedAccount } = useAccountsContext();
 
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
@@ -88,8 +89,6 @@ export default function IpData() {
     }
   };
 
-  
-  
   return (
     <>
       <div className="bg-[#1C1A11] flex flex-col flex-shrink-0 w-full justify-center items-center text-white min-[2000px]:w-[3000px]">
@@ -150,83 +149,96 @@ export default function IpData() {
 
               <div className="flex items-start mt-[60px] gap-[60px]">
                 <div className="flex flex-col items-start gap-[6px]">
-                  <p>Name</p>
-                  <input
-                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
+                  <TypesComponent text="Name" className="text-[#fff]" />
+                  <Input
+                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-6/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
                     name="name"
                     value={nftMetadata.name}
                     onChange={handleInputChange}
                   />
-                  <TypesComponent
-                    className="text-[#8A8A8A] "
-                    text={`Enter a name that can match your patent name, making it easily searchable. Choose a descriptive and unique name for clear identification.`}
-                  />
+                  <h1 className="text-[#8A8A8A] min-[2000px]:text-2xl">
+                    Enter a name that can match your patent name, making it
+                    easily searchable. Choose a descriptive and unique name for
+                    clear identification.
+                  </h1>
                 </div>
                 <div className="flex flex-col items-start self-stretch gap-[8px]">
-                  <p>Technical Name</p>
-                  <input
-                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
+                  <TypesComponent
+                    text="Technical Name"
+                    className="text-[#fff]"
+                  />
+                  <Input
+                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-6/6 w-full mt-[6px] h-auto text-[#fff] p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
                     name="technicalName"
                     value={nftMetadata.technicalName}
                     onChange={handleInputChange}
                   />
 
-                  <TypesComponent
-                    className="text-[#8A8A8A] "
-                    text={`Enter the technical legal-name that can match your patent name, making it easily searchable. Choose a descriptive and unique name for clear identification.`}
-                  />
+                  <h1 className="text-[#8A8A8A] min-[2000px]:text-2xl">
+                  Enter the technical legal-name that can match your patent name, making it easily searchable. Choose a descriptive and unique name for clear identification.
+                  </h1>
                 </div>
               </div>
 
               <div className="flex items-start mt-[60px] gap-[60px]">
                 <div className="flex flex-col items-start self-stretch gap-[8px] w-full">
-                  <p>Description</p>
-                  <input
-                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
+                <TypesComponent
+                    text="Description"
+                    className="text-[#fff]"
+                  />
+                 
+                  <Input
+                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-6/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
                     name="description"
                     value={nftMetadata.description}
                     onChange={handleInputChange}
                   />
-
-                  <TypesComponent
-                    text="Write a short description which should clearly describe your product."
-                    className=" text-[#8A8A8A] "
-                  />
+                  
+                  <h1 className="text-[#8A8A8A] min-[2000px]:text-2xl">
+                  Write a short description which should clearly describe your product.
+                  </h1>
                 </div>
               </div>
 
-              <div className="flex items-start mt-[60px] gap-[60px]">
+              <div className="flex items-start mt-[60px] gap-[60px] w-full">
                 <div className="flex flex-col items-start gap-[6px]">
-                  <p>Registration Number</p>
-                  <input
-                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
+                <TypesComponent
+                    text="Registration Number"
+                    className="text-[#fff]"
+                  />
+                 
+                  <Input
+                    className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-6/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
                     name="registryNumber"
                     value={nftMetadata.registryNumber}
                     onChange={handleInputChange}
                   />
-
-                  <TypesComponent
-                    className="text-[#8A8A8A] "
-                    text={`A unique identifier issued once your patent is officially approved and published to track and reference your patent in legal. ${(
-                      <br />
-                    )} Example: US1234567B1.`}
-                  />
+                  <h1 className="text-[#8A8A8A] min-[2000px]:text-2xl">
+                  A unique identifier issued once your patent is officially approved and published to track and reference your patent in legal. 
+                  <span className="block">Example: US1234567B1.</span>
+                  </h1>
                 </div>
 
-                <p>First Date Use</p>
-                <input
-                  className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-5/6 w-full mt-[6px] h-auto text-[#fff]  p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
+                  <div className="flex flex-col">
+                  <TypesComponent
+                    text="First Date Use"
+                    className="text-[#fff]"
+                  />
+                  <Input
+                  className={`text-[20px] min-[2000px]:text-2xl flex min-[2000px]:w-6/6 w-full mt-[6px] h-auto text-[#fff] p-3 items-start gap-[10px] self-stretch bg-[#27251C] outline-none border-none focus:outline-none pr-10 rounded-md focus:ring-1 focus:ring-[#FACC15] min-w-[280px]`}
                   name="useDate"
                   value={nftMetadata.useDate}
                   onChange={handleInputChange}
                   type="Date"
                 />
+                  </div>
+                  
               </div>
             </div>
 
             <div className="flex items-start justify-between w-full ">
               <button
-                className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15]  hover:text-[#1C1A11] hover:border-none"
+                className="bg-transparent rounded-[16px] px-[20px] py-[8px] w-[128px] items-center text-center min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl min-[2000px]:w-[200px] flex-shrink-0 border border-[#D0DFE4] text-[#D0DFE4] hover:bg-[#FACC15] hover:text-[#1C1A11] hover:border-none"
                 onClick={handleBack}
               >
                 Back
