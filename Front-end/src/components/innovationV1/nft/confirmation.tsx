@@ -124,8 +124,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     console.log("Pasaron 10 segundos");
 
     toast({
-      title: "Collection Created",
-      description: `Successfully created proof of innovation id 11 from Substrate Address: ${addr}`,
+      title: "Proof of Innovation Created",
+      description: `Successfully created proof of innovation id 16 from Substrate Address: ${addr}`,
       variant: "default",
       className: "bg-white text-black border border-gray-200",
     });
