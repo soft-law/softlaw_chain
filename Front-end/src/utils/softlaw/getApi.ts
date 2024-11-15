@@ -5,7 +5,7 @@ export const getSoftlawApi = async () => {
   const wsProvider = new WsProvider(
     process.env.NEXT_PUBLIC_CHAIN_WEB_SOCKET
       ? process.env.NEXT_PUBLIC_CHAIN_WEB_SOCKET
-      : "ws://127.0.0.1:57935"
+      : "wss://testnet.soft.law/node"
   );
 
   const api = await ApiPromise.create({

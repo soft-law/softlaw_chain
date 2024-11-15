@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import AccountsProvider, { useAccountsContext } from "@/context/account";
+import { useAccountsContext } from "@/context/account";
 import { useToast } from "@/hooks/use-toast";
 import {
   web3Accounts,
@@ -9,7 +9,6 @@ import {
   web3FromSource,
 } from "@polkadot/extension-dapp";
 import { getSoftlawApi } from "@/utils/softlaw/getApi";
-import { ApiPromise, WsProvider } from "@polkadot/api";
 
 export default function WalletConnect() {
   const { selectedAccount, setSelectedAccount } = useAccountsContext();
@@ -110,7 +109,6 @@ export default function WalletConnect() {
       await web3Enable("Softlaw");
       const accounts = await web3Accounts();
       const account = accounts[0];
-      // let api = await getSoftlawApi()
       console.log("api AssetHub", api);
 
       if (!account) {

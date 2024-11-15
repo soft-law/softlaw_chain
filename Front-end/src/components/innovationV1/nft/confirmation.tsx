@@ -6,13 +6,14 @@ import MintNftUnique from "./mintUnique";
 import { useInnovationContext } from "@/context/innovation";
 import { ChainSelector } from "./chainSelector";
 import { useAccountsContext } from "@/context/account";
+import { getSoftlawApi } from "@/utils/softlaw/getApi";
+import { web3Enable, web3FromAddress } from "@polkadot/extension-dapp";
+import { useToast } from "@/hooks/use-toast";
 // import Footer from "../Footer";
 
 interface ConfirmationModalProps {
-
   onClose: () => void; // Function to close the modal
   onEditPage: (page: number) => void; // Function to allow editing specific page
-
 }
 
 interface NFTMetadata {
@@ -26,17 +27,15 @@ interface NFTMetadata {
   image: string[];
 }
 
-
-
-
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onClose,
   onEditPage,
 }) => {
+  const { chain, setChain, nftMetadataUrl } = useInnovationContext();
 
- const {chain, setChain, nftMetadataUrl} = useInnovationContext();
+  const { toast } = useToast();
 
- const {selectedAccount} = useAccountsContext()
+  const { selectedAccount } = useAccountsContext();
   // Handle both close and edit in one function
   const handleEditPage = (page: number) => {
     const tabKeys = ["collections", "nfts", "contracts"];
@@ -47,14 +46,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   const [nftData, setNftData] = useState<NFTMetadata>();
 
-
-
   async function fetchNFTData(url: string | null): Promise<NFTMetadata | null> {
     if (!url) {
       console.error("No URL provided");
       return null;
     }
-  
+
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -68,32 +65,71 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     }
   }
 
- // En el useEffect
-useEffect(() => {
-  const loadNFTData = async () => {
-    try {
-      const data = await fetchNFTData(nftMetadataUrl);
-      if (data) {
-        setNftData(data);
+  // En el useEffect
+  useEffect(() => {
+    const loadNFTData = async () => {
+      try {
+        const data = await fetchNFTData(nftMetadataUrl);
+        if (data) {
+          setNftData(data);
+        }
+      } catch (error) {
+        console.error("Error loading NFT data:", error);
       }
-    } catch (error) {
-      console.error("Error loading NFT data:", error);
+    };
+
+    loadNFTData();
+  }, [nftMetadataUrl]); // Agregar
+
+  const [nftV1, setNftV1] = useState<object>({
+    name: 0,
+    description: 0,
+    fillingDate: 0,
+    jurisdiction: 0,
+  });
+
+  const mintNFT = async () => {
+    // validateMetadata();
+
+    let api = await getSoftlawApi();
+    await web3Enable("softlaw");
+
+    if (!selectedAccount?.address) {
+      throw new Error("No selected account");
     }
+
+    // let type = await api.createType()
+
+    const addr = selectedAccount.address;
+
+    const injector = await web3FromAddress(addr);
+
+    api.setSigner(injector.signer as any);
+
+    try {
+      const tx = await api.tx.ipPallet
+        .mintNft(
+          "nftMetadata.name",
+          "nftMetadata.description",
+          "nftMetadata.useDate",
+          "nftMetadata.registryNumber"
+        )
+        .signAndSend(addr);
+    } catch (e) {
+      console.log("error: ", e);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+
+    console.log("Pasaron 10 segundos");
+
+    toast({
+      title: "Proof of Innovation Created",
+      description: `Successfully created proof of innovation id 16 from Substrate Address: ${addr}`,
+      variant: "default",
+      className: "bg-white text-black border border-gray-200",
+    });
   };
-
-  loadNFTData();
-}, [nftMetadataUrl]); // Agregar 
-
-
-
-const [nftV1, setNftV1] = useState<object>({
-  name: 0,
-  description: 0,
-  fillingDate:0,
-  jurisdiction: 0,
-})
-
-
   return (
     <>
       <div className="flex flex-col inset-0 fixed items-center justify-center bg-black bg-opacity-50 z-50 w-full md:max-w-5xl mx-auto max-h-[100vh] ">
@@ -109,153 +145,150 @@ const [nftV1, setNftV1] = useState<object>({
                   />
                 </div>
                 <div className="flex items-start gap-[60px] self-stretch w-full">
-                 
                   {/* Left hand starts */}
-                    <div className="flex flex-col items-start gap-[60px] w-full">
-                       {/* page 1 starts */}
-                      <div className="flex w-full items-start self-stretch justify-start gap-[60px]">
-                        {/* page 1 starts */}
-                        <div className="flex flex-col w-full items-start gap-[60px] self-stretch">
-                          <div className="flex flex-col gap-[8px]">
-                            <TypesComponent
-                              className="font-bold"
-                              text="Types of Intellectual Property"
-                            />
+                  <div className="flex flex-col items-start gap-[60px] w-full">
+                    {/* page 1 starts */}
+                    <div className="flex w-full items-start self-stretch justify-start gap-[60px]">
+                      {/* page 1 starts */}
+                      <div className="flex flex-col w-full items-start gap-[60px] self-stretch">
+                        <div className="flex flex-col gap-[8px]">
+                          <TypesComponent
+                            className="font-bold"
+                            text="Types of Intellectual Property"
+                          />
 
-                            <TypesComponent
-                              className="text-[#8A8A8A]"
-                              text={`
-                          ${
-                             nftData?.type||
-                            "N/A"
-                          }`}
-                            />
-                          </div>
+                          <TypesComponent
+                            className="text-[#8A8A8A]"
+                            text={`
+                          ${nftData?.type || "N/A"}`}
+                          />
+                        </div>
 
-                          <div className="flex flex-col gap-[8px]">
-                            <TypesComponent
-                              className="font-bold"
-                              text="Reference Number"
-                            />
+                        <div className="flex flex-col gap-[8px]">
+                          <TypesComponent
+                            className="font-bold"
+                            text="Reference Number"
+                          />
 
-                            {/* <TypesComponent
+                          {/* <TypesComponent
                               className="text-[#8A8A8A]"
                               text={`
                       ${formData.IpRegistries.ReferenceNumber || "N/A"}`}
                             /> */}
 
-                            {/* <p>
+                          {/* <p>
                       Reference Number:{" "}
                       {formData.IpRegistries?.ReferenceNumber || "N/A"}
                     </p> */}
-                          </div>
-
-                          <div className="flex flex-col gap-[8px]">
-                            <TypesComponent
-                              className="font-bold"
-                              text="Reference Link"
-                            />
-
-                            <TypesComponent
-                              className="text-[#8A8A8A]"
-                              text={`
-                        ${nftData?.registryNumber|| "N/A"}
-                        `} 
-                            />
-                          </div>
                         </div>
-                        {/* page 1 ends */}
-                        
-                        <button
-                          onClick={() => handleEditPage(1)}
-                          className="text-[#F6E18B] w-full md:w-[30.02px]"
-                        >
-                          <img src="/images/EditIcon.svg"
+
+                        <div className="flex flex-col gap-[8px]">
+                          <TypesComponent
+                            className="font-bold"
+                            text="Reference Link"
+                          />
+
+                          <TypesComponent
+                            className="text-[#8A8A8A]"
+                            text={`
+                        ${nftData?.registryNumber || "N/A"}
+                        `}
+                          />
+                        </div>
+                      </div>
+                      {/* page 1 ends */}
+
+                      <button
+                        onClick={() => handleEditPage(1)}
+                        className="text-[#F6E18B] w-full md:w-[30.02px]"
+                      >
+                        <img
+                          src="/images/EditIcon.svg"
                           className="shrink-0"
                           loading="lazy"
-                          alt="Edit" />
-                        </button> 
-                      </div>
-                       {/* page 1 starts */}
+                          alt="Edit"
+                        />
+                      </button>
+                    </div>
+                    {/* page 1 starts */}
 
-                      <div className="w-[270px] h-[1px] flex bg-[#8A8A8A]"></div>
+                    <div className="w-[270px] h-[1px] flex bg-[#8A8A8A]"></div>
 
-                      {/* page 2 starts */}
-                      <div className="flex w-full items-start self-stretch justify-start gap-[60px]">
-                        <div className="flex flex-col items-start gap-[60px] self-stretch">
-                          {/* Types of patent start */}
-                          <div className="flex flex-col gap-[8px]">
+                    {/* page 2 starts */}
+                    <div className="flex w-full items-start self-stretch justify-start gap-[60px]">
+                      <div className="flex flex-col items-start gap-[60px] self-stretch">
+                        {/* Types of patent start */}
+                        <div className="flex flex-col gap-[8px]">
+                          <TypesComponent
+                            className="font-bold"
+                            text="Types of Patent"
+                          />
+                          <TypesComponent
+                            className="text-[#8A8A8A]"
+                            text={`${nftData?.name || "N/A"}`}
+                          />
+                        </div>
+                        {/* Types of patent start */}
+
+                        {/* Patent Title start*/}
+                        <div className="flex flex-col gap-[8px]">
+                          <TypesComponent
+                            className="font-bold"
+                            text="Patent Title"
+                          />
+                          <TypesComponent
+                            className="text-[#8A8A8A]"
+                            text={`${nftData?.name || "N/A"}`}
+                          />
+                        </div>
+                        {/* Patent Title ends */}
+
+                        {/* Patent Number and Filling date starts */}
+                        <div className="flex items-center justify-center w-full gap-[60px] self-stretch">
+                          {/* patent number */}
+                          <div className="flex flex-col items-start w-full gap-[8px]">
                             <TypesComponent
                               className="font-bold"
-                              text="Types of Patent"
+                              text="Patent Number"
                             />
                             <TypesComponent
                               className="text-[#8A8A8A]"
-                              text={`${
-                                nftData?.name || "N/A"
-                              }`}
+                              text={`${nftData?.registryNumber || "N/A"}`}
                             />
                           </div>
-                          {/* Types of patent start */}
+                          {/* patent number ends */}
 
-                          {/* Patent Title start*/}
-                          <div className="flex flex-col gap-[8px]">
+                          {/* filling date starts */}
+                          <div className="flex flex-col items-start w-full gap-[8px]">
                             <TypesComponent
-                              className="font-bold"
-                              text="Patent Title"
+                              className="font-bold "
+                              text="Filling Date"
                             />
                             <TypesComponent
                               className="text-[#8A8A8A]"
-                              text={`${nftData?.name || "N/A"}`}
+                              text={`${nftData?.useDate || "N/A"}`}
                             />
                           </div>
-                          {/* Patent Title ends */}
-
-                          {/* Patent Number and Filling date starts */}
-                          <div className="flex items-center justify-center w-full gap-[60px] self-stretch">
-                            {/* patent number */}
-                            <div className="flex flex-col items-start w-full gap-[8px]">
-                              <TypesComponent
-                                className="font-bold"
-                                text="Patent Number"
-                              />
-                              <TypesComponent
-                                className="text-[#8A8A8A]"
-                                text={`${
-                                  nftData?.registryNumber || "N/A"
-                                }`}
-                              />
-                            </div>
-                            {/* patent number ends */}
-
-                            {/* filling date starts */}
-                            <div className="flex flex-col items-start w-full gap-[8px]">
-                              <TypesComponent
-                                className="font-bold "
-                                text="Filling Date"
-                              />
-                              <TypesComponent
-                                className="text-[#8A8A8A]"
-                                text={`${
-                                  nftData?.useDate || "N/A"
-                                }`}
-                              />
-                            </div>
-                            {/* Filling Date ends */}
-                          </div>
-
-                          {/* Patent Number and Filling date ends*/}
+                          {/* Filling Date ends */}
                         </div>
 
-                        <button
-                          onClick={() => handleEditPage(2)}
-                          className="text-[#F6E18B]"
-                        >
-                          <img src="/images/EditIcon.svg" className="shrink-0" loading="lazy"  alt="Edit" />
-                        </button>
+                        {/* Patent Number and Filling date ends*/}
                       </div>
-                      {/* page 2 ends */}  
+
+                      <button
+                        onClick={() => handleEditPage(2)}
+                        className="text-[#F6E18B]"
+                      >
+                        <img
+                          src="/images/EditIcon.svg"
+                          className="shrink-0"
+                          loading="lazy"
+                          alt="Edit"
+                        />
+                      </button>
                     </div>
+                    {/* page 2 ends */}
+                  </div>
                   {/* Left hand ends */}
 
                   <div className="w-[1px] h-[700px] bg-[#8A8A8A]"></div>
@@ -268,8 +301,13 @@ const [nftV1, setNftV1] = useState<object>({
                         <TypesComponent text="Thumbnail Image" />
                         <p>
                           Files Uploaded:{""}{" "}
-                          {nftData?.image|| "No file uploaded"}
+                          {nftData?.image || "No file uploaded"}
                         </p>
+                        <div>
+                          {nftData?.image?.map((src, index) => (
+                            <img key={index} src={src} alt={`NFT ${index}`} />
+                          ))}
+                        </div>
                       </div>
 
                       <div className="flex flex-col gap-2">
@@ -279,15 +317,12 @@ const [nftV1, setNftV1] = useState<object>({
                           text={`${nftData?.technicalName || "N/A"}`}
                         />
                       </div>
-                
 
                       <div className="flex flex-col gap-2">
                         <TypesComponent text="Types of Protection" />
                         <TypesComponent
                           className="text-[#8A8A8A]"
-                          text={
-                            nftData?.type || "N/A"
-                          }
+                          text={nftData?.type || "N/A"}
                         />
                       </div>
 
@@ -309,7 +344,11 @@ const [nftV1, setNftV1] = useState<object>({
                       onClick={() => handleEditPage(3)}
                       className="text-[#F6E18B]"
                     >
-                      <img src="/images/EditIcon.svg" className="shrink-0" alt="Edit" />
+                      <img
+                        src="/images/EditIcon.svg"
+                        className="shrink-0"
+                        alt="Edit"
+                      />
                     </button>
                   </div>
                   {/* page 3, right hand side ends */}
@@ -325,14 +364,20 @@ const [nftV1, setNftV1] = useState<object>({
                 Back
               </button>
 
-              <ChainSelector/>
+              <button
+                className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
+                onClick={mintNFT}
+              >
+                Mint I.P.
+              </button>
+
+              {/* <ChainSelector/> */}
               {/* {chain==="softlaw" && <button onClick={mintNFT}>MINT WITH SOFTLAW</button>}
               
               {chain ==="unique" && <MintNftUnique />} */}
-             
             </div>
           </div>
-          
+
           {/* <Footer width="w-full" className="mt-[120px]" /> */}
         </div>
       </div>
