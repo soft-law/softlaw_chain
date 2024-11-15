@@ -5,6 +5,9 @@ import type { LicenseFormData } from "./types";
 import AlertDialog from "./AlertDialogue";
 import TypesComponent from "@/components/TypesProps";
 import { useToast } from "@/hooks/use-toast";
+import { getSoftlawApi } from "@/utils/softlaw/getApi";
+import { web3Enable, web3FromAddress } from "@polkadot/extension-dapp";
+import { useAccountsContext } from "@/context/account";
 
 interface LicenseSampleFormProps {
   formData: LicenseFormData;
@@ -20,8 +23,39 @@ export function LicenseSampleForm({
   onBack,
 }: LicenseSampleFormProps) {
   const {toast} = useToast()
+  const {selectedAccount}= useAccountsContext()
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    let api = await getSoftlawApi();
+    await web3Enable("softlaw");
+
+    let  addr;
+    // let type = await api.createType()
+    if(!selectedAccount){
+      return 
+    } 
+    addr = selectedAccount?.address;
+
+    const injector = await web3FromAddress(addr);
+
+    api.setSigner(injector.signer as any);
+
+    try {
+      const tx = await api.tx.ipPallet
+        .mintNft(
+          "nftMetadata.name",
+          "nftMetadata.description",
+          "nftMetadata.useDate",
+          "nftMetadata.registryNumber"
+        )
+        .signAndSend(addr);
+    } catch (e) {
+      console.log("error: ", e);
+    }
+
     await new Promise((resolve) => setTimeout(resolve, 10000));
 
     console.log("Pasaron 10 segundos");

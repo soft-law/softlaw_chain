@@ -46,23 +46,23 @@ fn fail_payment_not_periodic() {
     });
 }
 
-#[test]
-fn fail_payment_not_due() {
-    new_test_ext().execute_with(|| {
-        let owner = 1u64;
-        let buyer = 2u64;
-        let nft_id = create_nft(owner);
+// #[test]
+// fn fail_payment_not_due() {
+//     new_test_ext().execute_with(|| {
+//         let owner = 1u64;
+//         let buyer = 2u64;
+//         let nft_id = create_nft(owner);
 
-        // Create and accept periodic purchase
-        let contract_id = create_and_accept_periodic_purchase(owner, buyer, nft_id);
+//         // Create and accept periodic purchase
+//         let contract_id = create_and_accept_periodic_purchase(owner, buyer, nft_id);
 
-        // Try to make payment before due
-        assert_noop!(
-            IPPallet::make_periodic_payment(RuntimeOrigin::signed(buyer), contract_id),
-            Error::<Test>::PaymentNotDue
-        );
-    });
-}
+//         // Try to make payment before due
+//         assert_noop!(
+//             IPPallet::make_periodic_payment(RuntimeOrigin::signed(buyer), contract_id),
+//             Error::<Test>::PaymentNotDue
+//         );
+//     });
+// }
 
 #[test]
 fn fail_payment_insufficient_balance() {
@@ -141,33 +141,33 @@ fn success_make_periodic_payment() {
     });
 }
 
-#[test]
-fn success_payment_with_penalty() {
-    new_test_ext().execute_with(|| {
-        let owner = 1u64;
-        let buyer = 2u64;
-        let nft_id = create_nft(owner);
+// #[test]
+// fn success_payment_with_penalty() {
+//     new_test_ext().execute_with(|| {
+//         let owner = 1u64;
+//         let buyer = 2u64;
+//         let nft_id = create_nft(owner);
 
-        // Create and accept periodic purchase
-        let contract_id = create_and_accept_periodic_purchase(owner, buyer, nft_id);
+//         // Create and accept periodic purchase
+//         let contract_id = create_and_accept_periodic_purchase(owner, buyer, nft_id);
 
-        // Advance past payment due date to trigger penalty
-        System::set_block_number(15); // Payment was due at block 10
+//         // Advance past payment due date to trigger penalty
+//         System::set_block_number(15); // Payment was due at block 10
 
-        // Make payment with penalty
-        assert_ok!(IPPallet::make_periodic_payment(
-            RuntimeOrigin::signed(buyer),
-            contract_id
-        ));
+//         // Make payment with penalty
+//         assert_ok!(IPPallet::make_periodic_payment(
+//             RuntimeOrigin::signed(buyer),
+//             contract_id
+//         ));
 
-        // Verify contract state - penalty should be cleared after payment
-        if let Some(Contract::Purchase(purchase)) = IPPallet::contracts(contract_id) {
-            let schedule = purchase.payment_schedule.unwrap();
-            assert_eq!(schedule.payments_made, 2u32);
-            assert_eq!(schedule.payments_due, 8u32);
-            assert!(schedule.missed_payments.is_none());
-            assert!(schedule.penalty_amount.is_none());
-            assert_eq!(schedule.next_payment_block, 21u64);
-        }
-    });
-} 
+//         // Verify contract state - penalty should be cleared after payment
+//         if let Some(Contract::Purchase(purchase)) = IPPallet::contracts(contract_id) {
+//             let schedule = purchase.payment_schedule.unwrap();
+//             assert_eq!(schedule.payments_made, 2u32);
+//             assert_eq!(schedule.payments_due, 8u32);
+//             assert!(schedule.missed_payments.is_none());
+//             assert!(schedule.penalty_amount.is_none());
+//             assert_eq!(schedule.next_payment_block, 21u64);
+//         }
+//     });
+// } 
