@@ -9,21 +9,109 @@ import {
   web3FromSource,
 } from "@polkadot/extension-dapp";
 import { getSoftlawApi } from "@/utils/softlaw/getApi";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 
 export default function WalletConnect() {
-  const { selectedAccount, setSelectedAccount } =
-    useAccountsContext();
+  const { selectedAccount, setSelectedAccount } = useAccountsContext();
   const { toast } = useToast();
   const [isConnecting, setIsConnecting] = useState(false);
 
   const walletConnect = async () => {
     try {
+      // const wsProvider = new WsProvider("wss://testnet.soft.law/node");
+
+      // const types = {
+      //   NFT: {
+      //     id: "NFTId",
+      //     owner: "AccountId",
+      //     name: "Vec<u8>",
+      //     description: "Vec<u8>",
+      //     filing_date: "Vec<u8>",
+      //     jurisdiction: "Vec<u8>",
+      //   },
+      //   // Definición corregida del PaymentType
+      //   PaymentType: {
+      //     _enum: {
+      //       OneTime: "Balance",
+      //       Periodic: "(Balance, BlockNumber)", // Usando una tupla para los parámetros
+      //     },
+      //   },
+      //   PaymentSchedule: {
+      //     payments_made: "u32",
+      //     payments_due: "u32",
+      //     next_payment_block: "BlockNumber",
+      //     missed_payments: "Option<u32>",
+      //     penalty_amount: "Option<Balance>",
+      //   },
+      //   Offer: {
+      //     _enum: ["License(LicenseOffer)", "Purchase(PurchaseOffer)"],
+      //   },
+      //   Contract: {
+      //     _enum: ["License(License)", "Purchase(PurchaseContract)"],
+      //   },
+      //   ContractType: {
+      //     _enum: ["License", "Purchase"],
+      //   },
+      //   LicenseOffer: {
+      //     nft_id: "NFTId",
+      //     licensor: "AccountId",
+      //     payment_type: "PaymentType",
+      //     is_exclusive: "bool",
+      //     duration: "BlockNumber",
+      //   },
+      //   PurchaseOffer: {
+      //     nft_id: "NFTId",
+      //     seller: "AccountId",
+      //     payment_type: "PaymentType",
+      //   },
+      //   License: {
+      //     nft_id: "NFTId",
+      //     licensor: "AccountId",
+      //     licensee: "AccountId",
+      //     payment_type: "PaymentType",
+      //     is_exclusive: "bool",
+      //     duration: "BlockNumber",
+      //     start_block: "BlockNumber",
+      //     payment_schedule: "Option<PaymentSchedule>",
+      //   },
+      //   PurchaseContract: {
+      //     nft_id: "NFTId",
+      //     seller: "AccountId",
+      //     buyer: "AccountId",
+      //     payment_type: "PaymentType",
+      //     payment_schedule: "Option<PaymentSchedule>",
+      //   },
+      //   NFTId: "u32",
+      //   OfferId: "u32",
+      //   ContractId: "u32",
+      //   Balance: "u128",
+      //   BlockNumber: "u32",
+      //   Index: "u32",
+      // };
+
+      // const api = await ApiPromise.create({
+      //   provider: wsProvider,
+      //   types: types,
+      // });
+
+      // const [chain, nodeName, nodeVersion] = await Promise.all([
+      //   api.rpc.system.chain(),
+      //   api.rpc.system.name(),
+      //   api.rpc.system.version(),
+      // ]);
+
+      // console.log(
+      //   `Connected to chain ${chain} using ${nodeName} v${nodeVersion}`
+      // );
+      // console.log("Genesis hash:", api.genesisHash.toHex());
+
+      let api = await getSoftlawApi();
       setIsConnecting(true);
       await web3Enable("Softlaw");
       const accounts = await web3Accounts();
       const account = accounts[0];
-      let api = await getSoftlawApi()
-      console.log("api AssetHub",api)
+      // let api = await getSoftlawApi()
+      console.log("api AssetHub", api);
 
       if (!account) {
         throw new Error("No accounts found.");
@@ -112,4 +200,3 @@ export default function WalletConnect() {
     </button>
   );
 }
-

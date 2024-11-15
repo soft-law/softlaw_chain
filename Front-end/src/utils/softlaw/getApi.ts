@@ -1,15 +1,31 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 
 export const getSoftlawApi = async () => {
-  //Api local
-  // const wsProvider = new WsProvider("ws://127.0.0.1:55465");
+  // const wsProvider = new WsProvider("wss://testnet.soft.law/node");
+  const wsProvider = new WsProvider("ws://127.0.0.1:57935");
 
-  //Api Asset Hub
-  const wsProvider = new WsProvider("wss://testnet.soft.law/node")
+  const api = await ApiPromise.create({
+    provider: wsProvider,
+    // types: {
+    //   ip_pallet: {
+    //     mint_nft: {
+    //       name: 'string',
+    //       description: 'string',
+    //       filing_date: 'string',
+    //       jurisdiction: 'string',
+    //     },
+    //   },
+    // },
+  });
 
-  //Api Tanssi
-  // const wsProvider = new WsProvider("wss://fraa-dancebox-3129-rpc.a.dancebox.tanssi.network");
-  const api = await ApiPromise.create({ provider: wsProvider });
-  console.log(api.genesisHash.toHex());
+  const [chain, nodeName, nodeVersion] = await Promise.all([
+    api.rpc.system.chain(),
+    api.rpc.system.name(),
+    api.rpc.system.version(),
+  ]);
+
+  console.log(`Connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
+  console.log("Genesis hash:", api.genesisHash.toHex());
+
   return api;
 };
