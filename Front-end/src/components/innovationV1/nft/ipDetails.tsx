@@ -296,9 +296,15 @@ export default function IpDetails() {
                 </div>
               )}
 
-              {imagesLinks?.map((value) => (
+              {/* {imagesLinks?.map((value) => (
                 <img src={value} />
-              ))}
+              ))} */}
+
+              <div>
+                {imagesLinks?.map((src, index) => (
+                  <img key={index} src={src} alt={`NFT ${index}`} />
+                ))}
+              </div>
             </div>
 
             {/*           
@@ -350,10 +356,12 @@ export default function IpDetails() {
                 </button>
 
                 {isModalOpen && (
+                   <div className="overlay">
                   <ConfirmationModal
                     onClose={handleCloseModal}
                     onEditPage={handleEditPage}
                   />
+                  </div>
                 )}
               </div>
             </div>

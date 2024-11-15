@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { LicenseFormData } from "./types";
 import AlertDialog from "./AlertDialogue";
 import TypesComponent from "@/components/TypesProps";
+import { useToast } from "@/hooks/use-toast";
 
 interface LicenseSampleFormProps {
   formData: LicenseFormData;
@@ -18,8 +19,19 @@ export function LicenseSampleForm({
   onChange,
   onBack,
 }: LicenseSampleFormProps) {
-  const handleSubmit = (e: React.FormEvent) => {
+  const {toast} = useToast()
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+
+    console.log("Pasaron 10 segundos");
+
+    toast({
+      title: "License Created",
+      description: `Successfully created License Contract id 5 `,
+      variant: "default",
+      className: "bg-white text-black border border-gray-200",
+    });
     onSubmit(formData);
   };
 
