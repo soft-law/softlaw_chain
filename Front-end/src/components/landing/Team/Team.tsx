@@ -16,12 +16,14 @@ function Team() {
           <div className="flex items-center justify-between">
             <Teamcard name="Mario" role="Founder"  />
             <Teamcard name="Luke" role="Tech Director & Polkadot Dev" />
-            <Teamcard name="Favour" role="Front-End Dev" />
+            {/* <Teamcard name="Favour" role="Front-End Dev" /> */}
           </div>
 
           <div className="flex">
             <Teamcard name="Pat" role="Product Designer" />
-            <Teamcard name="Ganesh" role="Polkadot Dev" />
+            {/* <Teamcard name="Ganesh" role="Polkadot Dev" /> */}
+            {/* <Teamcard name="Ganesh" role="Polkadot Dev" /> */}
+            <Teamcard name="Favour" role="Front-End Dev" />
           </div>
         </div>
        

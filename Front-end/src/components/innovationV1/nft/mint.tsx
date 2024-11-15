@@ -174,7 +174,7 @@ export default function MintNftButton() {
 
   return (
     <button
-      className="mt-4 text-white hover:bg-white hover:text-blue-500 border border-yellow-400 rounded px-4 py-2"
+        className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
       onClick={handleMint}
       disabled={loading}
     >

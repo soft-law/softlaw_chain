@@ -317,7 +317,7 @@ export default function IpDetails() {
               >
                 Back
               </button>
-              <button
+              {/* <button
                 onClick={() => {
                   console.log(
                     "Collection Metadata: ",
@@ -337,7 +337,7 @@ export default function IpDetails() {
                 className="bg-[#D0DFE4] min-[2000px]:py-[16px] min-[2000px]:tracking-[1px] min-[2000px]:text-3xl w-[128px] min-[2000px]:w-[200px] items-center text-center rounded-[16px] text-[#1C1A11] px-[22px] py-[8px] flex-shrink-0 hover:bg-[#FACC15]"
               >
                 Test
-              </button>
+              </button> */}
 
               <div>
                 {/* Once the final page is completed, submit */}

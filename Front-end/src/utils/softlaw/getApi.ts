@@ -1,8 +1,8 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 
 export const getSoftlawApi = async () => {
-  // const wsProvider = new WsProvider("wss://testnet.soft.law/node");
-  const wsProvider = new WsProvider("ws://127.0.0.1:57935");
+  const wsProvider = new WsProvider("wss://testnet.soft.law/node");
+  // const wsProvider = new WsProvider("ws://127.0.0.1:57935");
 
   const api = await ApiPromise.create({
     provider: wsProvider,
