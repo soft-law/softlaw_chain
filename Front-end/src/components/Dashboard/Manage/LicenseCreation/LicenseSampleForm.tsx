@@ -22,51 +22,89 @@ export function LicenseSampleForm({
   onChange,
   onBack,
 }: LicenseSampleFormProps) {
-  const {toast} = useToast()
-  const {selectedAccount}= useAccountsContext()
-
+  const { toast } = useToast();
+  const { selectedAccount } = useAccountsContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let api = await getSoftlawApi();
+    if (!selectedAccount?.address) {
+      toast({
+        title: "Error",
+        description: "No account selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const api = await getSoftlawApi();
     await web3Enable("softlaw");
 
-    let  addr;
-    // let type = await api.createType()
-    if(!selectedAccount){
-      return 
-    } 
-    addr = selectedAccount?.address;
-
+    const addr = selectedAccount.address;
     const injector = await web3FromAddress(addr);
-
     api.setSigner(injector.signer as any);
 
     try {
-      const tx = await api.tx.ipPallet
-        .mintNft(
-          "nftMetadata.name",
-          "nftMetadata.description",
-          "nftMetadata.useDate",
-          "nftMetadata.registryNumber"
-        )
-        .signAndSend(addr);
-    } catch (e) {
-      console.log("error: ", e);
+      // Preparar argumentos para offerLicense
+      const nftId = formData.nftId;
+
+      // Manejar paymentType para OneTime y Periodic
+      const paymentType =
+        formData.paymentType === "OneTime"
+          ? { OneTime: formData.price.amount.toString() }
+          : {
+              Periodic: {
+                amountPerPayment: formData.price.amount.toString(),
+                totalPayments:
+                  formData.periodicPayment?.totalPayments?.toString() || "0",
+                frequency:
+                  formData.periodicPayment?.frequency?.toString() || "1",
+              },
+            };
+
+      const isExclusive = formData.licenseType === "Exclusive"; // booleano
+      const duration =
+        formData.durationType === "Permanent"
+          ? "0" // Usar "0" para duración permanente
+          : formData.customDuration?.value?.toString() || "0";
+
+      // Ejecutar extrinsic
+      const unsub = await api.tx.ipPallet
+        .offerLicense(nftId, paymentType, isExclusive, duration)
+        .signAndSend(
+          addr,
+          { signer: injector.signer },
+          ({ status, events }) => {
+            if (status.isInBlock) {
+              toast({
+                title: "Transaction Sent",
+                description: `Included in block: ${status.asInBlock.toString()}`,
+                variant: "default",
+              });
+            } else if (status.isFinalized) {
+              toast({
+                title: "Transaction Finalized",
+                description: "License created successfully.",
+                variant: "default",
+              });
+              events.forEach(({ event }) => {
+                if (event.method === "ExtrinsicFailed") {
+                  console.error("Transaction failed", event.data);
+                }
+              });
+              unsub(); // Desuscribirse del evento
+            }
+          }
+        );
+    } catch (error) {
+      console.error("Error during transaction:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Transaction failed",
+        variant: "destructive",
+      });
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-
-    console.log("Pasaron 10 segundos");
-
-    toast({
-      title: "License Created",
-      description: `Successfully created License Contract id 5 `,
-      variant: "default",
-      className: "bg-white text-black border border-gray-200",
-    });
-    onSubmit(formData);
   };
 
   const handleInputChange = (updates: Partial<LicenseFormData>) => {
@@ -96,9 +134,7 @@ export function LicenseSampleForm({
             <p>
               License Price: {formData.price.amount} {formData.price.currency}
             </p>
-            <p>
-              Royalty Rate: {formData.royaltyrate}%
-            </p>
+            <p>Royalty Rate: {formData.royaltyrate}%</p>
           </div>
 
           {/* License Type Selection */}
@@ -152,8 +188,6 @@ export function LicenseSampleForm({
           </div>
 
           <div className="bg-[transparent]  rounded-md items-start text-[#fff] space-y-[10px]">
-          
-
             {formData.durationType === "Permanent" && (
               <p>License Duration: Permanent</p>
             )}
@@ -173,14 +207,21 @@ export function LicenseSampleForm({
             {formData.paymentType === "OneTime" && (
               <p>Payment Type: One-Time Payment</p>
             )}
-            {formData.paymentType === "Recurring" && (
+            {formData.paymentType === "Periodic" && (
               <div className="flex flex-col gap-[8px]">
-                <p>Payment Type: Recurring </p>
-                <p>Payment Interval: {formData.recurringPayment?.interval}</p>
+                <p>Payment Type: Periodic</p>
+                <p>
+                  Amount Per Payment:{" "}
+                  {formData.periodicPayment?.amountPerPayment}
+                </p>
+                <p>Total Payments: {formData.periodicPayment?.totalPayments}</p>
+                <p>
+                  Payment Frequency: Every {formData.periodicPayment?.frequency}{" "}
+                  days
+                </p>
               </div>
             )}
           </div>
-         
 
           <div className="flex justify-between pt-4">
             <Button
@@ -200,7 +241,6 @@ export function LicenseSampleForm({
         </form>
       </div>
 
-
       <AlertDialog
         open={showConfirmDialog}
         onClose={() => setShowConfirmDialog(false)}
@@ -213,5 +253,3 @@ export function LicenseSampleForm({
     </div>
   );
 }
-
-
