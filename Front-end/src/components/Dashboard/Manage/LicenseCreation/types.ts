@@ -12,10 +12,12 @@ export interface LicenseFormData {
   customDuration?: {
     value: number;
     unit?: "days" | "months" | "years";
-    expirationDate?: string;
+    expirationDate?: string
   };
-  paymentType: "OneTime" | "Recurring";
-  recurringPayment?: {
-    interval: "Monthly" | "Quarterly" | "Annually";
+  paymentType: "OneTime" | "Periodic";
+  periodicPayment?: {
+    amountPerPayment: number;
+    totalPayments: number;
+    frequency: number;
   };
 }
